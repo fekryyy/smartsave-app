@@ -72,11 +72,16 @@ class ApiClient {
 class AuthInterceptor extends Interceptor {
   final Dio dio;
   final FlutterSecureStorage storage;
+  bool _isRefreshing = false;
 
   AuthInterceptor(this.dio, this.storage);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    if (options.headers['X-Retry'] == 'true') {
+      handler.next(options);
+      return;
+    }
     final token = await storage.read(key: 'auth_token');
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -87,7 +92,23 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
+      // NEVER retry login, register, google auth, or refresh-token routes
+      final path = err.requestOptions.path;
+      if (path == '/auth/login' || path == '/auth/register' ||
+          path == '/auth/google' || path == '/auth/refresh-token' ||
+          err.requestOptions.headers['X-Retry'] == 'true') {
+        handler.next(err);
+        return;
+      }
+
+      // Prevent concurrent refresh loops
+      if (_isRefreshing) {
+        handler.next(err);
+        return;
+      }
+
       try {
+        _isRefreshing = true;
         final refreshToken = await storage.read(key: 'refresh_token');
         if (refreshToken != null) {
           final response = await dio.post('/auth/refresh-token', data: {
@@ -101,6 +122,8 @@ class AuthInterceptor extends Interceptor {
 
           final retryOptions = err.requestOptions;
           retryOptions.headers['Authorization'] = 'Bearer $newToken';
+          retryOptions.headers['X-Retry'] = 'true';
+          _isRefreshing = false;
           final retryResponse = await dio.fetch(retryOptions);
           handler.resolve(retryResponse);
           return;
@@ -108,6 +131,7 @@ class AuthInterceptor extends Interceptor {
       } catch (_) {
         await storage.deleteAll();
       }
+      _isRefreshing = false;
     }
     handler.next(err);
   }

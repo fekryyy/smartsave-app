@@ -9,7 +9,7 @@ A cross-platform mobile application for tracking expenses, analyzing spending ha
 - **Database:** MongoDB (Mongoose ODM)
 - **Authentication:** JWT + bcrypt, Google OAuth
 - **Charts:** fl_chart, Syncfusion
-- **Notifications:** Firebase Cloud Messaging, flutter_local_notifications
+- **Notifications:** Firebase Cloud Messaging, flutter_local_notificationsss
 
 ## Project Structure
 

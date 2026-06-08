@@ -23,7 +23,7 @@ const advisorMemorySchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['chat', 'advice', 'analysis', 'plan', 'prediction', 'insight', 'score', 'system'],
+    enum: ['chat', 'advice', 'analysis', 'info', 'plan', 'prediction', 'insight', 'score', 'system'],
     default: 'chat',
   },
   metadata: {

@@ -1,7 +1,7 @@
 /**
  * Unified AI Service
  *
- * Provides a single interface for generating responses from OpenAI or Claude.
+ * Provides a single interface for generating responses from OpenAI, Claude, or DeepSeek.
  * Uses native fetch (Node 18+) to avoid additional dependencies.
  * Features: retries with exponential backoff, rate limiting, error handling.
  */
@@ -9,7 +9,55 @@
 const aiConfig = require('../config/ai');
 const logger = require('../utils/logger');
 
+class AIFallbackError extends Error {
+  constructor(message, systemPrompt, userPrompt) {
+    super(message);
+    this.name = 'AIFallbackError';
+    this.systemPrompt = systemPrompt;
+    this.userPrompt = userPrompt;
+  }
+}
+
 class AIService {
+  /**
+   * Rate-limit guard: if we hit 429, skip future calls until the limit resets.
+   * Set from OpenRouter's `X-RateLimit-Reset` header or a conservative default.
+   */
+  static _rateLimitedUntil = 0;
+  static _rateLimitBufferMs = 5000; // Extra buffer beyond the reset timestamp
+
+  /**
+   * Check if the AI service is currently rate-limited.
+   * If so, throw immediately rather than wasting a futile HTTP call.
+   */
+  static _checkRateLimited() {
+    if (Date.now() < AIService._rateLimitedUntil) {
+      const remaining = Math.ceil((AIService._rateLimitedUntil - Date.now()) / 1000);
+      throw new AIFallbackError(
+        `AI rate-limited for ~${remaining}s (skipping to avoid wasted calls)`,
+        '',
+        ''
+      );
+    }
+  }
+
+  /**
+   * Record that we hit a rate limit.
+   * @param {number} [retryAfter] Seconds until retry (from Retry-After header)
+   */
+  static _markRateLimited(retryAfter) {
+    const duration = retryAfter ? retryAfter * 1000 : 60_000; // default 60s
+    AIService._rateLimitedUntil = Date.now() + duration + AIService._rateLimitBufferMs;
+    logger.warn(`AI rate-limited for ${Math.ceil(duration / 1000)}s (detected)`);
+  }
+
+  /**
+   * Clear rate-limit state after a successful call.
+   */
+  static _clearRateLimited() {
+    AIService._rateLimitedUntil = 0;
+  }
+
   /**
    * Generate a response from the configured AI provider.
    *
@@ -22,24 +70,31 @@ class AIService {
    */
   async generate(systemPrompt, userPrompt, options = {}) {
     if (!aiConfig.isConfigured) {
-      logger.warn('AI service not configured — returning fallback response');
-      return this._getFallbackResponse(systemPrompt, userPrompt);
+      logger.warn('AI service not configured');
+      throw new AIFallbackError('AI service not configured', systemPrompt, userPrompt);
     }
+
+    // Early exit if we know we're rate-limited
+    AIService._checkRateLimited();
 
     const provider = aiConfig.provider;
     const temperature = options.temperature ?? aiConfig.temperature;
     const maxTokens = options.maxTokens ?? aiConfig.maxTokens;
-    const maxRetries = aiConfig.maxRetries;
+    const maxRetries = options.maxRetries ?? aiConfig.maxRetries;
+    // totalAttempts ensures at least 1 try even when maxRetries is 0
+    const totalAttempts = Math.max(1, maxRetries);
 
     let lastError;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    for (let attempt = 1; attempt <= totalAttempts; attempt++) {
       try {
         let result;
         if (provider === 'openai') {
           result = await this._callOpenAI(systemPrompt, userPrompt, temperature, maxTokens);
         } else if (provider === 'claude') {
           result = await this._callClaude(systemPrompt, userPrompt, temperature, maxTokens);
+        } else if (provider === 'deepseek') {
+          result = await this._callDeepSeek(systemPrompt, userPrompt, temperature, maxTokens);
         } else {
           throw new Error(`Unknown AI provider: ${provider}`);
         }
@@ -56,8 +111,8 @@ class AIService {
       }
     }
 
-    logger.error(`AI service failed after ${maxRetries} attempts: ${lastError.message}`);
-    return this._getFallbackResponse(systemPrompt, userPrompt);
+    logger.error(`AI service failed after ${totalAttempts} attempt(s): ${lastError.message}`);
+    throw new AIFallbackError(lastError.message, systemPrompt, userPrompt);
   }
 
   /**
@@ -65,27 +120,51 @@ class AIService {
    */
   async _callOpenAI(systemPrompt, userPrompt, temperature, maxTokens) {
     const url = `${aiConfig.openaiBaseUrl}/chat/completions`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${aiConfig.openaiApiKey}`,
-      },
-      body: JSON.stringify({
-        model: aiConfig.openaiModel,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        temperature,
-        max_tokens: maxTokens,
-      }),
-    });
+
+    // 15-second timeout — if OpenRouter hangs, fail fast and let fallback handle it
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${aiConfig.openaiApiKey}`,
+          'Referer': 'https://smartsave.app',
+          'X-Title': 'SmartSave',
+        },
+        body: JSON.stringify({
+          model: aiConfig.openaiModel,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          temperature,
+          max_tokens: maxTokens,
+        }),
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorBody = await response.text().catch(() => '');
+
+      // Rate-limit detection (OpenRouter returns 429 with Retry-After)
+      if (response.status === 429) {
+        const retryAfter = parseInt(response.headers.get('Retry-After') || '60', 10);
+        AIService._markRateLimited(retryAfter);
+        throw new Error(`OpenAI API rate-limited (429): ${errorBody}`);
+      }
+
       throw new Error(`OpenAI API error ${response.status}: ${errorBody}`);
     }
+
+    // Successful call — clear any previous rate-limit state
+    AIService._clearRateLimited();
 
     const data = await response.json();
     return data.choices?.[0]?.message?.content?.trim() || '';
@@ -96,23 +175,33 @@ class AIService {
    */
   async _callClaude(systemPrompt, userPrompt, temperature, maxTokens) {
     const url = `${aiConfig.claudeBaseUrl}/messages`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': aiConfig.claudeApiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: aiConfig.claudeModel,
-        system: systemPrompt,
-        messages: [
-          { role: 'user', content: userPrompt },
-        ],
-        temperature,
-        max_tokens: maxTokens,
-      }),
-    });
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': aiConfig.claudeApiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: aiConfig.claudeModel,
+          system: systemPrompt,
+          messages: [
+            { role: 'user', content: userPrompt },
+          ],
+          temperature,
+          max_tokens: maxTokens,
+        }),
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorBody = await response.text().catch(() => '');
@@ -121,6 +210,49 @@ class AIService {
 
     const data = await response.json();
     return data.content?.[0]?.text?.trim() || '';
+  }
+
+  /**
+   * Call DeepSeek chat completions API (OpenAI-compatible format)
+   */
+  async _callDeepSeek(systemPrompt, userPrompt, temperature, maxTokens) {
+    const url = `${aiConfig.deepseekBaseUrl}/chat/completions`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${aiConfig.deepseekApiKey}`,
+          'Referer': 'https://smartsave.app',
+          'X-Title': 'SmartSave',
+        },
+        body: JSON.stringify({
+          model: aiConfig.deepseekModel,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          temperature,
+          max_tokens: maxTokens,
+        }),
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      throw new Error(`DeepSeek API error ${response.status}: ${errorBody}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content?.trim() || '';
   }
 
   /**

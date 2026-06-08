@@ -27,28 +27,20 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   bool get isChatLoading => _isChatLoading;
   String? get error => _error;
 
-  // Load all data in parallel
+  // Load all data — primary path: single /analysis call (it returns everything)
   Future<void> loadAll() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final results = await Future.wait([
-        _repository.getFullAnalysis(),
-        _repository.getInsights(),
-        _repository.getActionPlans(),
-        _repository.getPredictions(),
-      ]);
-
-      _analysis = results[0] as FullFinancialAnalysis;
+      _analysis = await _repository.getFullAnalysis();
       _score = _analysis!.score;
-      _insights = results[1] as List<FinancialInsight>;
-      _actionPlans = results[2] as List<ActionPlan>;
-      _predictions = results[3] as List<FinancialPrediction>;
+      _insights = _analysis!.insights;
+      _actionPlans = _analysis!.actionPlans;
+      _predictions = _analysis!.predictions;
     } catch (e) {
-      _error = e.toString();
-      // Try loading individually
+      // Primary /analysis call failed — try individual endpoints
       await _loadIndividually();
     }
 
@@ -56,9 +48,13 @@ class FinancialAdvisorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Fallback: load each data piece from its own endpoint
   Future<void> _loadIndividually() async {
+    bool anyLoaded = false;
+
     try {
       _score = await _repository.getScore();
+      anyLoaded = true;
     } catch (_) {}
     try {
       _insights = await _repository.getInsights();
@@ -69,6 +65,20 @@ class FinancialAdvisorProvider extends ChangeNotifier {
     try {
       _predictions = await _repository.getPredictions();
     } catch (_) {}
+
+    if (anyLoaded) {
+      // Construct a partial analysis so the screen can render
+      _analysis = FullFinancialAnalysis(
+        score: _score ?? FinancialScore(score: 0, level: 'N/A'),
+        health: FinancialHealth(status: 'needs_attention'),
+        insights: _insights,
+        actionPlans: _actionPlans,
+        predictions: _predictions,
+      );
+      _error = null;
+    } else {
+      _error = _error ?? 'Unable to load financial data';
+    }
   }
 
   // Reload specific sections

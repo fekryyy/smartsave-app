@@ -119,7 +119,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
               borderRadius: BorderRadius.circular(10),
-              boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2))],
+              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2))],
             ),
             child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
           ),
@@ -141,7 +141,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _showChat ? AppColors.primary.withOpacity(0.15) : (isDark ? AppColors.darkCardAlt : AppColors.grey100),
+                color: _showChat ? AppColors.primary.withValues(alpha: 0.15) : (isDark ? AppColors.darkCardAlt : AppColors.grey100),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -299,13 +299,13 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   decoration: BoxDecoration(
                     gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 6))],
+                    boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.25), blurRadius: 16, offset: const Offset(0, 6))],
                   ),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
                         child: const Icon(Icons.chat_rounded, color: Colors.white, size: 24),
                       ),
                       const SizedBox(width: 16),
@@ -367,7 +367,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkCard : AppColors.primary.withOpacity(0.05),
+              color: isDark ? AppColors.darkCard : AppColors.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -377,7 +377,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   decoration: BoxDecoration(
                     gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 4))],
+                    boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 4))],
                   ),
                   child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 36),
                 ),
@@ -437,7 +437,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               decoration: BoxDecoration(
                 gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(18).copyWith(bottomRight: Radius.zero),
-                boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))],
+                boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2))],
               ),
               child: Text(
                 msg.answer,
@@ -471,12 +471,12 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isError
-                  ? AppColors.danger.withOpacity(0.1)
+                  ? AppColors.danger.withValues(alpha: 0.1)
                   : (isDark ? AppColors.darkCard : AppColors.grey50),
               borderRadius: BorderRadius.circular(16).copyWith(topLeft: Radius.zero),
               border: Border.all(
                 color: isError
-                    ? AppColors.danger.withOpacity(0.2)
+                    ? AppColors.danger.withValues(alpha: 0.2)
                     : (isDark ? AppColors.darkBorder : AppColors.grey200),
               ),
             ),
@@ -496,7 +496,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -573,7 +573,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 decoration: BoxDecoration(
                   gradient: AppColors.primaryGradient,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2))],
+                  boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 2))],
                 ),
                 child: provider.isChatLoading
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
@@ -609,7 +609,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.grey100),
           boxShadow: [
             BoxShadow(
-              color: scoreColor.withOpacity(0.08),
+              color: scoreColor.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -654,7 +654,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: scoreColor.withOpacity(0.12),
+                          color: scoreColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -709,7 +709,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         alignment: Alignment.centerLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: color.withOpacity(0.6 + ratio * 0.4),
+            color: color.withValues(alpha: 0.6 + ratio * 0.4),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -748,7 +748,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(statusIcon, color: statusColor, size: 20),
@@ -759,7 +759,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
+                    color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -825,7 +825,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(iconData, color: iconColor, size: 18),
@@ -844,7 +844,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.danger.withOpacity(0.1),
+                          color: AppColors.danger.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text('URGENT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.danger)),
@@ -904,7 +904,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [impactColor.withOpacity(0.1), impactColor.withOpacity(0.05)],
+                colors: [impactColor.withValues(alpha: 0.1), impactColor.withValues(alpha: 0.05)],
               ),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -922,7 +922,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: impactColor.withOpacity(0.12),
+                        color: impactColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
@@ -946,7 +946,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
+                color: AppColors.success.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -988,7 +988,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: planColor.withOpacity(0.1),
+                  color: planColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(planIcon, color: planColor, size: 20),
@@ -1031,7 +1031,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: planColor.withOpacity(0.1),
+                      color: planColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
@@ -1116,8 +1116,8 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: prediction.confidence == 'high'
-                        ? AppColors.success.withOpacity(0.1)
-                        : AppColors.warning.withOpacity(0.1),
+                        ? AppColors.success.withValues(alpha: 0.1)
+                        : AppColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
@@ -1163,8 +1163,8 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: item.risk == 'high'
-                          ? AppColors.danger.withOpacity(0.1)
-                          : AppColors.warning.withOpacity(0.1),
+                          ? AppColors.danger.withValues(alpha: 0.1)
+                          : AppColors.warning.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -1228,7 +1228,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -1249,7 +1249,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, size: 16, color: AppColors.primary),

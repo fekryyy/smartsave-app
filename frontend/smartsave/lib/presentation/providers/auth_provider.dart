@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../core/errors/failures.dart';
-import '../../core/network/api_client.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/datasources/remote/challenge_remote_datasource.dart';
@@ -24,19 +23,24 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _status == AuthStatus.authenticated;
 
   Future<void> initialize() async {
-    final isLoggedIn = await _authRepository.isLoggedIn();
-    if (isLoggedIn) {
-      try {
-        _user = await _authRepository.getProfile();
-        _status = AuthStatus.authenticated;
-        _challengeRemote.recordLogin();
-      } catch (_) {
+    try {
+      final isLoggedIn = await _authRepository.isLoggedIn();
+      if (isLoggedIn) {
+        try {
+          _user = await _authRepository.getProfile();
+          _status = AuthStatus.authenticated;
+        } catch (_) {
+          _status = AuthStatus.unauthenticated;
+        }
+      } else {
         _status = AuthStatus.unauthenticated;
       }
-    } else {
+    } catch (_) {
       _status = AuthStatus.unauthenticated;
     }
     notifyListeners();
+    // Fire-and-forget: gamification should never break auth flow
+    _recordLoginSafe();
   }
 
   Future<bool> login(String email, String password) async {
@@ -49,7 +53,8 @@ class AuthProvider extends ChangeNotifier {
       _status = AuthStatus.authenticated;
       _isLoading = false;
       notifyListeners();
-      _challengeRemote.recordLogin();
+      // Fire-and-forget: gamification should never break auth flow
+      _recordLoginSafe();
       return true;
     } on Failure catch (e) {
       _errorMessage = e.message;
@@ -76,7 +81,8 @@ class AuthProvider extends ChangeNotifier {
       _status = AuthStatus.authenticated;
       _isLoading = false;
       notifyListeners();
-      _challengeRemote.recordLogin();
+      // Fire-and-forget: gamification should never break auth flow
+      _recordLoginSafe();
       return true;
     } on Failure catch (e) {
       _errorMessage = e.message;
@@ -151,6 +157,15 @@ class AuthProvider extends ChangeNotifier {
       return (e.response!.data as Map)['message'] ?? 'Request failed. Please try again.';
     }
     return 'Request failed. Please try again.';
+  }
+
+  /// Fire-and-forget gamification tracking that never throws
+  Future<void> _recordLoginSafe() async {
+    try {
+      await _challengeRemote.recordLogin();
+    } catch (_) {
+      // Silently ignore — gamification should never break auth
+    }
   }
 
   void clearError() {

@@ -35,7 +35,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     if (!mounted) return;
 
     final authProvider = context.read<AuthProvider>();
-    await authProvider.initialize();
+    try {
+      await authProvider.initialize();
+    } catch (_) {
+      // If initialize throws (e.g., Keychain read failure), go to login
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      return;
+    }
 
     if (!mounted) return;
     final isAuth = authProvider.isAuthenticated;
