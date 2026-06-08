@@ -1,0 +1,38 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Flutter
+frontend/smartsave/build/
+frontend/smartsave/.dart_tool/
+frontend/smartsave/.packages
+frontend/smartsave/.pub/
+frontend/smartsave/.flutter-plugins
+frontend/smartsave/.flutter-plugins-dependencies
+frontend/smartsave/*.iml
+frontend/smartsave/ios/Pods/
+frontend/smartsave/ios/.symlinks/
+frontend/smartsave/android/.gradle/
+frontend/smartsave/android/app/build/
+frontend/smartsave/android/local.properties
+frontend/smartsave/coverage/
+
+# Environment
+.env
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep

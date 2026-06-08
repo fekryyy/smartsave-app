@@ -1,0 +1,29 @@
+import '../../../core/network/api_client.dart';
+
+class FinancialAdvisorRemoteDataSource {
+  final ApiClient _apiClient = ApiClient();
+
+  Future<Map<String, dynamic>> getFullAnalysis() async {
+    return _apiClient.get('/financial-advisor/analysis');
+  }
+
+  Future<Map<String, dynamic>> getScore() async {
+    return _apiClient.get('/financial-advisor/score');
+  }
+
+  Future<Map<String, dynamic>> getInsights() async {
+    return _apiClient.get('/financial-advisor/insights');
+  }
+
+  Future<Map<String, dynamic>> getActionPlan() async {
+    return _apiClient.get('/financial-advisor/action-plan');
+  }
+
+  Future<Map<String, dynamic>> getPredictions() async {
+    return _apiClient.get('/financial-advisor/predictions');
+  }
+
+  Future<Map<String, dynamic>> askQuestion(String question) async {
+    return _apiClient.post('/financial-advisor/ask', data: {'question': question});
+  }
+}
