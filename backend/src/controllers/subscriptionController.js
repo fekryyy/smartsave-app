@@ -2,11 +2,30 @@ const Subscription = require('../models/Subscription');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getAll = catchAsync(async (req, res) => {
-  const subs = await Subscription.find({ user: req.user.id }).sort({ nextBillingDate: 1 });
+  const { page = 1, limit = 50 } = req.query;
+  const query = { user: req.user.id };
+
+  const subs = await Subscription.find(query)
+    .sort({ nextBillingDate: 1 })
+    .skip((page - 1) * limit)
+    .limit(parseInt(limit))
+    .lean({ virtuals: true });
+
+  const total = await Subscription.countDocuments(query);
   const monthlyTotal = subs.reduce((sum, s) => sum + s.monthlyAmount, 0);
   const yearlyTotal = subs.reduce((sum, s) => sum + s.yearlyAmount, 0);
   const upcoming = subs.filter(s => s.isActive && s.nextBillingDate && new Date(s.nextBillingDate) <= new Date(Date.now() + 30 * 86400000));
-  res.json({ success: true, data: { subscriptions: subs, monthlyTotal, yearlyTotal, upcoming } });
+
+  res.json({
+    success: true,
+    data: { subscriptions: subs, monthlyTotal, yearlyTotal, upcoming },
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  });
 });
 
 exports.getById = catchAsync(async (req, res) => {

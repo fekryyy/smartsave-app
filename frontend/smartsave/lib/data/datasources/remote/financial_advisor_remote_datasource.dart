@@ -4,26 +4,26 @@ class FinancialAdvisorRemoteDataSource {
   final ApiClient _apiClient = ApiClient();
 
   Future<Map<String, dynamic>> getFullAnalysis() async {
-    return _apiClient.get('/financial-advisor/analysis');
+    return _apiClient.get('/financial-advisor/analysis').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> getScore() async {
-    return _apiClient.get('/financial-advisor/score');
+    return _apiClient.get('/financial-advisor/score').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> getInsights() async {
-    return _apiClient.get('/financial-advisor/insights');
+    return _apiClient.get('/financial-advisor/insights').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> getActionPlan() async {
-    return _apiClient.get('/financial-advisor/action-plan');
+    return _apiClient.get('/financial-advisor/action-plan').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> getPredictions() async {
-    return _apiClient.get('/financial-advisor/predictions');
+    return _apiClient.get('/financial-advisor/predictions').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> askQuestion(String question) async {
-    return _apiClient.post('/financial-advisor/ask', data: {'question': question});
+    return _apiClient.post('/financial-advisor/ask', data: {'question': question}).dataOrThrow;
   }
 }

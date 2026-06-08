@@ -35,35 +35,46 @@ class AnalyticsProvider extends ChangeNotifier {
   Future<void> loadCategoryBreakdown({String period = 'monthly'}) async {
     try {
       _categoryBreakdown = await _analyticsRepository.getCategoryBreakdown(period: period);
-    } catch (_) {}
+    } catch (_) {
+      _errorMessage = _errorMessage ?? 'Failed to load category breakdown';
+    }
   }
 
   Future<void> loadMonthlyTrend({int months = 6}) async {
     try {
       _monthlyTrend = await _analyticsRepository.getMonthlyTrend(months: months);
-    } catch (_) {}
+    } catch (_) {
+      _errorMessage = _errorMessage ?? 'Failed to load trends';
+    }
   }
 
   Future<void> loadIncomeVsExpenses({String period = 'monthly'}) async {
     try {
       _incomeVsExpenses = await _analyticsRepository.getIncomeVsExpenses(period: period);
-    } catch (_) {}
+    } catch (_) {
+      _errorMessage = _errorMessage ?? 'Failed to load income vs expenses';
+    }
   }
 
   Future<void> loadSavingsGrowth({int months = 6}) async {
     try {
       _savingsGrowth = await _analyticsRepository.getSavingsGrowth(months: months);
-    } catch (_) {}
+    } catch (_) {
+      _errorMessage = _errorMessage ?? 'Failed to load savings growth';
+    }
   }
 
   Future<void> loadRecommendations() async {
     try {
       _recommendations = await _analyticsRepository.getRecommendations();
-    } catch (_) {}
+    } catch (_) {
+      _errorMessage = _errorMessage ?? 'Failed to load recommendations';
+    }
   }
 
   Future<void> loadAllAnalytics() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     await Future.wait([

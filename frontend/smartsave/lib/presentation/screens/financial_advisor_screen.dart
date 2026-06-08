@@ -80,7 +80,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
             Expanded(
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : provider.error != null && provider.analysis == null
+                  : provider.errorMessage != null && provider.analysis == null
                       ? _buildErrorState(provider, isDark)
                       : _buildContent(provider, isDark),
             ),

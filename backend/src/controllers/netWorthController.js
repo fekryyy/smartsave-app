@@ -2,7 +2,7 @@ const NetWorth = require('../models/NetWorth');
 const catchAsync = require('../utils/catchAsync');
 
 exports.getNetWorth = catchAsync(async (req, res) => {
-  let nw = await NetWorth.findOne({ user: req.user.id });
+  let nw = await NetWorth.findOne({ user: req.user.id }).lean({ virtuals: true });
   if (!nw) {
     nw = await NetWorth.create({ user: req.user.id, entries: [{ assets: {}, liabilities: {} }] });
   }
@@ -36,7 +36,7 @@ exports.addEntry = catchAsync(async (req, res) => {
 });
 
 exports.getHistory = catchAsync(async (req, res) => {
-  const nw = await NetWorth.findOne({ user: req.user.id });
+  const nw = await NetWorth.findOne({ user: req.user.id }).lean();
   if (!nw) return res.json({ success: true, data: [] });
   const history = nw.entries.map(e => ({
     date: e.date,

@@ -76,6 +76,9 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.index({ user: 1, date: -1 });
 transactionSchema.index({ user: 1, category: 1 });
 transactionSchema.index({ user: 1, type: 1, date: -1 });
+transactionSchema.index({ user: 1, isActive: 1, date: -1 });
+transactionSchema.index({ user: 1, type: 1, isActive: 1, date: -1 });
+transactionSchema.index({ user: 1, category: 1, isActive: 1 });
 
 transactionSchema.statics.getMonthlyTotals = function(userId, year, month) {
   return this.aggregate([

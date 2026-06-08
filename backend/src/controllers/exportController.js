@@ -3,19 +3,19 @@ const { Parser } = require('json2csv');
 const XLSX = require('xlsx');
 const Transaction = require('../models/Transaction');
 const Goal = require('../models/Goal');
+const asyncHandler = require('../utils/catchAsync');
 const { getDateRange } = require('../utils/helpers');
 
 const exportController = {
-  async exportPDF(req, res, next) {
-    try {
-      const { period = 'monthly', type = 'transactions' } = req.query;
-      const { start, end } = getDateRange(period);
+  exportPDF: asyncHandler(async (req, res) => {
+    const { period = 'monthly', type = 'transactions' } = req.query;
+    const { start, end } = getDateRange(period);
 
       let data;
       if (type === 'transactions') {
-        data = await Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).sort('-date');
+        data = await Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).sort('-date').lean();
       } else {
-        data = await Goal.find({ user: req.user.id });
+        data = await Goal.find({ user: req.user.id }).lean();
       }
 
       const doc = new PDFDocument({ margin: 30, size: 'A4' });
@@ -64,13 +64,9 @@ const exportController = {
       }
 
       doc.end();
-    } catch (error) {
-      next(error);
-    }
-  },
+    }),
 
-  async exportCSV(req, res, next) {
-    try {
+  exportCSV: asyncHandler(async (req, res) => {
       const { period = 'monthly', type = 'transactions' } = req.query;
       const { start, end } = getDateRange(period);
 
@@ -98,68 +94,61 @@ const exportController = {
         res.setHeader('Content-Disposition', `attachment; filename=smartsave-goals-${Date.now()}.csv`);
         res.send(csv);
       }
-    } catch (error) {
-      next(error);
-    }
-  },
+    }),
 
-  async exportExcel(req, res, next) {
-    try {
-      const { period = 'monthly' } = req.query;
-      const { start, end } = getDateRange(period);
+  exportExcel: asyncHandler(async (req, res) => {
+    const { period = 'monthly' } = req.query;
+    const { start, end } = getDateRange(period);
 
-      const [transactions, goals] = await Promise.all([
-        Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).lean(),
-        Goal.find({ user: req.user.id }).lean(),
-      ]);
+    const [transactions, goals] = await Promise.all([
+      Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).lean(),
+      Goal.find({ user: req.user.id }).lean(),
+    ]);
 
-      const wb = XLSX.utils.book_new();
+    const wb = XLSX.utils.book_new();
 
-      // Transactions sheet
-      const txData = transactions.map(t => ({
-        Type: t.type,
-        Amount: t.amount,
-        Category: t.category,
-        Description: t.description,
-        Date: new Date(t.date).toLocaleDateString(),
-        'Payment Method': t.paymentMethod,
-      }));
-      const txSheet = XLSX.utils.json_to_sheet(txData);
-      XLSX.utils.book_append_sheet(wb, txSheet, 'Transactions');
+    // Transactions sheet
+    const txData = transactions.map(t => ({
+      Type: t.type,
+      Amount: t.amount,
+      Category: t.category,
+      Description: t.description,
+      Date: new Date(t.date).toLocaleDateString(),
+      'Payment Method': t.paymentMethod,
+    }));
+    const txSheet = XLSX.utils.json_to_sheet(txData);
+    XLSX.utils.book_append_sheet(wb, txSheet, 'Transactions');
 
-      // Goals sheet
-      const goalData = goals.map(g => ({
-        Title: g.title,
-        'Target Amount': g.targetAmount,
-        'Current Amount': g.currentAmount,
-        Progress: g.targetAmount > 0 ? `${Math.round((g.currentAmount / g.targetAmount) * 100)}%` : '0%',
-        Status: g.status,
-        'Target Date': g.targetDate ? new Date(g.targetDate).toLocaleDateString() : 'No target',
-      }));
-      const goalSheet = XLSX.utils.json_to_sheet(goalData);
-      XLSX.utils.book_append_sheet(wb, goalSheet, 'Savings Goals');
+    // Goals sheet
+    const goalData = goals.map(g => ({
+      Title: g.title,
+      'Target Amount': g.targetAmount,
+      'Current Amount': g.currentAmount,
+      Progress: g.targetAmount > 0 ? `${Math.round((g.currentAmount / g.targetAmount) * 100)}%` : '0%',
+      Status: g.status,
+      'Target Date': g.targetDate ? new Date(g.targetDate).toLocaleDateString() : 'No target',
+    }));
+    const goalSheet = XLSX.utils.json_to_sheet(goalData);
+    XLSX.utils.book_append_sheet(wb, goalSheet, 'Savings Goals');
 
-      // Summary sheet
-      const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-      const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-      const summaryData = [
-        { Metric: 'Total Income', Value: totalIncome },
-        { Metric: 'Total Expenses', Value: totalExpenses },
-        { Metric: 'Net Savings', Value: totalIncome - totalExpenses },
-        { Metric: 'Period', Value: `${start.toLocaleDateString()} - ${end.toLocaleDateString()}` },
-      ];
-      const summarySheet = XLSX.utils.json_to_sheet(summaryData);
-      XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+    // Summary sheet
+    const totalIncome = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+    const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+    const summaryData = [
+      { Metric: 'Total Income', Value: totalIncome },
+      { Metric: 'Total Expenses', Value: totalExpenses },
+      { Metric: 'Net Savings', Value: totalIncome - totalExpenses },
+      { Metric: 'Period', Value: `${start.toLocaleDateString()} - ${end.toLocaleDateString()}` },
+    ];
+    const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
 
-      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
 
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename=smartsave-report-${Date.now()}.xlsx`);
-      res.send(buffer);
-    } catch (error) {
-      next(error);
-    }
-  },
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename=smartsave-report-${Date.now()}.xlsx`);
+    res.send(buffer);
+  }),
 };
 
 module.exports = exportController;

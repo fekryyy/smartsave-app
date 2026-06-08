@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/errors/provider_error_handler.dart';
 import '../../data/models/report_model.dart';
 import '../../data/models/heatmap_model.dart';
 import '../../data/repositories/report_repository_impl.dart';
 
-class ReportProvider extends ChangeNotifier {
+class ReportProvider extends ChangeNotifier with ProviderErrorHandler {
   final ReportRepositoryImpl _reportRepository = ReportRepositoryImpl();
   MonthlyReport? _currentReport;
   List<ComparisonItem> _comparison = [];
@@ -22,7 +23,10 @@ class ReportProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _currentReport = await _reportRepository.getMonthlyReport(year, month);
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -32,7 +36,10 @@ class ReportProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _comparison = await _reportRepository.getComparison(year, month);
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -42,7 +49,10 @@ class ReportProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _trends = await _reportRepository.getTrends();
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -52,7 +62,10 @@ class ReportProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _heatmap = await _reportRepository.getHeatmap(year);
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }

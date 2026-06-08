@@ -24,4 +24,8 @@ const autoSaveSchema = new mongoose.Schema({
   }],
 }, { timestamps: true });
 
+// Compound indexes for common queries
+autoSaveSchema.index({ user: 1, isActive: 1 });
+autoSaveSchema.index({ user: 1, createdAt: -1 });
+
 module.exports = mongoose.model('AutoSave', autoSaveSchema);

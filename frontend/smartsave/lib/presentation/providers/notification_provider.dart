@@ -74,4 +74,9 @@ class NotificationProvider extends ChangeNotifier {
       notifyListeners();
     } catch (_) {}
   }
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

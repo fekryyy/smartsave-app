@@ -1,10 +1,10 @@
 const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const Goal = require('../models/Goal');
+const asyncHandler = require('../utils/catchAsync');
 
 const recommendationController = {
-  async getRecommendations(req, res, next) {
-    try {
+  getRecommendations: asyncHandler(async (req, res) => {
       const userId = req.user.id;
       const now = new Date();
       const currentMonth = now.getMonth() + 1;
@@ -67,7 +67,7 @@ const recommendationController = {
       });
 
       // 2. Budget warnings
-      const budgets = await Budget.find({ user: userId, month: currentMonth, year: currentYear });
+      const budgets = await Budget.find({ user: userId, month: currentMonth, year: currentYear }).lean();
       budgets.forEach(budget => {
         if (budget.amount > 0) {
           const percentage = (budget.spent / budget.amount) * 100;
@@ -105,7 +105,7 @@ const recommendationController = {
       });
 
       // 4. Goal-related recommendations
-      const activeGoals = await Goal.find({ user: userId, status: 'active' });
+      const activeGoals = await Goal.find({ user: userId, status: 'active' }).lean();
       for (const goal of activeGoals) {
         if (goal.monthlyContribution > 0) {
           const monthlyIncome = await Transaction.aggregate([
@@ -177,10 +177,7 @@ const recommendationController = {
       recommendations.sort((a, b) => (impactOrder[a.impact] || 0) - (impactOrder[b.impact] || 0));
 
       res.json({ success: true, data: recommendations });
-    } catch (error) {
-      next(error);
-    }
-  },
+    }),
 };
 
 module.exports = recommendationController;

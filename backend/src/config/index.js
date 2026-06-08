@@ -14,4 +14,6 @@ module.exports = {
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
   appUrl: process.env.APP_URL || 'http://localhost:5000',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  redisCacheTTL: parseInt(process.env.REDIS_CACHE_TTL || '300'),
 };

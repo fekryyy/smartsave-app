@@ -14,7 +14,7 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   List<ConversationResponse> _chatHistory = [];
   bool _isLoading = false;
   bool _isChatLoading = false;
-  String? _error;
+  String? _errorMessage;
 
   // Getters
   FullFinancialAnalysis? get analysis => _analysis;
@@ -25,12 +25,12 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   List<ConversationResponse> get chatHistory => _chatHistory;
   bool get isLoading => _isLoading;
   bool get isChatLoading => _isChatLoading;
-  String? get error => _error;
+  String? get errorMessage => _errorMessage;
 
   // Load all data — primary path: single /analysis call (it returns everything)
   Future<void> loadAll() async {
     _isLoading = true;
-    _error = null;
+    _errorMessage = null;
     notifyListeners();
 
     try {
@@ -75,9 +75,9 @@ class FinancialAdvisorProvider extends ChangeNotifier {
         actionPlans: _actionPlans,
         predictions: _predictions,
       );
-      _error = null;
+      _errorMessage = null;
     } else {
-      _error = _error ?? 'Unable to load financial data';
+      _errorMessage = _errorMessage ?? 'Unable to load financial data';
     }
   }
 
@@ -133,6 +133,11 @@ class FinancialAdvisorProvider extends ChangeNotifier {
 
   void clearChat() {
     _chatHistory.clear();
+    notifyListeners();
+  }
+
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }

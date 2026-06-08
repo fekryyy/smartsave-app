@@ -5,9 +5,27 @@ const catchAsync = require('../utils/catchAsync');
 const mongoose = require('mongoose');
 
 exports.getAll = catchAsync(async (req, res) => {
-  const rules = await AutoSave.find({ user: req.user.id }).sort({ createdAt: -1 });
+  const { page = 1, limit = 50 } = req.query;
+  const query = { user: req.user.id };
+
+  const rules = await AutoSave.find(query)
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(parseInt(limit))
+    .lean();
+  const total = await AutoSave.countDocuments(query);
   const totalProjected = rules.reduce((sum, r) => sum + r.totalContributed, 0);
-  res.json({ success: true, data: { rules, totalProjected } });
+
+  res.json({
+    success: true,
+    data: { rules, totalProjected },
+    pagination: {
+      page: parseInt(page),
+      limit: parseInt(limit),
+      total,
+      pages: Math.ceil(total / limit),
+    },
+  });
 });
 
 exports.getById = catchAsync(async (req, res) => {

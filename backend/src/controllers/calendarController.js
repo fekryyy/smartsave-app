@@ -15,7 +15,7 @@ exports.getCalendarData = catchAsync(async (req, res) => {
   const transactions = await Transaction.find({
     user: req.user.id, isActive: true,
     date: { $gte: startDate, $lt: endDate },
-  }).sort({ date: 1 });
+  }).sort({ date: 1 }).lean();
 
   const dailyMap = {};
   const pad = (n) => String(n).padStart(2, '0');
@@ -32,9 +32,9 @@ exports.getCalendarData = catchAsync(async (req, res) => {
     user: req.user.id, isActive: true,
     startDate: { $lte: endDate },
     $or: [{ endDate: null }, { endDate: { $gte: startDate } }],
-  });
+  }).lean();
 
-  const budgets = await Budget.find({ user: req.user.id, month: m, year: y });
+  const budgets = await Budget.find({ user: req.user.id, month: m, year: y }).lean();
   const budgetDeadlines = budgets.map(b => ({
     category: b.category,
     limit: b.limit,
@@ -42,7 +42,7 @@ exports.getCalendarData = catchAsync(async (req, res) => {
     deadline: new Date(y, m, 0),
   }));
 
-  const goals = await Goal.find({ user: req.user.id, status: 'active' });
+  const goals = await Goal.find({ user: req.user.id, status: 'active' }).lean();
   const goalMilestones = goals.map(g => ({
     title: g.title,
     targetDate: g.targetDate,

@@ -19,6 +19,8 @@ import 'presentation/providers/xp_provider.dart';
 import 'presentation/providers/financial_advisor_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'data/datasources/local/local_database.dart';
+import 'services/cache_manager.dart';
+import 'services/sync_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +30,8 @@ void main() async {
   };
   try {
     await LocalDatabase.instance.database;
+    await CacheManager().init();
+    SyncService().start();
   } catch (_) {
     // Local DB not available (e.g., on web) - continue without offline support
   }

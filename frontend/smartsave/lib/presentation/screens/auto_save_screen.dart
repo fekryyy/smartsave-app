@@ -48,24 +48,40 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> {
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () => provider.loadAll(),
-              child: ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _buildSummaryCard(context, provider.totalProjected, activeCount, format, isDark),
-                  const SizedBox(height: 24),
-                  Text('Your Rules', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 12),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(children: [
+                      _buildSummaryCard(context, provider.totalProjected, activeCount, format, isDark),
+                      const SizedBox(height: 24),
+                      Text('Your Rules', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
+                    ]),
+                  )),
                   if (provider.rules.isEmpty)
-                    const EmptyState(
-                      icon: Icons.auto_graph_rounded,
-                      title: 'No auto-save rules',
-                      subtitle: 'Set rules to save money automatically',
-                    )
+                    const SliverToBoxAdapter(child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: EmptyState(
+                        icon: Icons.auto_graph_rounded,
+                        title: 'No auto-save rules',
+                        subtitle: 'Set rules to save money automatically',
+                      ),
+                    ))
                   else
-                    ...provider.rules.map((rule) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _buildRuleCard(context, rule, format, isDark, provider),
-                    )),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (ctx, index) {
+                          final rule = provider.rules[index];
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                            child: RepaintBoundary(child: _buildRuleCard(context, rule, format, isDark, provider)),
+                          );
+                        },
+                        childCount: provider.rules.length,
+                      ),
+                    ),
+                  const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
                 ],
               ),
             ),

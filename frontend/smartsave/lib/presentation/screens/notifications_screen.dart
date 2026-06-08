@@ -58,7 +58,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     itemCount: notifications.length,
                     itemBuilder: (ctx, index) {
                       final notif = notifications[index];
-                      return Dismissible(
+                      return RepaintBoundary(child: Dismissible(
                         key: ValueKey(notif.id),
                         direction: DismissDirection.endToStart,
                         background: Container(
@@ -101,7 +101,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ]),
                           ),
                         ),
-                      );
+                      ));
                     },
                   ),
                 ),

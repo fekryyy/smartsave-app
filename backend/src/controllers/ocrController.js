@@ -1,60 +1,58 @@
 const Tesseract = require('tesseract.js');
 const Transaction = require('../models/Transaction');
+const asyncHandler = require('../utils/catchAsync');
+const { AppError } = require('../middleware/errorHandler');
 
 const ocrController = {
-  async scanReceipt(req, res, next) {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ success: false, message: 'Receipt image is required' });
-      }
+  scanReceipt: asyncHandler(async (req, res) => {
+    if (!req.file) {
+      throw new AppError('Receipt image is required', 400);
+    }
 
-      const { data: { text } } = await Tesseract.recognize(req.file.path, 'eng', {
-        logger: m => m.status === 'recognizing text' && process.env.NODE_ENV === 'development' && console.log(m),
+    const { data: { text } } = await Tesseract.recognize(req.file.path, 'eng', {
+      logger: m => m.status === 'recognizing text' && process.env.NODE_ENV === 'development' && console.log(m),
+    });
+
+    // Extract information from OCR text
+    const extracted = extractReceiptInfo(text);
+    const amount = extracted.amount || 0;
+    const merchant = extracted.merchant || '';
+    const category = categorizeTransaction(merchant, text);
+    const description = merchant || 'Receipt scan';
+
+    if (amount > 0) {
+      const transaction = await Transaction.create({
+        user: req.user.id,
+        type: 'expense',
+        amount,
+        category,
+        description,
+        date: new Date(),
+        paymentMethod: 'Cash',
+        tags: ['scan', 'receipt'],
+        receiptUrl: req.file.path,
       });
 
-      // Extract information from OCR text
-      const extracted = extractReceiptInfo(text);
-      const amount = extracted.amount || 0;
-      const merchant = extracted.merchant || '';
-      const category = categorizeTransaction(merchant, text);
-      const description = merchant || 'Receipt scan';
-
-      if (amount > 0) {
-        const transaction = await Transaction.create({
-          user: req.user.id,
-          type: 'expense',
-          amount,
-          category,
-          description,
-          date: new Date(),
-          paymentMethod: 'Cash',
-          tags: ['scan', 'receipt'],
-          receiptUrl: req.file.path,
-        });
-
-        res.json({
-          success: true,
-          message: 'Receipt scanned successfully',
-          data: {
-            transaction,
-            extracted: { amount, merchant, category },
-            rawText: text.substring(0, 200),
-          },
-        });
-      } else {
-        res.json({
-          success: true,
-          message: 'Receipt scanned but could not detect amount. Please enter manually.',
-          data: {
-            extracted: { amount, merchant, category },
-            rawText: text.substring(0, 200),
-          },
-        });
-      }
-    } catch (error) {
-      next(error);
+      res.json({
+        success: true,
+        message: 'Receipt scanned successfully',
+        data: {
+          transaction,
+          extracted: { amount, merchant, category },
+          rawText: text.substring(0, 200),
+        },
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Receipt scanned but could not detect amount. Please enter manually.',
+        data: {
+          extracted: { amount, merchant, category },
+          rawText: text.substring(0, 200),
+        },
+      });
     }
-  },
+  }),
 };
 
 function extractReceiptInfo(text) {

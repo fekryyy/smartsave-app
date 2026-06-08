@@ -48,4 +48,8 @@ challengeSchema.virtual('progressPct').get(function() {
   return this.goal > 0 ? Math.min(100, Math.round((this.progress / this.goal) * 100)) : 0;
 });
 
+// Compound indexes for common queries
+challengeSchema.index({ user: 1, status: 1, createdAt: -1 });
+challengeSchema.index({ user: 1, type: 1, status: 1 });
+
 module.exports = mongoose.model('Challenge', challengeSchema);

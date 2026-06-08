@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/errors/provider_error_handler.dart';
 import '../../data/repositories/xp_repository_impl.dart';
 
-class XpProvider extends ChangeNotifier {
+class XpProvider extends ChangeNotifier with ProviderErrorHandler {
   final XpRepositoryImpl _repository = XpRepositoryImpl();
   int _level = 1;
   String _levelName = 'Beginner Saver';
@@ -33,7 +34,10 @@ class XpProvider extends ChangeNotifier {
       _nextThreshold = data['nextThreshold'] ?? 0;
       _progress = (data['progress'] ?? 0).toDouble();
       _totalTransactions = data['totalTransactions'] ?? 0;
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }

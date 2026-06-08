@@ -15,26 +15,26 @@ class TransactionRemoteDataSource {
     if (startDate != null) params['startDate'] = startDate;
     if (endDate != null) params['endDate'] = endDate;
 
-    final response = await _apiClient.get(ApiConstants.transactions, queryParameters: params);
+    final response = await _apiClient.get(ApiConstants.transactions, queryParameters: params).dataOrThrow;
     return response['data'];
   }
 
   Future<Map<String, dynamic>> getRecentTransactions() async {
-    final response = await _apiClient.get(ApiConstants.recentTransactions);
+    final response = await _apiClient.get(ApiConstants.recentTransactions).dataOrThrow;
     return response;
   }
 
   Future<Map<String, dynamic>> createTransaction(Map<String, dynamic> data) async {
-    final response = await _apiClient.post(ApiConstants.transactions, data: data);
+    final response = await _apiClient.post(ApiConstants.transactions, data: data).dataOrThrow;
     return response['data'];
   }
 
   Future<Map<String, dynamic>> updateTransaction(String id, Map<String, dynamic> data) async {
-    final response = await _apiClient.put('${ApiConstants.transactions}/$id', data: data);
+    final response = await _apiClient.put('${ApiConstants.transactions}/$id', data: data).dataOrThrow;
     return response['data'];
   }
 
   Future<void> deleteTransaction(String id) async {
-    await _apiClient.delete('${ApiConstants.transactions}/$id');
+    await _apiClient.delete('${ApiConstants.transactions}/$id').dataOrThrow;
   }
 }

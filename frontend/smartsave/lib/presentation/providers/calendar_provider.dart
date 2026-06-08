@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/errors/provider_error_handler.dart';
 import '../../data/models/calendar_model.dart';
 import '../../data/repositories/calendar_repository_impl.dart';
 
-class CalendarProvider extends ChangeNotifier {
+class CalendarProvider extends ChangeNotifier with ProviderErrorHandler {
   final CalendarRepositoryImpl _repository = CalendarRepositoryImpl();
   CalendarData? _calendarData;
   bool _isLoading = false;
@@ -17,7 +18,10 @@ class CalendarProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _calendarData = await _repository.getCalendarData(year, month);
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }

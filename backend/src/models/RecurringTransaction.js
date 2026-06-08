@@ -89,4 +89,8 @@ recurringTransactionSchema.methods.calculateNextExecution = function() {
   return next;
 };
 
+// Compound indexes for common queries
+recurringTransactionSchema.index({ user: 1, isActive: 1, nextExecutionDate: 1 });
+recurringTransactionSchema.index({ user: 1, isActive: 1, createdAt: -1 });
+
 module.exports = mongoose.model('RecurringTransaction', recurringTransactionSchema);

@@ -178,7 +178,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
                         itemCount: transactions.length,
                         itemBuilder: (ctx, index) {
                           final tx = transactions[index];
-                          return _buildTransactionCard(tx, format);
+                          return RepaintBoundary(child: _buildTransactionCard(tx, format));
                         },
                       ),
                     ),

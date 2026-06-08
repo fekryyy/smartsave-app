@@ -1,6 +1,8 @@
 const Challenge = require('../models/Challenge');
 const Achievement = require('../models/Achievement');
 const UserStreak = require('../models/UserStreak');
+const asyncHandler = require('../utils/catchAsync');
+const { AppError } = require('../middleware/errorHandler');
 
 const CHECKPOINTS = {
   first_transaction: { threshold: 1, points: 10 },
@@ -52,125 +54,116 @@ async function checkAndAward(req, badge, current) {
 }
 
 const challengeController = {
-  async getAll(req, res, next) {
-    try {
-      const challenges = await Challenge.find({ user: req.user.id }).sort('-createdAt');
-      const streak = await UserStreak.findOne({ user: req.user.id });
-      const achievements = await Achievement.find({ user: req.user.id }).sort('-unlockedAt');
-      res.json({ success: true, data: { challenges, streak, achievements } });
-    } catch (error) {
-      next(error);
-    }
-  },
+  getAll: asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
+    const query = { user: req.user.id };
 
-  async joinChallenge(req, res, next) {
-    try {
-      const { title, description, type, goal, points, endDate } = req.body;
-      const challenge = await Challenge.create({
-        user: req.user.id, title, description, type, goal, points: points || 0, endDate,
-      });
-      res.status(201).json({ success: true, data: challenge });
-    } catch (error) {
-      next(error);
-    }
-  },
+    const challenges = await Challenge.find(query)
+      .sort('-createdAt')
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .lean({ virtuals: true });
 
-  async updateProgress(req, res, next) {
-    try {
-      const { progress } = req.body;
-      const challenge = await Challenge.findOneAndUpdate(
-        { _id: req.params.id, user: req.user.id },
-        { progress },
-        { new: true },
+    const streak = await UserStreak.findOne({ user: req.user.id }).lean();
+    const achievements = await Achievement.find({ user: req.user.id }).sort('-unlockedAt').lean();
+    const total = await Challenge.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: { challenges, streak, achievements },
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  }),
+
+  joinChallenge: asyncHandler(async (req, res) => {
+    const { title, description, type, goal, points, endDate } = req.body;
+    const challenge = await Challenge.create({
+      user: req.user.id, title, description, type, goal, points: points || 0, endDate,
+    });
+    res.status(201).json({ success: true, data: challenge });
+  }),
+
+  updateProgress: asyncHandler(async (req, res) => {
+    const { progress } = req.body;
+    const challenge = await Challenge.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      { progress },
+      { new: true },
+    );
+    if (!challenge) throw new AppError('Challenge not found', 404);
+
+    if (challenge.progress >= challenge.goal && challenge.status === 'active') {
+      challenge.status = 'completed';
+      challenge.completedAt = new Date();
+      await challenge.save();
+
+      await UserStreak.findOneAndUpdate(
+        { user: req.user.id },
+        { $inc: { totalPoints: challenge.points } },
+        { upsert: true },
       );
-      if (!challenge) return res.status(404).json({ success: false, message: 'Challenge not found' });
-
-      if (challenge.progress >= challenge.goal && challenge.status === 'active') {
-        challenge.status = 'completed';
-        challenge.completedAt = new Date();
-        await challenge.save();
-
-        await UserStreak.findOneAndUpdate(
-          { user: req.user.id },
-          { $inc: { totalPoints: challenge.points } },
-          { upsert: true },
-        );
-      }
-
-      res.json({ success: true, data: challenge });
-    } catch (error) {
-      next(error);
     }
-  },
 
-  async awardAchievement(req, res, next) {
-    try {
-      const { badge } = req.body;
-      await checkAndAward(req, badge, 1);
-      const achievements = await Achievement.find({ user: req.user.id });
-      const streak = await UserStreak.findOne({ user: req.user.id });
-      res.json({ success: true, data: { achievements, streak } });
-    } catch (error) {
-      next(error);
-    }
-  },
+    res.json({ success: true, data: challenge });
+  }),
 
-  async awardByCount(req, res, next) {
-    try {
-      const { badge, count } = req.body;
-      await checkAndAward(req, badge, count);
-      const achievements = await Achievement.find({ user: req.user.id });
-      const streak = await UserStreak.findOne({ user: req.user.id });
-      res.json({ success: true, data: { achievements, streak } });
-    } catch (error) {
-      next(error);
-    }
-  },
+  awardAchievement: asyncHandler(async (req, res) => {
+    const { badge } = req.body;
+    await checkAndAward(req, badge, 1);
+    const achievements = await Achievement.find({ user: req.user.id }).lean();
+    const streak = await UserStreak.findOne({ user: req.user.id }).lean();
+    res.json({ success: true, data: { achievements, streak } });
+  }),
 
-  async recordLogin(req, res, next) {
-    try {
-      const streak = await UserStreak.findOne({ user: req.user.id }) || new UserStreak({ user: req.user.id });
-      const now = new Date();
-      const last = streak.lastLoginDate;
+  awardByCount: asyncHandler(async (req, res) => {
+    const { badge, count } = req.body;
+    await checkAndAward(req, badge, count);
+    const achievements = await Achievement.find({ user: req.user.id }).lean();
+    const streak = await UserStreak.findOne({ user: req.user.id }).lean();
+    res.json({ success: true, data: { achievements, streak } });
+  }),
 
-      if (last) {
-        const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-        if (diffDays === 1) {
-          streak.loginStreak += 1;
-        } else if (diffDays > 1) {
-          streak.loginStreak = 1;
-        }
-      } else {
+  recordLogin: asyncHandler(async (req, res) => {
+    const streak = await UserStreak.findOne({ user: req.user.id }) || new UserStreak({ user: req.user.id });
+    const now = new Date();
+    const last = streak.lastLoginDate;
+
+    if (last) {
+      const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) {
+        streak.loginStreak += 1;
+      } else if (diffDays > 1) {
         streak.loginStreak = 1;
       }
+    } else {
+      streak.loginStreak = 1;
+    }
 
-      streak.lastLoginDate = now;
-      if (streak.loginStreak > streak.bestLoginStreak) {
-        streak.bestLoginStreak = streak.loginStreak;
-      }
+    streak.lastLoginDate = now;
+    if (streak.loginStreak > streak.bestLoginStreak) {
+      streak.bestLoginStreak = streak.loginStreak;
+    }
 
+    await streak.save();
+    await checkAndAward(req, 'seven_day_streak', streak.loginStreak);
+    await checkAndAward(req, 'thirty_day_streak', streak.loginStreak);
+    res.json({ success: true, data: streak });
+  }),
+
+  recordSpend: asyncHandler(async (req, res) => {
+    const streak = await UserStreak.findOne({ user: req.user.id });
+    if (streak) {
+      streak.noSpendStreak = 0;
+      streak.lastSpendDate = new Date();
       await streak.save();
-      await checkAndAward(req, 'seven_day_streak', streak.loginStreak);
-      await checkAndAward(req, 'thirty_day_streak', streak.loginStreak);
-      res.json({ success: true, data: streak });
-    } catch (error) {
-      next(error);
     }
-  },
-
-  async recordSpend(req, res, next) {
-    try {
-      const streak = await UserStreak.findOne({ user: req.user.id });
-      if (streak) {
-        streak.noSpendStreak = 0;
-        streak.lastSpendDate = new Date();
-        await streak.save();
-      }
-      res.json({ success: true, data: streak });
-    } catch (error) {
-      next(error);
-    }
-  },
+    res.json({ success: true, data: streak });
+  }),
 };
 
 module.exports = { challengeController, checkAndAward, CHECKPOINTS };

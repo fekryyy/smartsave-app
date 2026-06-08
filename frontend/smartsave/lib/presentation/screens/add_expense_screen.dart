@@ -97,7 +97,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
     setState(() { _receiptImage = File(xFile.path); _scanning = true; });
     try {
       final result = await ApiClient().uploadFile(ApiConstants.ocrScan, xFile.path, 'receipt');
-      final data = result['data'] as Map<String, dynamic>?;
+      final data = result.dataOrThrow['data'] as Map<String, dynamic>?;
       if (data != null && mounted) {
         if (data['amount'] != null) _amountController.text = data['amount'].toString();
         if (data['category'] != null) _selectedCategory = data['category'] as String;

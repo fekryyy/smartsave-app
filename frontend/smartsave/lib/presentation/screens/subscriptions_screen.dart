@@ -41,12 +41,28 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () => subProvider.loadAll(),
-              child: ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  _buildSummaryRow(context, subProvider, format, isDark),
-                  const SizedBox(height: 20),
-                  ...subProvider.subscriptions.map((sub) => _buildSubCard(context, sub, subProvider, format, isDark)),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(children: [
+                      _buildSummaryRow(context, subProvider, format, isDark),
+                      const SizedBox(height: 20),
+                    ]),
+                  )),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (ctx, index) {
+                        final sub = subProvider.subscriptions[index];
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          child: RepaintBoundary(child: _buildSubCard(context, sub, subProvider, format, isDark)),
+                        );
+                      },
+                      childCount: subProvider.subscriptions.length,
+                    ),
+                  ),
+                  const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
                 ],
               ),
             ),

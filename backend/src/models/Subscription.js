@@ -39,4 +39,8 @@ subscriptionSchema.virtual('yearlyAmount').get(function() {
 subscriptionSchema.set('toJSON', { virtuals: true });
 subscriptionSchema.set('toObject', { virtuals: true });
 
+// Compound indexes for common queries
+subscriptionSchema.index({ user: 1, isActive: 1 });
+subscriptionSchema.index({ user: 1, nextBillingDate: 1 });
+
 module.exports = mongoose.model('Subscription', subscriptionSchema);

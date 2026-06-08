@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/errors/provider_error_handler.dart';
 import '../../data/models/auto_save_model.dart';
 import '../../data/repositories/auto_save_repository_impl.dart';
 
-class AutoSaveProvider extends ChangeNotifier {
+class AutoSaveProvider extends ChangeNotifier with ProviderErrorHandler {
   final AutoSaveRepositoryImpl _repository = AutoSaveRepositoryImpl();
   List<AutoSaveRule> _rules = [];
   double _totalProjected = 0;
@@ -18,7 +19,10 @@ class AutoSaveProvider extends ChangeNotifier {
     try {
       _rules = await _repository.getRules();
       _totalProjected = await _repository.getTotalProjected();
-    } catch (_) {}
+      clearError();
+    } catch (e) {
+      setError(extractErrorMessage(e));
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -27,9 +31,11 @@ class AutoSaveProvider extends ChangeNotifier {
     try {
       final rule = await _repository.createRule(data);
       _rules.add(rule);
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }
@@ -41,9 +47,11 @@ class AutoSaveProvider extends ChangeNotifier {
       if (index != -1) {
         _rules[index] = AutoSaveRule.fromJson({...data, '_id': id});
       }
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }
@@ -52,9 +60,11 @@ class AutoSaveProvider extends ChangeNotifier {
     try {
       await _repository.deleteRule(id);
       _rules.removeWhere((r) => r.id == id);
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }
@@ -64,7 +74,8 @@ class AutoSaveProvider extends ChangeNotifier {
       await _repository.triggerContribution(id);
       await loadAll();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }

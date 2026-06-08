@@ -94,6 +94,10 @@ goalSchema.methods.addContribution = function(amount) {
   return this.save();
 };
 
+// Compound indexes for common queries
+goalSchema.index({ user: 1, status: 1, createdAt: -1 });
+goalSchema.index({ user: 1, priority: 1, status: 1 });
+
 goalSchema.set('toJSON', { virtuals: true });
 goalSchema.set('toObject', { virtuals: true });
 

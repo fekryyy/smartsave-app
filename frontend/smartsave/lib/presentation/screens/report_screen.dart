@@ -71,10 +71,11 @@ class _ReportScreenState extends State<ReportScreen> {
   Future<void> _exportPDF() async {
     setState(() => _exporting = true);
     try {
-      final bytes = await ApiClient().getBytes('/export/pdf', queryParameters: {
+      final result = await ApiClient().getBytes('/export/pdf', queryParameters: {
         'year': _year.toString(),
         'month': _month.toString(),
       });
+      final bytes = result.dataOrThrow;
       final path = 'report_${_year}_$_month.pdf';
       await Share.shareXFiles([XFile.fromData(bytes, path: path, mimeType: 'application/pdf')]);
     } catch (e) {

@@ -4,22 +4,22 @@ class SubscriptionRemoteDataSource {
   final ApiClient _apiClient = ApiClient();
 
   Future<Map<String, dynamic>> getAll() async {
-    return _apiClient.get('/subscriptions');
+    return _apiClient.get('/subscriptions').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> getById(String id) async {
-    return _apiClient.get('/subscriptions/$id');
+    return _apiClient.get('/subscriptions/$id').dataOrThrow;
   }
 
   Future<Map<String, dynamic>> create(Map<String, dynamic> data) async {
-    return _apiClient.post('/subscriptions', data: data);
+    return _apiClient.post('/subscriptions', data: data).dataOrThrow;
   }
 
   Future<Map<String, dynamic>> update(String id, Map<String, dynamic> data) async {
-    return _apiClient.put('/subscriptions/$id', data: data);
+    return _apiClient.put('/subscriptions/$id', data: data).dataOrThrow;
   }
 
   Future<Map<String, dynamic>> delete(String id) async {
-    return _apiClient.delete('/subscriptions/$id');
+    return _apiClient.delete('/subscriptions/$id').dataOrThrow;
   }
 }

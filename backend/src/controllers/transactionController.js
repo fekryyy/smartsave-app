@@ -3,221 +3,201 @@ const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const Notification = require('../models/Notification');
 const UserStreak = require('../models/UserStreak');
+const asyncHandler = require('../utils/catchAsync');
+const { AppError } = require('../middleware/errorHandler');
 const { checkAndAward } = require('./challengeController');
 
 const transactionController = {
-  async getAll(req, res, next) {
-    try {
-      const { page = 1, limit = 20, type, category, startDate, endDate, paymentMethod, sort = '-date' } = req.query;
-      const query = { user: req.user.id, isActive: true };
+  getAll: asyncHandler(async (req, res) => {
+    const { page = 1, limit = 20, type, category, startDate, endDate, paymentMethod, sort = '-date' } = req.query;
+    const query = { user: req.user.id, isActive: true };
 
-      if (type) query.type = type;
-      if (category) query.category = category;
-      if (paymentMethod) query.paymentMethod = paymentMethod;
-      if (startDate || endDate) {
-        query.date = {};
-        if (startDate) query.date.$gte = new Date(startDate);
-        if (endDate) query.date.$lte = new Date(endDate);
-      }
+    if (type) query.type = type;
+    if (category) query.category = category;
+    if (paymentMethod) query.paymentMethod = paymentMethod;
+    if (startDate || endDate) {
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(startDate);
+      if (endDate) query.date.$lte = new Date(endDate);
+    }
 
-      const transactions = await Transaction.find(query)
-        .sort(sort)
-        .skip((page - 1) * limit)
-        .limit(parseInt(limit));
+    const transactions = await Transaction.find(query)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .lean();
 
-      const total = await Transaction.countDocuments(query);
+    const total = await Transaction.countDocuments(query);
 
-      res.json({
-        success: true,
-        data: {
-          transactions,
-          pagination: {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            total,
-            pages: Math.ceil(total / limit),
-          },
+    res.json({
+      success: true,
+      data: {
+        transactions,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit),
         },
-      });
-    } catch (error) {
-      next(error);
+      },
+    });
+  }),
+
+  getById: asyncHandler(async (req, res) => {
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    }).lean();
+
+    if (!transaction) {
+      throw new AppError('Transaction not found', 404);
     }
-  },
 
-  async getById(req, res, next) {
-    try {
-      const transaction = await Transaction.findOne({
-        _id: req.params.id,
-        user: req.user.id,
-      });
+    res.json({ success: true, data: transaction });
+  }),
 
-      if (!transaction) {
-        return res.status(404).json({ success: false, message: 'Transaction not found' });
-      }
+  create: asyncHandler(async (req, res) => {
+    const { type, amount, category, description, date, paymentMethod, currency, tags } = req.body;
 
-      res.json({ success: true, data: transaction });
-    } catch (error) {
-      next(error);
+    const transaction = await Transaction.create({
+      user: req.user.id,
+      type,
+      amount,
+      category,
+      description,
+      date: date || new Date(),
+      paymentMethod,
+      currency,
+      tags,
+    });
+
+    // Update user totals
+    const incFields = { totalTransactions: 1 };
+    if (type === 'income') {
+      incFields.totalIncome = amount;
+    } else if (type === 'expense') {
+      incFields.totalExpenses = amount;
+      await updateBudgetSpent(req.user.id, category, amount, date);
     }
-  },
+    await User.findByIdAndUpdate(req.user.id, { $inc: incFields });
 
-  async create(req, res, next) {
+    // Create notification
     try {
-      const { type, amount, category, description, date, paymentMethod, currency, tags } = req.body;
+      const notifData = type === 'expense'
+        ? { type: 'budget_warning', title: 'Expense Recorded', message: `\$${amount} spent on ${category}${description ? ': ' + description : ''}` }
+        : { type: 'weekly_summary', title: 'Income Received', message: `\$${amount} income from ${category}` };
+      await Notification.create({ user: req.user.id, ...notifData });
+    } catch (_) { /* notification failure is non-critical */ }
 
-      const transaction = await Transaction.create({
-        user: req.user.id,
-        type,
-        amount,
-        category,
-        description,
-        date: date || new Date(),
-        paymentMethod,
-        currency,
-        tags,
-      });
-
-      // Update user totals
-      const incFields = { totalTransactions: 1 };
-      if (type === 'income') {
-        incFields.totalIncome = amount;
-      } else if (type === 'expense') {
-        incFields.totalExpenses = amount;
-        await updateBudgetSpent(req.user.id, category, amount, date);
-      }
-      await User.findByIdAndUpdate(req.user.id, { $inc: incFields });
-
-      // Create notification
-      try {
-        const notifData = type === 'expense'
-          ? { type: 'budget_warning', title: 'Expense Recorded', message: `\$${amount} spent on ${category}${description ? ': ' + description : ''}` }
-          : { type: 'weekly_summary', title: 'Income Received', message: `\$${amount} income from ${category}` };
-        await Notification.create({ user: req.user.id, ...notifData });
-      } catch (_) {}
-
-      // Gamification: award transaction count achievements
-      try {
-        const count = await Transaction.countDocuments({ user: req.user.id, isActive: true });
-        await checkAndAward(req, 'first_transaction', count);
-        await checkAndAward(req, 'ten_transactions', count);
-        await checkAndAward(req, 'fifty_transactions', count);
-        if (type === 'expense') {
-          const streak = await UserStreak.findOne({ user: req.user.id });
-          if (streak) {
-            streak.noSpendStreak = 0;
-            streak.lastSpendDate = new Date();
-            await streak.save();
-          }
+    // Gamification: award transaction count achievements
+    try {
+      const count = await Transaction.countDocuments({ user: req.user.id, isActive: true });
+      await checkAndAward(req, 'first_transaction', count);
+      await checkAndAward(req, 'ten_transactions', count);
+      await checkAndAward(req, 'fifty_transactions', count);
+      if (type === 'expense') {
+        const streak = await UserStreak.findOne({ user: req.user.id });
+        if (streak) {
+          streak.noSpendStreak = 0;
+          streak.lastSpendDate = new Date();
+          await streak.save();
         }
-      } catch (_) {}
+      }
+    } catch (_) { /* gamification failure is non-critical */ }
 
-      res.status(201).json({
-        success: true,
-        message: 'Transaction created successfully',
-        data: transaction,
-      });
-    } catch (error) {
-      next(error);
+    res.status(201).json({
+      success: true,
+      message: 'Transaction created successfully',
+      data: transaction,
+    });
+  }),
+
+  update: asyncHandler(async (req, res) => {
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!transaction) {
+      throw new AppError('Transaction not found', 404);
     }
-  },
 
-  async update(req, res, next) {
-    try {
-      const transaction = await Transaction.findOne({
-        _id: req.params.id,
-        user: req.user.id,
-      });
+    const oldAmount = transaction.amount;
+    const oldCategory = transaction.category;
+    const oldType = transaction.type;
 
-      if (!transaction) {
-        return res.status(404).json({ success: false, message: 'Transaction not found' });
+    const allowedUpdates = ['amount', 'category', 'description', 'date', 'paymentMethod', 'currency', 'tags'];
+    allowedUpdates.forEach(field => {
+      if (req.body[field] !== undefined) {
+        transaction[field] = req.body[field];
       }
+    });
 
-      const oldAmount = transaction.amount;
-      const oldCategory = transaction.category;
-      const oldType = transaction.type;
+    await transaction.save();
 
-      const allowedUpdates = ['amount', 'category', 'description', 'date', 'paymentMethod', 'currency', 'tags'];
-      allowedUpdates.forEach(field => {
-        if (req.body[field] !== undefined) {
-          transaction[field] = req.body[field];
-        }
-      });
-
-      await transaction.save();
-
-      // Update user totals on type/amount change
-      const userInc = {};
-      if (oldType !== transaction.type || oldAmount !== transaction.amount) {
-        // Reverse old values
-        if (oldType === 'income') userInc.totalIncome = -oldAmount;
-        if (oldType === 'expense') userInc.totalExpenses = -oldAmount;
-        // Add new values
-        if (transaction.type === 'income') userInc.totalIncome = (userInc.totalIncome || 0) + transaction.amount;
-        if (transaction.type === 'expense') userInc.totalExpenses = (userInc.totalExpenses || 0) + transaction.amount;
-      }
-      if (Object.keys(userInc).length > 0) {
-        await User.findByIdAndUpdate(req.user.id, { $inc: userInc });
-      }
-
-      // Update budgets if expense changed
-      if (oldType === 'expense') {
-        await updateBudgetSpent(req.user.id, oldCategory, -oldAmount, transaction.date);
-      }
-      if (transaction.type === 'expense') {
-        await updateBudgetSpent(req.user.id, transaction.category, transaction.amount, transaction.date);
-      }
-
-      res.json({
-        success: true,
-        message: 'Transaction updated successfully',
-        data: transaction,
-      });
-    } catch (error) {
-      next(error);
+    // Update user totals on type/amount change
+    const userInc = {};
+    if (oldType !== transaction.type || oldAmount !== transaction.amount) {
+      // Reverse old values
+      if (oldType === 'income') userInc.totalIncome = -oldAmount;
+      if (oldType === 'expense') userInc.totalExpenses = -oldAmount;
+      // Add new values
+      if (transaction.type === 'income') userInc.totalIncome = (userInc.totalIncome || 0) + transaction.amount;
+      if (transaction.type === 'expense') userInc.totalExpenses = (userInc.totalExpenses || 0) + transaction.amount;
     }
-  },
-
-  async delete(req, res, next) {
-    try {
-      const transaction = await Transaction.findOne({
-        _id: req.params.id,
-        user: req.user.id,
-      });
-
-      if (!transaction) {
-        return res.status(404).json({ success: false, message: 'Transaction not found' });
-      }
-
-      transaction.isActive = false;
-      await transaction.save();
-
-      // Reverse user totals
-      const decFields = { totalTransactions: -1 };
-      if (transaction.type === 'income') {
-        decFields.totalIncome = -transaction.amount;
-      } else if (transaction.type === 'expense') {
-        decFields.totalExpenses = -transaction.amount;
-        await updateBudgetSpent(req.user.id, transaction.category, -transaction.amount, transaction.date);
-      }
-      await User.findByIdAndUpdate(req.user.id, { $inc: decFields });
-
-      res.json({ success: true, message: 'Transaction deleted successfully' });
-    } catch (error) {
-      next(error);
+    if (Object.keys(userInc).length > 0) {
+      await User.findByIdAndUpdate(req.user.id, { $inc: userInc });
     }
-  },
 
-  async getRecent(req, res, next) {
-    try {
-      const transactions = await Transaction.find({ user: req.user.id, isActive: true })
-        .sort('-date')
-        .limit(10);
-
-      res.json({ success: true, data: transactions });
-    } catch (error) {
-      next(error);
+    // Update budgets if expense changed
+    if (oldType === 'expense') {
+      await updateBudgetSpent(req.user.id, oldCategory, -oldAmount, transaction.date);
     }
-  },
+    if (transaction.type === 'expense') {
+      await updateBudgetSpent(req.user.id, transaction.category, transaction.amount, transaction.date);
+    }
+
+    res.json({
+      success: true,
+      message: 'Transaction updated successfully',
+      data: transaction,
+    });
+  }),
+
+  delete: asyncHandler(async (req, res) => {
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!transaction) {
+      throw new AppError('Transaction not found', 404);
+    }
+
+    transaction.isActive = false;
+    await transaction.save();
+
+    // Reverse user totals
+    const decFields = { totalTransactions: -1 };
+    if (transaction.type === 'income') {
+      decFields.totalIncome = -transaction.amount;
+    } else if (transaction.type === 'expense') {
+      decFields.totalExpenses = -transaction.amount;
+      await updateBudgetSpent(req.user.id, transaction.category, -transaction.amount, transaction.date);
+    }
+    await User.findByIdAndUpdate(req.user.id, { $inc: decFields });
+
+    res.json({ success: true, message: 'Transaction deleted successfully' });
+  }),
+
+  getRecent: asyncHandler(async (req, res) => {
+    const transactions = await Transaction.find({ user: req.user.id, isActive: true })
+      .sort('-date')
+      .limit(10)
+      .lean();
+
+    res.json({ success: true, data: transactions });
+  }),
 };
 
 async function updateBudgetSpent(userId, category, amount, date) {

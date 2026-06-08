@@ -42,42 +42,56 @@ class _BudgetScreenState extends State<BudgetScreen> {
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: () => budgetProvider.loadOverview(),
-              child: ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  if (budgetProvider.errorMessage != null)
-                    Container(width: double.infinity, padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 16), decoration: BoxDecoration(color: AppColors.dangerLight, borderRadius: BorderRadius.circular(12)),
-                      child: Row(children: [
-                        const Icon(Icons.error_outline, color: AppColors.danger, size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(budgetProvider.errorMessage!, style: const TextStyle(color: AppColors.danger, fontSize: 13))),
-                        GestureDetector(onTap: () => budgetProvider.clearError(), child: const Icon(Icons.close, color: AppColors.danger, size: 16)),
-                      ])),
-                  // Overall Budget Card
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))]),
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                     child: Column(children: [
-                      Text('Monthly Budget', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
-                      const SizedBox(height: 8),
-                      Text(format.format(summary?['totalBudget'] ?? 0), style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      Text('Spent: ${format.format(summary?['totalSpent'] ?? 0)}  |  Remaining: ${format.format(summary?['remaining'] ?? 0)}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
-                      const SizedBox(height: 16),
-                      ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: ((summary?['percentageUsed'] ?? 0) / 100).clamp(0.0, 1.0), backgroundColor: Colors.white.withOpacity(0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
-                      const SizedBox(height: 4),
-                      Text('${summary?['percentageUsed'] ?? 0}% used', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                      if (budgetProvider.errorMessage != null)
+                        Container(width: double.infinity, padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 16), decoration: BoxDecoration(color: AppColors.dangerLight, borderRadius: BorderRadius.circular(12)),
+                          child: Row(children: [
+                            const Icon(Icons.error_outline, color: AppColors.danger, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(budgetProvider.errorMessage!, style: const TextStyle(color: AppColors.danger, fontSize: 13))),
+                            GestureDetector(onTap: () => budgetProvider.clearError(), child: const Icon(Icons.close, color: AppColors.danger, size: 16)),
+                          ])),
+                      // Overall Budget Card
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))]),
+                        child: Column(children: [
+                          Text('Monthly Budget', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
+                          const SizedBox(height: 8),
+                          Text(format.format(summary?['totalBudget'] ?? 0), style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text('Spent: ${format.format(summary?['totalSpent'] ?? 0)}  |  Remaining: ${format.format(summary?['remaining'] ?? 0)}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                          const SizedBox(height: 16),
+                          ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: ((summary?['percentageUsed'] ?? 0) / 100).clamp(0.0, 1.0), backgroundColor: Colors.white.withOpacity(0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
+                          const SizedBox(height: 4),
+                          Text('${summary?['percentageUsed'] ?? 0}% used', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
+                        ]),
+                      ),
+                      const SizedBox(height: 24),
+                      Text('Category Budgets', style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 12),
                     ]),
-                  ),
-                  const SizedBox(height: 24),
-
-                  Text('Category Budgets', style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 12),
-
+                  )),
                   if (budgetProvider.budgets.isEmpty)
-                    const EmptyState(icon: Icons.account_balance_wallet_outlined, title: 'No budgets set', subtitle: 'Set category budgets to track spending')
+                    const SliverToBoxAdapter(child: EmptyState(icon: Icons.account_balance_wallet_outlined, title: 'No budgets set', subtitle: 'Set category budgets to track spending'))
                   else
-                    ...budgetProvider.budgets.map((budget) => _buildBudgetCard(context, budget, format)),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (ctx, index) {
+                          final budget = budgetProvider.budgets[index];
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                            child: RepaintBoundary(child: _buildBudgetCard(context, budget, format)),
+                          );
+                        },
+                        childCount: budgetProvider.budgets.length,
+                      ),
+                    ),
                 ],
               ),
             ),

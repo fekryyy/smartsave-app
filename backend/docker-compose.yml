@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────
+# SmartSave Full Stack — Docker Compose
+# ─────────────────────────────────────────────────────────────
+# Start:   docker compose up -d
+# Stop:    docker compose down
+# Logs:    docker compose logs -f app
+# Rebuild: docker compose build --no-cache app
+# ─────────────────────────────────────────────────────────────
+
+version: '3.9'
+
+services:
+  # ── MongoDB ──
+  mongodb:
+    image: mongo:7
+    container_name: smartsave-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: smartsave
+    # Optional auth (uncomment if needed):
+    # MONGO_INITDB_ROOT_USERNAME: root
+    # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ── Redis ──
+  redis:
+    image: redis:7-alpine
+    container_name: smartsave-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    # Optional password (uncomment):
+    # command: redis-server --requirepass ${REDIS_PASSWORD}
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # ── Node.js Backend ──
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartsave-backend
+    restart: unless-stopped
+    ports:
+      - '${PORT:-5000}:5000'
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 5000
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MONGODB_URI: mongodb://mongodb:27017/smartsave
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRE: ${JWT_EXPIRE:-30d}
+      JWT_REFRESH_EXPIRE: ${JWT_REFRESH_EXPIRE:-90d}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      AI_API_KEY: ${AI_API_KEY}
+      # Email (optional)
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+    volumes:
+      - app_logs:/app/logs
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local

@@ -1,64 +1,69 @@
 const RecurringTransaction = require('../models/RecurringTransaction');
+const asyncHandler = require('../utils/catchAsync');
+const { AppError } = require('../middleware/errorHandler');
 
 const recurringController = {
-  async getAll(req, res, next) {
-    try {
-      const recurring = await RecurringTransaction.find({ user: req.user.id, isActive: true }).sort('-createdAt');
-      res.json({ success: true, data: recurring });
-    } catch (error) {
-      next(error);
-    }
-  },
+  getAll: asyncHandler(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
+    const query = { user: req.user.id, isActive: true };
 
-  async create(req, res, next) {
-    try {
-      const { type, amount, category, description, frequency, interval, startDate, endDate, paymentMethod } = req.body;
+    const recurring = await RecurringTransaction.find(query)
+      .sort('-createdAt')
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .lean();
 
-      const recurring = await RecurringTransaction.create({
-        user: req.user.id,
-        type, amount, category, description, frequency,
-        interval: interval || 1,
-        startDate: startDate || new Date(),
-        endDate: endDate || null,
-        nextExecutionDate: startDate || new Date(),
-        paymentMethod: paymentMethod || 'Cash',
-      });
+    const total = await RecurringTransaction.countDocuments(query);
 
-      res.status(201).json({ success: true, message: 'Recurring transaction created', data: recurring });
-    } catch (error) {
-      next(error);
-    }
-  },
+    res.json({
+      success: true,
+      data: recurring,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  }),
 
-  async update(req, res, next) {
-    try {
-      const recurring = await RecurringTransaction.findOne({ _id: req.params.id, user: req.user.id });
-      if (!recurring) return res.status(404).json({ success: false, message: 'Recurring transaction not found' });
+  create: asyncHandler(async (req, res) => {
+    const { type, amount, category, description, frequency, interval, startDate, endDate, paymentMethod } = req.body;
 
-      const allowed = ['amount', 'category', 'description', 'frequency', 'interval', 'endDate', 'paymentMethod', 'isActive'];
-      allowed.forEach(f => { if (req.body[f] !== undefined) recurring[f] = req.body[f]; });
-      if (req.body.startDate) { recurring.startDate = req.body.startDate; recurring.nextExecutionDate = req.body.startDate; }
+    const recurring = await RecurringTransaction.create({
+      user: req.user.id,
+      type, amount, category, description, frequency,
+      interval: interval || 1,
+      startDate: startDate || new Date(),
+      endDate: endDate || null,
+      nextExecutionDate: startDate || new Date(),
+      paymentMethod: paymentMethod || 'Cash',
+    });
 
-      await recurring.save();
-      res.json({ success: true, data: recurring });
-    } catch (error) {
-      next(error);
-    }
-  },
+    res.status(201).json({ success: true, message: 'Recurring transaction created', data: recurring });
+  }),
 
-  async remove(req, res, next) {
-    try {
-      const recurring = await RecurringTransaction.findOneAndUpdate(
-        { _id: req.params.id, user: req.user.id },
-        { isActive: false },
-        { new: true },
-      );
-      if (!recurring) return res.status(404).json({ success: false, message: 'Recurring transaction not found' });
-      res.json({ success: true, message: 'Recurring transaction cancelled' });
-    } catch (error) {
-      next(error);
-    }
-  },
+  update: asyncHandler(async (req, res) => {
+    const recurring = await RecurringTransaction.findOne({ _id: req.params.id, user: req.user.id });
+    if (!recurring) throw new AppError('Recurring transaction not found', 404);
+
+    const allowed = ['amount', 'category', 'description', 'frequency', 'interval', 'endDate', 'paymentMethod', 'isActive'];
+    allowed.forEach(f => { if (req.body[f] !== undefined) recurring[f] = req.body[f]; });
+    if (req.body.startDate) { recurring.startDate = req.body.startDate; recurring.nextExecutionDate = req.body.startDate; }
+
+    await recurring.save();
+    res.json({ success: true, data: recurring });
+  }),
+
+  remove: asyncHandler(async (req, res) => {
+    const recurring = await RecurringTransaction.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id },
+      { isActive: false },
+      { new: true },
+    );
+    if (!recurring) throw new AppError('Recurring transaction not found', 404);
+    res.json({ success: true, message: 'Recurring transaction cancelled' });
+  }),
 };
 
 module.exports = recurringController;

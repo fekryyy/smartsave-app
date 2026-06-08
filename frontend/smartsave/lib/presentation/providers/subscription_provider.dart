@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/errors/provider_error_handler.dart';
 import '../../data/models/subscription_model.dart';
 import '../../data/repositories/subscription_repository_impl.dart';
 
-class SubscriptionProvider extends ChangeNotifier {
+class SubscriptionProvider extends ChangeNotifier with ProviderErrorHandler {
   final SubscriptionRepositoryImpl _repository = SubscriptionRepositoryImpl();
   List<SubscriptionModel> _subscriptions = [];
   double _monthlyTotal = 0;
@@ -21,7 +22,6 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _subscriptions = await _repository.getSubscriptions();
-      // Compute totals locally from subscription data for reliability
       _monthlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.monthlyAmount);
       _yearlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.yearlyAmount);
       try {
@@ -29,11 +29,13 @@ class SubscriptionProvider extends ChangeNotifier {
       } catch (_) {
         _upcoming = [];
       }
-    } catch (_) {
+      clearError();
+    } catch (e) {
       _subscriptions = [];
       _monthlyTotal = 0;
       _yearlyTotal = 0;
       _upcoming = [];
+      setError(extractErrorMessage(e));
     }
     _isLoading = false;
     notifyListeners();
@@ -45,9 +47,11 @@ class SubscriptionProvider extends ChangeNotifier {
       _subscriptions.add(subscription);
       _monthlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.monthlyAmount);
       _yearlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.yearlyAmount);
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }
@@ -57,7 +61,6 @@ class SubscriptionProvider extends ChangeNotifier {
       await _repository.updateSubscription(id, data);
       final index = _subscriptions.indexWhere((s) => s.id == id);
       if (index != -1) {
-        // Merge updates into existing subscription to preserve all fields
         final existing = _subscriptions[index];
         final mergedJson = {
           '_id': existing.id,
@@ -82,9 +85,11 @@ class SubscriptionProvider extends ChangeNotifier {
         _monthlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.monthlyAmount);
         _yearlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.yearlyAmount);
       }
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }
@@ -95,9 +100,11 @@ class SubscriptionProvider extends ChangeNotifier {
       _subscriptions.removeWhere((s) => s.id == id);
       _monthlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.monthlyAmount);
       _yearlyTotal = _subscriptions.fold(0, (sum, s) => sum + s.yearlyAmount);
+      clearError();
       notifyListeners();
       return true;
-    } catch (_) {
+    } catch (e) {
+      setError(extractErrorMessage(e));
       return false;
     }
   }

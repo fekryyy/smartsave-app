@@ -41,4 +41,7 @@ netWorthSchema.virtual('netWorth').get(function() {
 netWorthSchema.set('toJSON', { virtuals: true });
 netWorthSchema.set('toObject', { virtuals: true });
 
+// Compound indexes for common queries
+netWorthSchema.index({ user: 1 }, { unique: true });
+
 module.exports = mongoose.model('NetWorth', netWorthSchema);

@@ -39,13 +39,13 @@ class SyncService {
           
           switch (op['operationType'] as String) {
             case 'POST':
-              await _apiClient.post(op['endpoint'] as String, data: data);
+              await _apiClient.post(op['endpoint'] as String, data: data).dataOrThrow;
               break;
             case 'PUT':
-              await _apiClient.put(op['endpoint'] as String, data: data);
+              await _apiClient.put(op['endpoint'] as String, data: data).dataOrThrow;
               break;
             case 'DELETE':
-              await _apiClient.delete(op['endpoint'] as String);
+              await _apiClient.delete(op['endpoint'] as String).dataOrThrow;
               break;
           }
 

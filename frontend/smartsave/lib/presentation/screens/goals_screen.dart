@@ -50,7 +50,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                         return _buildSummaryCard(context, goalProvider, format);
                       }
                       final goal = goalProvider.goals[index - 1];
-                      return _buildGoalCard(context, goal, format, goalProvider);
+                      return RepaintBoundary(child: _buildGoalCard(context, goal, format, goalProvider));
                     },
                   ),
                 ),

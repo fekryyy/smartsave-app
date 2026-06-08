@@ -5,21 +5,21 @@ class RecurringRemoteDataSource {
   final ApiClient _apiClient = ApiClient();
 
   Future<List<dynamic>> getRecurringTransactions() async {
-    final response = await _apiClient.get(ApiConstants.recurringTransactions);
+    final response = await _apiClient.get(ApiConstants.recurringTransactions).dataOrThrow;
     return response['data'] as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> createRecurringTransaction(Map<String, dynamic> data) async {
-    final response = await _apiClient.post(ApiConstants.recurringTransactions, data: data);
+    final response = await _apiClient.post(ApiConstants.recurringTransactions, data: data).dataOrThrow;
     return response['data'];
   }
 
   Future<Map<String, dynamic>> updateRecurringTransaction(String id, Map<String, dynamic> data) async {
-    final response = await _apiClient.put('${ApiConstants.recurringTransactions}/$id', data: data);
+    final response = await _apiClient.put('${ApiConstants.recurringTransactions}/$id', data: data).dataOrThrow;
     return response['data'];
   }
 
   Future<void> deleteRecurringTransaction(String id) async {
-    await _apiClient.delete('${ApiConstants.recurringTransactions}/$id');
+    await _apiClient.delete('${ApiConstants.recurringTransactions}/$id').dataOrThrow;
   }
 }
