@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase configuration files
+# google-services.json and GoogleService-Info.plist are generated from
+# Firebase Console. Each developer/machine needs their own copy.
+/google-services.json
+ios/Runner/GoogleService-Info.plist

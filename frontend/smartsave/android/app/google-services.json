@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "308366820873",
+    "project_id": "smartsave-d35fb",
+    "storage_bucket": "smartsave-d35fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308366820873:android:4a826c1a432a1bdb1e9ad8",
+        "android_client_info": {
+          "package_name": "com.example.smartsave"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308366820873-6rhupnqgkf1gr6s2l89sjtg1toqebpai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5vhayWFpjmMoMSkcbu7NuPK26eP1TbvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308366820873-6rhupnqgkf1gr6s2l89sjtg1toqebpai.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "308366820873-2u6agcn84rud4iru97u2ds6vbij5hr1i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smartsave"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

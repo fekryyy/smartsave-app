@@ -5,6 +5,18 @@ import '../../core/theme/app_colors.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../app/routes.dart';
 
+/// Animated splash screen that initializes auth state and navigates accordingly.
+///
+/// ## Navigation logic
+/// 1. Delays 2 seconds for splash animation
+/// 2. Calls [AuthProvider.initialize] which:
+///    - Checks JWT token in secure storage (email/password users)
+///    - Checks Firebase Auth cached session (Google Sign-In users)
+///    - Tries silent Google sign-in if no JWT found
+/// 3. Navigates to:
+///    - Onboarding → if authenticated but onboarding not completed
+///    - Dashboard → if authenticated and onboarding done
+///    - Login → if not authenticated
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -12,7 +24,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 

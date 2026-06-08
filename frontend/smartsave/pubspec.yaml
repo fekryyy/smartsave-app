@@ -75,6 +75,10 @@ dependencies:
   permission_handler: ^11.1.0
   json_annotation: ^4.8.1
   freezed_annotation: ^2.4.1
+  google_sign_in: ^6.2.2
+  firebase_auth: ^4.17.8
+  get_it: ^7.7.0
+  google_sign_in_ios: ^5.7.0
 
 dev_dependencies:
   flutter_test:
