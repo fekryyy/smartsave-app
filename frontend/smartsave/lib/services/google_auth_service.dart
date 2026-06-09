@@ -26,6 +26,12 @@ class GoogleAuthService {
   bool _isAvailable = false;
   bool _initialized = false;
 
+  /// The raw Google ID token from the last successful sign-in.
+  /// Used instead of Firebase ID tokens because the backend uses
+  /// `google-auth-library` which expects Google OAuth ID tokens
+  /// (not Firebase Auth ID tokens).
+  String? _lastGoogleIdToken;
+
   /// Whether Google Sign-In is available (Firebase configured, platform OK).
   bool get isAvailable => _isAvailable;
 
@@ -106,13 +112,18 @@ class GoogleAuthService {
         return null;
       }
 
-      // ── Step 3: Exchange Google credential for Firebase credential ──
+      // ── Step 3: Store raw Google ID token for backend verification ──
+      // The backend uses google-auth-library which expects a Google OAuth ID
+      // token (iss: accounts.google.com), NOT a Firebase Auth ID token.
+      _lastGoogleIdToken = googleAuth.idToken;
+
+      // ── Step 4: Exchange Google credential for Firebase credential ──
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // ── Step 4: Sign in to Firebase ──
+      // ── Step 5: Sign in to Firebase ──
       final UserCredential userCredential =
           await _firebaseAuth!.signInWithCredential(credential);
 
@@ -141,6 +152,9 @@ class GoogleAuthService {
   /// Safe to call multiple times. Never throws.
   Future<void> signOut() async {
     try {
+      // Clear stored raw Google ID token
+      _lastGoogleIdToken = null;
+
       // Sign out of Firebase first
       if (_firebaseAuth != null) {
         await _firebaseAuth!.signOut();
@@ -165,6 +179,7 @@ class GoogleAuthService {
   /// Safe to call multiple times. Never throws.
   Future<void> revokeAccess() async {
     try {
+      _lastGoogleIdToken = null;
       if (_firebaseAuth != null) {
         await _firebaseAuth!.signOut();
       }
@@ -176,19 +191,39 @@ class GoogleAuthService {
     }
   }
 
-  /// Gets a fresh Firebase ID token for the currently signed-in user.
+  /// Gets an ID token for the currently signed-in user.
   ///
-  /// The [forceRefresh] parameter (default true) ensures a fresh token
-  /// is always obtained — never reuse a potentially expired token.
+  /// Returns the raw Google OAuth ID token (preferred) if available,
+  /// falling back to the Firebase Auth ID token.
+  ///
+  /// The [forceRefresh] parameter controls whether the Firebase Auth token
+  /// fallback is force-refreshed from the server. The raw Google ID token
+  /// is always the one from the most recent sign-in — it cannot be
+  /// refreshed through Firebase (a new Google sign-in is required).
   ///
   /// Returns the ID token as a [String], or null if no user is signed in
   /// or token retrieval fails.
+  ///
+  /// ## Why the raw Google ID token?
+  /// The backend uses `google-auth-library`'s `verifyIdToken()` to
+  /// authenticate users. This library expects a Google OAuth ID token
+  /// (`iss: accounts.google.com`), NOT a Firebase Auth ID token
+  /// (`iss: https://securetoken.google.com/<project>`). Firebase ID tokens
+  /// use different signing keys that the library cannot verify.
   Future<String?> getIdToken({bool forceRefresh = true}) async {
+    // ── Preferred path: raw Google OAuth ID token ──
+    // This is the token the backend's google-auth-library can verify.
+    if (_lastGoogleIdToken != null) {
+      return _lastGoogleIdToken;
+    }
+
+    // ── Fallback: Firebase Auth ID token ──
     try {
       final User? user = _firebaseAuth?.currentUser;
       if (user == null) return null;
 
-      final IdTokenResult idTokenResult = await user.getIdTokenResult(forceRefresh);
+      final IdTokenResult idTokenResult =
+          await user.getIdTokenResult(forceRefresh);
       return idTokenResult.token;
     } catch (e) {
       debugPrint('[GoogleAuthService] Token error: ${e.runtimeType}');
@@ -235,6 +270,9 @@ class GoogleAuthService {
           await googleUser.authentication;
 
       if (googleAuth.idToken == null) return null;
+
+      // Store raw Google ID token for backend verification
+      _lastGoogleIdToken = googleAuth.idToken;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,

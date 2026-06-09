@@ -42,16 +42,38 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # Set project-level build settings (applies to ALL targets)
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+  end
+
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
       config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-    end
-    if target.name == 'firebase_messaging'
-      target.build_configurations.each do |config|
+
+      # Firebase plugins use static framework headers inside their ObjC code.
+      # Setting DEFINES_MODULE = NO prevents them from being treated as modules,
+      # which avoids the "non-modular header inside framework module" error.
+      if target.name == 'firebase_auth' || target.name == 'firebase_messaging'
         config.build_settings['DEFINES_MODULE'] = 'NO'
       end
     end
   end
+
+  # Add GoogleService-Info.plist to Runner target's Copy Bundle Resources
+  # This ensures Firebase can find the configuration at runtime
+  app_project = installer.aggregate_targets.first.user_project
+  app_project.targets.each do |target|
+    next unless target.name == 'Runner'
+    plist_name = 'GoogleService-Info.plist'
+    unless target.resources_build_phase.files.any? { |f| f.file_ref.name == plist_name || f.file_ref.path&.include?(plist_name) }
+      # Add file to the main group (which maps to ios/Runner/) with relative path
+      file_ref = app_project.main_group.new_file(plist_name)
+      target.resources_build_phase.add_file_reference(file_ref, true)
+      puts '[Podfile] Added GoogleService-Info.plist to Runner target resources'
+    end
+  end
+  app_project.save
 end
