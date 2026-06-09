@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:meta/meta.dart';
 import '../../core/di/service_locator.dart';
 import '../../core/errors/failures.dart';
 import '../../data/models/user_model.dart';

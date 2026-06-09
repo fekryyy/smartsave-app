@@ -3,8 +3,10 @@ const multer = require('multer');
 const router = express.Router();
 const ocrController = require('../controllers/ocrController');
 const { protect } = require('../middleware/auth');
+const perUserRateLimit = require('../middleware/perUserRateLimit');
 
 router.use(protect);
+router.use(perUserRateLimit({ windowMs: 60 * 1000, max: 5 })); // 5 req/min per user
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),

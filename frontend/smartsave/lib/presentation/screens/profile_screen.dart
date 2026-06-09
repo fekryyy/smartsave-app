@@ -52,7 +52,7 @@ class ProfileScreen extends StatelessWidget {
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               _buildStat(context, 'Balance', format.format((analyticsProvider.dashboardData?.balance ?? 0)), isDark),
               _buildStat(context, 'Expenses', format.format((analyticsProvider.dashboardData?.monthlyExpenses ?? 0)), isDark),
-              _buildStat(context, 'Goals', '${authProvider.isAuthenticated ? '3' : '0'}', isDark),
+              _buildStat(context, 'Goals', authProvider.isAuthenticated ? '3' : '0', isDark),
             ]),
           ),
           const SizedBox(height: 24),

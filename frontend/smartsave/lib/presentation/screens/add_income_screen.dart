@@ -127,11 +127,11 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> with SingleTickerProv
   }
 
   _mapSourceColors() {
-    return Map.fromIterable(AppConstants.incomeSources, key: (s) => s as String, value: (_) => AppColors.success);
+    return { for (var s in AppConstants.incomeSources) s : AppColors.success };
   }
 
   _mapSourceIcons() {
-    return Map.fromIterable(AppConstants.incomeSources, key: (s) => s as String, value: (s) => _getIcon(s));
+    return { for (var s in AppConstants.incomeSources) s : _getIcon(s) };
   }
 
   @override
@@ -221,9 +221,9 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> with SingleTickerProv
                             contentPadding: EdgeInsets.zero,
                             title: Text('Recurring', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: textCol)),
                             subtitle: _isRecurring ? Text('Every $_recurringFrequency', style: TextStyle(fontSize: 12, color: hintCol)) : null,
-                            secondary: Icon(Icons.repeat_rounded, size: 20, color: AppColors.success),
+                            secondary: const Icon(Icons.repeat_rounded, size: 20, color: AppColors.success),
                             value: _isRecurring,
-                            activeColor: AppColors.success,
+                            activeThumbColor: AppColors.success,
                             onChanged: (v) => setState(() => _isRecurring = v),
                           ),
                           if (_isRecurring) ...[
@@ -316,9 +316,9 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> with SingleTickerProv
                         Container(width: double.infinity, padding: const EdgeInsets.all(14), margin: const EdgeInsets.only(bottom: 4),
                           decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.danger.withValues(alpha: 0.2))),
                           child: Row(children: [
-                            Icon(Icons.error_outline_rounded, size: 18, color: AppColors.danger),
+                            const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.danger),
                             const SizedBox(width: 10),
-                            Expanded(child: Text(txProvider.errorMessage!, style: TextStyle(fontSize: 13, color: AppColors.danger))),
+                            Expanded(child: Text(txProvider.errorMessage!, style: const TextStyle(fontSize: 13, color: AppColors.danger))),
                           ])),
                       SizedBox(height: txProvider.errorMessage != null ? 12 : 0),
 
@@ -336,7 +336,7 @@ class _AddIncomeScreenState extends State<AddIncomeScreen> with SingleTickerProv
                           ),
                           child: txProvider.isLoading
                               ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-                              : Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                              : const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                   Icon(Icons.add_circle_outline, size: 20),
                                   SizedBox(width: 8),
                                   Text('Add Income', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),

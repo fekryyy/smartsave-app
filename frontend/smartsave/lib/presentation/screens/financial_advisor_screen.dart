@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../providers/financial_advisor_provider.dart';
 import '../../data/models/financial_advisor_models.dart';
@@ -179,11 +178,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.grey300),
+            const Icon(Icons.cloud_off_rounded, size: 64, color: AppColors.grey300),
             const SizedBox(height: 16),
             Text('Unable to load financial analysis', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF0F172A))),
             const SizedBox(height: 8),
-            Text('Make sure your backend server is running and you have transactions added.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.grey500)),
+            const Text('Make sure your backend server is running and you have transactions added.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.grey500)),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => provider.loadAll(),
@@ -251,7 +250,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                       onPressed: () => setState(() => _showAllInsights = !_showAllInsights),
                       child: Text(
                         _showAllInsights ? 'Show Less' : 'Show All (${provider.insights.length})',
-                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                        style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -286,7 +285,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                       onPressed: () => setState(() => _showAllPlans = !_showAllPlans),
                       child: Text(
                         _showAllPlans ? 'Show Less' : 'Show All (${provider.actionPlans.length})',
-                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                        style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -324,17 +323,17 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                         child: const Icon(Icons.chat_rounded, color: Colors.white, size: 24),
                       ),
                       const SizedBox(width: 16),
-                      Expanded(
+                      const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Ask Your Financial Advisor', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text('Get personalized answers about your money', style: TextStyle(fontSize: 13, color: Colors.white70)),
                           ],
                         ),
                       ),
-                      Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
+                      const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
                     ],
                   ),
                 ),
@@ -399,7 +398,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 const SizedBox(height: 20),
                 Text('Ask me anything about your finances', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF0F172A))),
                 const SizedBox(height: 8),
-                Text('I can analyze your spending, find savings, check your financial health, and more.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.grey500)),
+                const Text('I can analyze your spending, find savings, check your financial health, and more.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColors.grey500)),
               ],
             ),
           ),
@@ -419,10 +418,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.help_outline_rounded, size: 18, color: AppColors.primary),
+                    const Icon(Icons.help_outline_rounded, size: 18, color: AppColors.primary),
                     const SizedBox(width: 10),
                     Expanded(child: Text(q, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : AppColors.grey700))),
-                    Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.grey400),
+                    const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.grey400),
                   ],
                 ),
               ),
@@ -516,7 +515,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                     ),
                     child: Text(
                       'Score: ${msg.score!.score}/100 (${msg.score!.level})',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
                     ),
                   ),
                 ],
@@ -527,9 +526,9 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.check_circle_outline_rounded, size: 14, color: AppColors.success),
+                        const Icon(Icons.check_circle_outline_rounded, size: 14, color: AppColors.success),
                         const SizedBox(width: 6),
-                        Expanded(child: Text(action, style: TextStyle(fontSize: 12, color: AppColors.grey600))),
+                        Expanded(child: Text(action, style: const TextStyle(fontSize: 12, color: AppColors.grey600))),
                       ],
                     ),
                   )),
@@ -564,7 +563,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 onSubmitted: _sendMessage,
                 decoration: InputDecoration(
                   hintText: 'Ask a question...',
-                  hintStyle: TextStyle(color: AppColors.grey400, fontSize: 14),
+                  hintStyle: const TextStyle(color: AppColors.grey400, fontSize: 14),
                   filled: true,
                   fillColor: isDark ? AppColors.darkCardAlt : AppColors.grey100,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -653,7 +652,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('${score.score}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: scoreColor)),
-                      Text('/100', style: TextStyle(fontSize: 10, color: AppColors.grey400)),
+                      const Text('/100', style: TextStyle(fontSize: 10, color: AppColors.grey400)),
                     ],
                   ),
                 ],
@@ -682,7 +681,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.info_outline_rounded, size: 16, color: AppColors.grey400),
+                      const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.grey400),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -795,7 +794,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.check_circle_rounded, size: 16, color: AppColors.success),
+                    const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.success),
                     const SizedBox(width: 8),
                     Expanded(child: Text(s, style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : AppColors.grey700))),
                   ],
@@ -809,7 +808,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_amber_rounded, size: 16, color: AppColors.warning),
+                    const Icon(Icons.warning_amber_rounded, size: 16, color: AppColors.warning),
                     const SizedBox(width: 8),
                     Expanded(child: Text(s, style: TextStyle(fontSize: 12, color: isDark ? Colors.white70 : AppColors.grey700))),
                   ],
@@ -862,7 +861,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                           color: AppColors.danger.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text('URGENT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.danger)),
+                        child: const Text('URGENT', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.danger)),
                       ),
                   ],
                 ),
@@ -966,7 +965,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
               ),
               child: Text(
                 '\$${opp.estimatedSavings.toStringAsFixed(0)}',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.success),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.success),
               ),
             ),
           ],
@@ -1016,14 +1015,14 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                     Text(plan.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF0F172A))),
                     Row(
                       children: [
-                        Icon(Icons.timer_outlined, size: 12, color: AppColors.grey400),
+                        const Icon(Icons.timer_outlined, size: 12, color: AppColors.grey400),
                         const SizedBox(width: 4),
-                        Text(plan.duration, style: TextStyle(fontSize: 11, color: AppColors.grey500)),
+                        Text(plan.duration, style: const TextStyle(fontSize: 11, color: AppColors.grey500)),
                         if (plan.expectedMonthlySavings > 0) ...[
                           const SizedBox(width: 12),
-                          Icon(Icons.savings_outlined, size: 12, color: AppColors.success),
+                          const Icon(Icons.savings_outlined, size: 12, color: AppColors.success),
                           const SizedBox(width: 4),
-                          Text('\$${plan.expectedMonthlySavings.toStringAsFixed(0)}/mo', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.success)),
+                          Text('\$${plan.expectedMonthlySavings.toStringAsFixed(0)}/mo', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.success)),
                         ],
                       ],
                     ),
@@ -1066,7 +1065,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                                 color: isDark ? AppColors.darkCardAlt : AppColors.grey100,
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: Text(step.week, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.grey500)),
+                              child: Text(step.week, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.grey500)),
                             ),
                           ],
                         ),
@@ -1076,10 +1075,10 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              Icon(Icons.lightbulb_outline_rounded, size: 12, color: AppColors.warning),
+                              const Icon(Icons.lightbulb_outline_rounded, size: 12, color: AppColors.warning),
                               const SizedBox(width: 4),
                               Expanded(
-                                child: Text(step.tip, style: TextStyle(fontSize: 11, color: AppColors.grey500, fontStyle: FontStyle.italic)),
+                                child: Text(step.tip, style: const TextStyle(fontSize: 11, color: AppColors.grey500, fontStyle: FontStyle.italic)),
                               ),
                             ],
                           ),
@@ -1165,7 +1164,7 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
             ),
             if (prediction.detail != null) ...[
               const SizedBox(height: 4),
-              Text(prediction.detail!, style: TextStyle(fontSize: 12, color: AppColors.grey500)),
+              Text(prediction.detail!, style: const TextStyle(fontSize: 12, color: AppColors.grey500)),
             ],
           ],
           if (prediction.type == 'budget_overruns' && prediction.budgetItems != null) ...[

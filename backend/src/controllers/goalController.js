@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const Notification = require('../models/Notification');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
+const { auditFromRequest } = require('../utils/audit');
 
 const goalController = {
   getAll: asyncHandler(async (req, res) => {
@@ -54,6 +55,9 @@ const goalController = {
       monthlyContribution: monthlyContribution || 0,
     });
 
+    auditFromRequest(req, 'create', 'goal', goal._id,
+      `Created goal "${title}" with target $${targetAmount}`);
+
     res.status(201).json({ success: true, message: 'Goal created', data: goal });
   }),
 
@@ -71,6 +75,8 @@ const goalController = {
     });
 
     await goal.save();
+    auditFromRequest(req, 'update', 'goal', goal._id,
+      `Updated goal "${goal.title}"`);
     res.json({ success: true, message: 'Goal updated', data: goal });
   }),
 
@@ -79,6 +85,9 @@ const goalController = {
     if (!goal) {
       throw new AppError('Goal not found', 404);
     }
+    auditFromRequest(req, 'delete', 'goal', goal._id,
+      `Deleted goal "${goal.title}" ($${goal.currentAmount}/$${goal.targetAmount})`,
+      { title: goal.title, targetAmount: goal.targetAmount, currentAmount: goal.currentAmount });
     res.json({ success: true, message: 'Goal deleted' });
   }),
 
@@ -115,6 +124,9 @@ const goalController = {
         message: `\$${amount} added to "${goal.title}" goal`,
       });
     } catch (_) { /* notification failure is non-critical */ }
+
+    auditFromRequest(req, 'contribution', 'goal', goal._id,
+      `Added $${amount} contribution to "${goal.title}"`);
 
     res.json({ success: true, message: 'Contribution added', data: goal });
   }),

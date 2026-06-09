@@ -134,8 +134,8 @@ class _CalendarScreenState extends State<CalendarScreen> with RouteAware {
                               .asMap().entries.map((e) => Row(mainAxisSize: MainAxisSize.min, children: [
                                 Container(width: 8, height: 8, decoration: BoxDecoration(color: e.value, shape: BoxShape.circle)),
                                 const SizedBox(width: 4),
-                                Text(['Income','Expense','Savings','Recurring'][e.key], style: TextStyle(color: AppColors.grey500, fontSize: 11)),
-                              ])).toList(),
+                                Text(['Income','Expense','Savings','Recurring'][e.key], style: const TextStyle(color: AppColors.grey500, fontSize: 11)),
+                              ])),
                           ]),
                         ),
                     ]),
@@ -194,7 +194,7 @@ class _CalendarScreenState extends State<CalendarScreen> with RouteAware {
               }),
             ] else
               Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.grey500.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                child: Center(child: Text('No transactions for this day', style: TextStyle(color: AppColors.grey500)))),
+                child: const Center(child: Text('No transactions for this day', style: TextStyle(color: AppColors.grey500)))),
             if (calendar.calendarData != null) ...[
               _buildRecurringDeadlines(context, calendar.calendarData!.upcomingRecurring, date, format, isDark, Icons.repeat, AppColors.primary, 'Recurring'),
               _buildRecurringDeadlines(context, calendar.calendarData!.budgetDeadlines, date, format, isDark, Icons.alarm, AppColors.warning, 'Budget Deadlines'),
@@ -210,7 +210,7 @@ class _CalendarScreenState extends State<CalendarScreen> with RouteAware {
       decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
       child: Column(children: [Icon(icon, color: color, size: 18), const SizedBox(height: 4),
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
-        Text(label, style: TextStyle(color: AppColors.grey500, fontSize: 10))])));
+        Text(label, style: const TextStyle(color: AppColors.grey500, fontSize: 10))])));
   }
 
   Widget _buildRecurringDeadlines(BuildContext context, List<Map<String, dynamic>> items, DateTime date, NumberFormat format, bool isDark, IconData icon, Color color, String title) {

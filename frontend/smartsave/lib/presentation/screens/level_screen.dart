@@ -116,7 +116,7 @@ class _LevelScreenState extends State<LevelScreen> {
   Widget _buildStatsGrid(XpProvider provider, bool isDark) {
     return Row(
       children: [
-        Expanded(child: _buildStatItem('Total Transactions', '${_formatNumber(provider.totalTransactions)}', Icons.receipt_long_rounded, AppColors.primary, isDark)),
+        Expanded(child: _buildStatItem('Total Transactions', _formatNumber(provider.totalTransactions), Icons.receipt_long_rounded, AppColors.primary, isDark)),
         const SizedBox(width: 12),
         Expanded(child: _buildStatItem('Total Income', '\$${_formatNumber(0)}', Icons.trending_up_rounded, AppColors.success, isDark)),
         const SizedBox(width: 12),

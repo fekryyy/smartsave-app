@@ -60,7 +60,7 @@ class TransactionRepositoryImpl with CacheableRepository implements TransactionR
 
   @override
   Future<List<TransactionModel>> getRecentTransactions() async {
-    final cacheKey = 'transactions:recent';
+    const cacheKey = 'transactions:recent';
     final response = await cacheFirst(
       cacheKey: cacheKey,
       ttlSeconds: 30,

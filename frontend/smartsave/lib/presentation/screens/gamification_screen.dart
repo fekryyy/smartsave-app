@@ -150,7 +150,7 @@ class _GamificationScreenState extends State<GamificationScreen> with SingleTick
           if (c.points > 0)
             Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-              child: Text('+${c.points} pts', style: TextStyle(fontSize: 11, color: AppColors.warning, fontWeight: FontWeight.w600))),
+              child: Text('+${c.points} pts', style: const TextStyle(fontSize: 11, color: AppColors.warning, fontWeight: FontWeight.w600))),
         ]),
         if (c.description.isNotEmpty) ...[const SizedBox(height: 6), Text(c.description, style: TextStyle(fontSize: 12, color: isDark ? AppColors.grey400 : AppColors.grey500))],
         const SizedBox(height: 12),
@@ -237,7 +237,7 @@ class _GamificationScreenState extends State<GamificationScreen> with SingleTick
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)))),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: type, style: TextStyle(color: textCol),
+              initialValue: type, style: TextStyle(color: textCol),
               dropdownColor: isDark ? AppColors.darkCard : Colors.white,
               decoration: InputDecoration(labelText: 'Type', labelStyle: TextStyle(color: isDark ? AppColors.grey500 : AppColors.grey400),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),

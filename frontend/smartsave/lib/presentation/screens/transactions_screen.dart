@@ -232,7 +232,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
           Text(label, style: TextStyle(fontSize: 11, fontWeight: hasRange ? FontWeight.w600 : FontWeight.w500, color: hasRange ? AppColors.primary : AppColors.grey600)),
           if (hasRange) ...[
             const SizedBox(width: 4),
-            GestureDetector(onTap: () { setState(() { _startDate = null; _endDate = null; }); _load(); }, child: Icon(Icons.close_rounded, size: 14, color: AppColors.primary)),
+            GestureDetector(onTap: () { setState(() { _startDate = null; _endDate = null; }); _load(); }, child: const Icon(Icons.close_rounded, size: 14, color: AppColors.primary)),
           ],
         ]),
       ),
@@ -300,7 +300,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
               Text(tx.category, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(width: 6),
               PaymentMethodBadge(method: tx.paymentMethod),
-              if (tx.isRecurring) ...[const SizedBox(width: 4), Icon(Icons.repeat_rounded, size: 12, color: AppColors.primary)],
+              if (tx.isRecurring) ...[const SizedBox(width: 4), const Icon(Icons.repeat_rounded, size: 12, color: AppColors.primary)],
             ]),
             if (tx.description.isNotEmpty) Text(tx.description, style: Theme.of(context).textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
           ])),

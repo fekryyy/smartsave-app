@@ -120,9 +120,13 @@ class _BudgetScreenState extends State<BudgetScreen> with RouteAware {
   Widget _buildBudgetCard(BuildContext context, BudgetModel budget, NumberFormat format) {
     final percentage = budget.percentageUsed.clamp(0, 100);
     Color barColor;
-    if (percentage >= 90) barColor = AppColors.danger;
-    else if (percentage >= 75) barColor = AppColors.warning;
-    else barColor = AppColors.success;
+    if (percentage >= 90) {
+      barColor = AppColors.danger;
+    } else if (percentage >= 75) {
+      barColor = AppColors.warning;
+    } else {
+      barColor = AppColors.success;
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -170,7 +174,7 @@ class _BudgetScreenState extends State<BudgetScreen> with RouteAware {
       content: Form(
         key: formKey,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          DropdownButtonFormField(value: category, items: AppConstants.expenseCategories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => category = v ?? 'Food', decoration: const InputDecoration(labelText: 'Category')),
+          DropdownButtonFormField(initialValue: category, items: AppConstants.expenseCategories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => category = v ?? 'Food', decoration: const InputDecoration(labelText: 'Category')),
           const SizedBox(height: 12),
           TextFormField(controller: amountCtrl, decoration: InputDecoration(labelText: 'Budget Amount', prefixText: CurrencyUtil.getPrefixText(currency)), keyboardType: TextInputType.number, validator: _validateAmount),
         ]),

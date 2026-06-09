@@ -156,11 +156,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
   }
 
   _mapCategoryColors() {
-    return Map.fromIterable(AppConstants.expenseCategories, key: (c) => c as String, value: (c) => Color(AppConstants.categoryColors[c] ?? 0xFF9CA3AF));
+    return { for (var c in AppConstants.expenseCategories) c : Color(AppConstants.categoryColors[c] ?? 0xFF9CA3AF) };
   }
 
   _mapCategoryIcons() {
-    return Map.fromIterable(AppConstants.expenseCategories, key: (c) => c as String, value: (c) => _getIcon(c));
+    return { for (var c in AppConstants.expenseCategories) c : _getIcon(c) };
   }
 
   @override
@@ -276,9 +276,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                             contentPadding: EdgeInsets.zero,
                             title: Text('Recurring', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: textCol)),
                             subtitle: _isRecurring ? Text('Every $_recurringFrequency', style: TextStyle(fontSize: 12, color: hintCol)) : null,
-                            secondary: Icon(Icons.repeat_rounded, size: 20, color: AppColors.primary),
+                            secondary: const Icon(Icons.repeat_rounded, size: 20, color: AppColors.primary),
                             value: _isRecurring,
-                            activeColor: AppColors.primary,
+                            activeThumbColor: AppColors.primary,
                             onChanged: (v) => setState(() => _isRecurring = v),
                           ),
                           if (_isRecurring) ...[
@@ -371,9 +371,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                         Container(width: double.infinity, padding: const EdgeInsets.all(14), margin: const EdgeInsets.only(bottom: 4),
                           decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.danger.withValues(alpha: 0.2))),
                           child: Row(children: [
-                            Icon(Icons.error_outline_rounded, size: 18, color: AppColors.danger),
+                            const Icon(Icons.error_outline_rounded, size: 18, color: AppColors.danger),
                             const SizedBox(width: 10),
-                            Expanded(child: Text(txProvider.errorMessage!, style: TextStyle(fontSize: 13, color: AppColors.danger))),
+                            Expanded(child: Text(txProvider.errorMessage!, style: const TextStyle(fontSize: 13, color: AppColors.danger))),
                           ])),
                       SizedBox(height: txProvider.errorMessage != null ? 12 : 0),
 
@@ -392,7 +392,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                           ),
                           child: txProvider.isLoading
                               ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-                              : Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                              : const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                                   Icon(Icons.add_circle_outline, size: 20),
                                   SizedBox(width: 8),
                                   Text('Add Expense', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),

@@ -75,9 +75,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
             icon: const Icon(Icons.download_rounded),
             onSelected: (v) async {
               try {
-                if (v == 'pdf') await DownloadService().exportPDF();
-                else if (v == 'csv') await DownloadService().exportCSV();
-                else if (v == 'excel') await DownloadService().exportExcel();
+                if (v == 'pdf') {
+                  await DownloadService().exportPDF();
+                } else if (v == 'csv') {
+                  await DownloadService().exportCSV();
+                } else if (v == 'excel') {
+                  await DownloadService().exportExcel();
+                }
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Report exported')));
               } catch (e) {
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Export failed: $e')));
@@ -273,7 +277,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
           height: 220,
           trailing: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Icon(Icons.trending_up, size: 14, color: AppColors.success),
+              const Icon(Icons.trending_up, size: 14, color: AppColors.success),
               const SizedBox(width: 4),
               Text('Net Savings', style: TextStyle(fontSize: 10, color: isDark ? AppColors.grey400 : AppColors.grey500)),
             ])),
@@ -546,12 +550,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
           bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 22, getTitlesWidget: (v, m) {
             final i = v.toInt();
             return i >= 0 && i < trends.length
-                ? Padding(padding: const EdgeInsets.only(top: 4), child: Text(trends[i].month.substring(5), style: TextStyle(fontSize: 10, color: AppColors.grey500)))
+                ? Padding(padding: const EdgeInsets.only(top: 4), child: Text(trends[i].month.substring(5), style: const TextStyle(fontSize: 10, color: AppColors.grey500)))
                 : const Text('');
           })),
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         barGroups: trends.asMap().entries.map((e) => BarChartGroupData(
@@ -572,13 +576,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: BarChart(BarChartData(
-        gridData: FlGridData(show: false),
+        gridData: const FlGridData(show: false),
         titlesData: FlTitlesData(
           show: true,
-          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 22, getTitlesWidget: (v, m) => v < growth.length ? Text(growth[v.toInt()]['month'].toString().substring(5), style: TextStyle(fontSize: 10, color: AppColors.grey500)) : const Text(''))),
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 22, getTitlesWidget: (v, m) => v < growth.length ? Text(growth[v.toInt()]['month'].toString().substring(5), style: const TextStyle(fontSize: 10, color: AppColors.grey500)) : const Text(''))),
+          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         barGroups: growth.asMap().entries.map((e) {

@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const { z } = require('zod');
 const { AppError } = require('./errorHandler');
+const { maxTwoDecimals } = require('../utils/money');
 
 // ── Express-Validator middleware (existing, kept for backward compatibility) ──
 
@@ -34,7 +35,7 @@ const schemas = {
   // Transactions
   createTransaction: z.object({
     type: z.enum(['income', 'expense']),
-    amount: z.number().positive('Amount must be greater than 0'),
+    amount: z.number().positive('Amount must be greater than 0').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
     category: z.string().min(1, 'Category is required'),
     description: z.string().max(200).optional().default(''),
     date: z.string().optional(),
@@ -44,7 +45,7 @@ const schemas = {
   }),
 
   updateTransaction: z.object({
-    amount: z.number().positive().optional(),
+    amount: z.number().positive('Amount must be positive').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places').optional(),
     category: z.string().min(1).optional(),
     description: z.string().max(200).optional(),
     date: z.string().optional(),
@@ -56,7 +57,7 @@ const schemas = {
   // Budgets
   createBudget: z.object({
     category: z.string().min(1, 'Category is required'),
-    amount: z.number().positive('Budget amount must be at least 1'),
+    amount: z.number().positive('Budget amount must be at least 1').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
     period: z.enum(['weekly', 'monthly', 'yearly']).optional().default('monthly'),
     notifications: z.boolean().optional(),
   }),
@@ -65,7 +66,7 @@ const schemas = {
   createGoal: z.object({
     title: z.string().trim().min(2, 'Title must be at least 2 characters').max(100),
     description: z.string().max(500).optional().default(''),
-    targetAmount: z.number().positive('Target amount must be at least 1'),
+    targetAmount: z.number().positive('Target amount must be at least 1').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
     targetDate: z.string().optional().nullable(),
     category: z.enum(['Emergency Fund', 'Travel', 'Education', 'Shopping', 'Investment', 'Debt Payment', 'Retirement', 'Other']).optional().default('Other'),
     priority: z.enum(['low', 'medium', 'high']).optional().default('medium'),
@@ -75,7 +76,7 @@ const schemas = {
   }),
 
   goalContribution: z.object({
-    amount: z.number().positive('Amount must be greater than 0'),
+    amount: z.number().positive('Amount must be greater than 0').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
   }),
 
   // Change password
@@ -87,7 +88,7 @@ const schemas = {
   // Recurring
   createRecurring: z.object({
     type: z.enum(['income', 'expense']),
-    amount: z.number().positive(),
+    amount: z.number().positive('Amount must be positive').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
     category: z.enum(['Food', 'Transportation', 'Shopping', 'Bills', 'Entertainment', 'Health', 'Education', 'Travel', 'Other', 'Salary', 'Freelance', 'Investment', 'Gift', 'Refund']),
     description: z.string().optional().default(''),
     frequency: z.enum(['daily', 'weekly', 'monthly', 'yearly']),
@@ -101,7 +102,7 @@ const schemas = {
   createAutoSave: z.object({
     name: z.string().min(1, 'Name is required'),
     type: z.enum(['percentage_of_income', 'fixed_daily', 'fixed_payday', 'percentage_bonus', 'round_up']),
-    amount: z.number().positive().optional(),
+    amount: z.number().positive('Amount must be positive').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places').optional(),
     percentage: z.number().min(0).max(100).optional(),
     targetAccount: z.string().optional().default('savings'),
     frequency: z.enum(['daily', 'weekly', 'monthly', 'per_transaction']).optional().default('monthly'),
@@ -134,6 +135,80 @@ const schemas = {
   addXp: z.object({
     amount: z.number().int().positive('Valid XP amount required'),
     reason: z.string().optional(),
+  }),
+
+  // Auto-save update (all fields optional)
+  updateAutoSave: z.object({
+    name: z.string().min(1, 'Name is required').optional(),
+    type: z.enum(['percentage_of_income', 'fixed_daily', 'fixed_payday', 'percentage_bonus', 'round_up']).optional(),
+    amount: z.number().positive().optional(),
+    percentage: z.number().min(0).max(100).optional(),
+    targetAccount: z.string().optional(),
+    frequency: z.enum(['daily', 'weekly', 'monthly', 'per_transaction']).optional(),
+    paydayDay: z.number().int().min(1).max(31).optional(),
+  }),
+
+  // Challenges
+  joinChallenge: z.object({
+    challengeId: z.string().min(1, 'Challenge ID is required'),
+  }),
+
+  updateChallengeProgress: z.object({
+    progress: z.number().min(0, 'Progress must be at least 0'),
+  }),
+
+  awardAchievement: z.object({
+    badgeType: z.string().min(1, 'Badge type is required'),
+  }),
+
+  awardByCount: z.object({
+    badgeType: z.string().min(1, 'Badge type is required'),
+    count: z.number().int().positive('Count must be positive'),
+  }),
+
+  // Subscriptions
+  createSubscription: z.object({
+    name: z.string().min(1, 'Name is required').max(100),
+    amount: z.number().positive('Amount must be greater than 0').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places'),
+    currency: z.enum(['USD', 'EUR', 'GBP', 'EGP', 'SAR', 'AED']).optional().default('USD'),
+    billingDate: z.number().int().min(1).max(31).optional(),
+    renewalFrequency: z.enum(['monthly', 'yearly', 'weekly', 'quarterly']).optional().default('monthly'),
+    category: z.string().min(1, 'Category is required').optional(),
+    nextBillingDate: z.string().optional(),
+    missedPayments: z.number().int().min(0).optional().default(0),
+  }),
+
+  updateSubscription: z.object({
+    name: z.string().min(1).max(100).optional(),
+    amount: z.number().positive('Amount must be positive').refine(maxTwoDecimals, 'Amount cannot have more than 2 decimal places').optional(),
+    currency: z.enum(['USD', 'EUR', 'GBP', 'EGP', 'SAR', 'AED']).optional(),
+    billingDate: z.number().int().min(1).max(31).optional(),
+    renewalFrequency: z.enum(['monthly', 'yearly', 'weekly', 'quarterly']).optional(),
+    category: z.string().min(1).optional(),
+    nextBillingDate: z.string().optional(),
+    missedPayments: z.number().int().min(0).optional(),
+  }),
+
+  // Notifications
+  markNotificationRead: z.object({
+    notificationId: z.string().min(1),
+  }),
+
+  // Export query params
+  exportQuery: z.object({
+    type: z.enum(['income', 'expense', 'all']).optional().default('all'),
+    period: z.enum(['week', 'month', 'year', 'all']).optional().default('month'),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    category: z.string().optional(),
+  }),
+
+  // Analytics query params
+  analyticsQuery: z.object({
+    month: z.coerce.number().int().min(1).max(12).optional(),
+    year: z.coerce.number().int().min(2000).max(2100).optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
   }),
 };
 

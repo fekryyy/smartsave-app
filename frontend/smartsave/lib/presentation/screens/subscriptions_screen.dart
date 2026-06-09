@@ -120,7 +120,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> with RouteAwa
           child: Icon(icon, color: color, size: 20)),
         const SizedBox(height: 12),
         Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: isDark ? Colors.white : null)),
-        Text(label, style: TextStyle(color: AppColors.grey500, fontSize: 12)),
+        Text(label, style: const TextStyle(color: AppColors.grey500, fontSize: 12)),
       ]),
     );
   }
@@ -205,12 +205,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> with RouteAwa
             Row(children: [
               Text(format.format(sub.amount), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, color: AppColors.primary)),
               const SizedBox(width: 4),
-              Text('/${sub.renewalFrequency}', style: TextStyle(color: AppColors.grey500, fontSize: 12)),
+              Text('/${sub.renewalFrequency}', style: const TextStyle(color: AppColors.grey500, fontSize: 12)),
               const Spacer(),
               if (sub.nextBillingDate != null) ...[
-                Icon(Icons.date_range, size: 12, color: AppColors.grey500),
+                const Icon(Icons.date_range, size: 12, color: AppColors.grey500),
                 const SizedBox(width: 4),
-                Text('Next: ${DateFormat('MMM dd').format(sub.nextBillingDate!)}', style: TextStyle(color: AppColors.grey500, fontSize: 11)),
+                Text('Next: ${DateFormat('MMM dd').format(sub.nextBillingDate!)}', style: const TextStyle(color: AppColors.grey500, fontSize: 11)),
               ],
             ]),
           ],
@@ -268,14 +268,14 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> with RouteAwa
                   style: Theme.of(context).textTheme.bodyLarge),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
-                  value: frequency,
+                  initialValue: frequency,
                   decoration: const InputDecoration(labelText: 'Renewal Frequency', border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
                   items: ['weekly', 'monthly', 'quarterly', 'yearly'].map((f) => DropdownMenuItem(value: f, child: Text(f[0].toUpperCase() + f.substring(1)))).toList(),
                   onChanged: (v) => setSheetState(() => frequency = v ?? 'monthly'),
                 ),
                 const SizedBox(height: 14),
                 DropdownButtonFormField<String>(
-                  value: category,
+                  initialValue: category,
                   decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
                   items: ['Streaming', 'Software', 'Cloud', 'Fitness', 'Food', 'Music', 'News', 'Other'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                   onChanged: (v) => setSheetState(() => category = v ?? 'Other'),

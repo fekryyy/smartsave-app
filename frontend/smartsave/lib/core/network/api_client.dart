@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -42,7 +43,7 @@ class ApiClient {
       LogInterceptor(
         requestBody: true,
         responseBody: true,
-        logPrint: (obj) => print('[API] $obj'),
+        logPrint: (obj) => log('[API] $obj'),
       ),
     ]);
   }

@@ -16,7 +16,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _pageController = PageController();
   int _page = 0;
   String _selectedCurrency = 'USD';
-  Map<String, bool> _prefs = {
+  final Map<String, bool> _prefs = {
     'budgetWarnings': true,
     'goalReminders': true,
     'weeklySummary': true,
@@ -24,19 +24,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   };
 
   final _pages = [
-    _OnboardingPageData(
+    const _OnboardingPageData(
       icon: Icons.savings_rounded,
       title: 'Welcome to SmartSave',
       subtitle: 'Take control of your finances with smart budgeting, goal tracking, and insightful analytics.',
       color: AppColors.primary,
     ),
-    _OnboardingPageData(
+    const _OnboardingPageData(
       icon: Icons.auto_graph_rounded,
       title: 'Track Everything',
       subtitle: 'Log expenses & income, scan receipts, set budgets, track savings goals, and get personalized insights.',
       color: AppColors.success,
     ),
-    _OnboardingPageData(
+    const _OnboardingPageData(
       icon: Icons.tune_rounded,
       title: 'Almost Ready!',
       subtitle: 'Choose your currency and notification preferences to get started.',
@@ -145,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Text('Currency', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: hintCol)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _selectedCurrency,
+          initialValue: _selectedCurrency,
           decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none), filled: true, fillColor: isDark ? AppColors.darkCardAlt : Colors.white, contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12)),
           style: TextStyle(fontSize: 15, color: textCol),
           dropdownColor: isDark ? AppColors.darkCard : Colors.white,
@@ -161,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Text(_prefLabel(e.key), style: TextStyle(fontSize: 14, color: textCol)),
             Switch(
               value: e.value,
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
               onChanged: (v) => setState(() => _prefs[e.key] = v),
             ),
           ]),

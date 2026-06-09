@@ -25,7 +25,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
   final _descriptionController = TextEditingController();
   String _selectedType = 'expense';
   String _selectedCategory = 'Food';
-  DateTime _selectedDate = DateTime.now();
+  final DateTime _selectedDate = DateTime.now();
 
   bool _showForm = false;
   bool _showVoiceResult = false;
@@ -375,13 +375,13 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
           ),
           const SizedBox(height: 12),
           if (_isListening)
-            Text(
+            const Text(
               'Listening... tap to stop',
               style: TextStyle(color: AppColors.danger, fontSize: 13),
             )
           else if (_voiceText.isNotEmpty)
             Text(
-              '$_voiceText',
+              _voiceText,
               style: TextStyle(color: isDark ? AppColors.grey400 : AppColors.grey500, fontSize: 13),
               textAlign: TextAlign.center,
             )
@@ -580,13 +580,13 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
-            value: _selectedCategory,
+            initialValue: _selectedCategory,
             style: TextStyle(color: isDark ? Colors.white : const Color(0xFF0F172A)),
             dropdownColor: isDark ? AppColors.darkCard : Colors.white,
             decoration: InputDecoration(
@@ -611,7 +611,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
           ),

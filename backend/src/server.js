@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/database');
 const config = require('./config');
 const { errorHandler } = require('./middleware/errorHandler');
+const { protect } = require('./middleware/auth');
 const logger = require('./utils/logger');
 const recurringService = require('./services/recurringService');
 const redisService = require('./services/redisService');
@@ -49,7 +50,7 @@ app.use('/api/auth', rateLimit({ windowMs: 15 * 60 * 1000, max: 50 }));
 app.use('/api', limiter);
 
 // Body parsing
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Logging
@@ -81,8 +82,8 @@ app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/xp', require('./routes/xpRoutes'));
 app.use('/api/financial-advisor', require('./routes/financialAdvisorRoutes'));
 
-// Bull Board UI (admin only — protect in production via auth middleware)
-app.use('/admin/queues', serverAdapter.getRouter());
+// Bull Board UI — requires valid JWT (admin/protected)
+app.use('/admin/queues', protect, serverAdapter.getRouter());
 
 // Health check
 app.get('/api/health', async (req, res) => {

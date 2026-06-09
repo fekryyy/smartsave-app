@@ -116,7 +116,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> with RouteAware {
       decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
       child: Column(children: [
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 16)),
-        Text(label, style: TextStyle(color: AppColors.grey500, fontSize: 10)),
+        Text(label, style: const TextStyle(color: AppColors.grey500, fontSize: 10)),
       ])));
   }
 
@@ -143,7 +143,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> with RouteAware {
               ),
             ),
             const SizedBox(height: 4),
-            Text(DateFormat('MMM').format(DateTime.parse(history[i]['date'] as String)), style: TextStyle(fontSize: 8, color: AppColors.grey500)),
+            Text(DateFormat('MMM').format(DateTime.parse(history[i]['date'] as String)), style: const TextStyle(fontSize: 8, color: AppColors.grey500)),
           ])));
         })),
       ),

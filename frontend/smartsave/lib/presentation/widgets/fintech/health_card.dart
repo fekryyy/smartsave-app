@@ -20,7 +20,7 @@ class FinancialHealthCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
           colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

@@ -370,9 +370,13 @@ class _ReportScreenState extends State<ReportScreen> with RouteAware {
           final pctClamped = pct.clamp(0, 100) / 100;
 
           Color barColor;
-          if (pct >= 100) barColor = AppColors.danger;
-          else if (pct >= 80) barColor = AppColors.warning;
-          else barColor = AppColors.success;
+          if (pct >= 100) {
+            barColor = AppColors.danger;
+           } else if (pct >= 80) {
+            barColor = AppColors.warning;
+          } else {
+            barColor = AppColors.success;
+          }
 
           return Container(
             margin: const EdgeInsets.only(bottom: 10),

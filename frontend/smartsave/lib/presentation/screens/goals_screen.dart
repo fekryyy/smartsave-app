@@ -184,7 +184,7 @@ class _GoalsScreenState extends State<GoalsScreen> with RouteAware {
               return null;
             }),
             const SizedBox(height: 12),
-            DropdownButtonFormField(value: category, items: ['Emergency Fund', 'Travel', 'Education', 'Shopping', 'Investment', 'Debt Payment', 'Retirement', 'Other'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => category = v ?? 'Other', decoration: const InputDecoration(labelText: 'Category')),
+            DropdownButtonFormField(initialValue: category, items: ['Emergency Fund', 'Travel', 'Education', 'Shopping', 'Investment', 'Debt Payment', 'Retirement', 'Other'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => category = v ?? 'Other', decoration: const InputDecoration(labelText: 'Category')),
           ]),
         ),
       ),
@@ -251,7 +251,7 @@ class _GoalsScreenState extends State<GoalsScreen> with RouteAware {
               return null;
             }),
             const SizedBox(height: 12),
-            DropdownButtonFormField(value: categoryValue, items: ['Emergency Fund', 'Travel', 'Education', 'Shopping', 'Investment', 'Debt Payment', 'Retirement', 'Other'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => categoryValue = v ?? 'Other', decoration: const InputDecoration(labelText: 'Category')),
+            DropdownButtonFormField(initialValue: categoryValue, items: ['Emergency Fund', 'Travel', 'Education', 'Shopping', 'Investment', 'Debt Payment', 'Retirement', 'Other'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(), onChanged: (v) => categoryValue = v ?? 'Other', decoration: const InputDecoration(labelText: 'Category')),
           ]),
         ),
       ),

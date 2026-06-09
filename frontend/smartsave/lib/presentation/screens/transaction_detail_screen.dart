@@ -84,7 +84,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
           ),
           child: Column(children: [
-            Text('${isIncome ? 'Income' : 'Expense'}', style: const TextStyle(color: Colors.white70, fontSize: 14)),
+            Text(isIncome ? 'Income' : 'Expense', style: const TextStyle(color: Colors.white70, fontSize: 14)),
             const SizedBox(height: 8),
             Text('${isIncome ? '+' : '-'}${format.format(tx.amount)}', style: const TextStyle(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -140,7 +140,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0))),
             child: Row(children: [
-              Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 22),
+              const Icon(Icons.receipt_long_rounded, color: AppColors.primary, size: 22),
               const SizedBox(width: 12),
               Expanded(child: Text('Receipt attached', style: TextStyle(fontSize: 14, color: textCol))),
               const Icon(Icons.chevron_right, color: AppColors.grey400),

@@ -41,15 +41,15 @@ class MockGoogleAuthService extends GoogleAuthService {
   int revokeAccessCallCount = 0;
 
   @override
-  Future<UserCredential?> signIn() async => onSignIn?.call() ?? null;
+  Future<UserCredential?> signIn() async => onSignIn?.call();
 
   @override
   Future<String?> getIdToken({bool forceRefresh = true}) async =>
-      onGetIdToken?.call(forceRefresh: forceRefresh) ?? null;
+      onGetIdToken?.call(forceRefresh: forceRefresh);
 
   @override
   Future<UserCredential?> trySilentSignIn() async =>
-      onTrySilentSignIn?.call() ?? null;
+      onTrySilentSignIn?.call();
 
   @override
   Future<void> init() async => onInit?.call() ?? Future.value();

@@ -34,20 +34,20 @@ void main() {
       // onGenerateRoute can access AuthProvider via context.watch().
       return ChangeNotifierProvider<AuthProvider>.value(
         value: authProvider,
-        child: MaterialApp(
+        child: const MaterialApp(
           initialRoute: AppRoutes.login,
           onGenerateRoute: AppRoutes.onGenerateRoute,
-          home: const LoginScreen(),
+          home: LoginScreen(),
         ),
       );
     }
 
-    AuthProvider _createAuthProvider() {
+    AuthProvider createAuthProvider() {
       return AuthProvider(googleAuthService: _MockGoogleAuthService());
     }
 
     testWidgets('renders email and password fields', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -58,7 +58,7 @@ void main() {
     });
 
     testWidgets('renders Sign In button', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -67,7 +67,7 @@ void main() {
     });
 
     testWidgets('renders Google Sign-In button', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -76,7 +76,7 @@ void main() {
     });
 
     testWidgets('renders Register link', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -85,7 +85,7 @@ void main() {
     });
 
     testWidgets('shows error message when auth has error', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -95,7 +95,7 @@ void main() {
     });
 
     testWidgets('forgot password link navigates', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();
@@ -110,7 +110,7 @@ void main() {
     });
 
     testWidgets('Sign Up link is tappable', (tester) async {
-      final authProvider = _createAuthProvider();
+      final authProvider = createAuthProvider();
 
       await tester.pumpWidget(createTestWidget(authProvider: authProvider));
       await tester.pumpAndSettle();

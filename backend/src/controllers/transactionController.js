@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const Notification = require('../models/Notification');
 const UserStreak = require('../models/UserStreak');
+const { auditFromRequest } = require('../utils/audit');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
 const { checkAndAward } = require('./challengeController');
@@ -105,6 +106,10 @@ const transactionController = {
       }
     } catch (_) { /* gamification failure is non-critical */ }
 
+    // Audit trail
+    auditFromRequest(req, 'create', 'transaction', transaction._id,
+      `Created ${type} of $${amount} for ${category}`);
+
     res.status(201).json({
       success: true,
       message: 'Transaction created successfully',
@@ -157,6 +162,12 @@ const transactionController = {
       await updateBudgetSpent(req.user.id, transaction.category, transaction.amount, transaction.date);
     }
 
+    // Audit trail
+    auditFromRequest(req, 'update', 'transaction', transaction._id,
+      `Updated transaction: amount ${oldAmount}→${transaction.amount}, category ${oldCategory}→${transaction.category}`,
+      { amount: oldAmount, category: oldCategory, type: oldType },
+      { amount: transaction.amount, category: transaction.category, type: transaction.type });
+
     res.json({
       success: true,
       message: 'Transaction updated successfully',
@@ -186,6 +197,11 @@ const transactionController = {
       await updateBudgetSpent(req.user.id, transaction.category, -transaction.amount, transaction.date);
     }
     await User.findByIdAndUpdate(req.user.id, { $inc: decFields });
+
+    // Audit trail
+    auditFromRequest(req, 'delete', 'transaction', transaction._id,
+      `Deleted ${transaction.type} of $${transaction.amount} for ${transaction.category}`,
+      { amount: transaction.amount, category: transaction.category, type: transaction.type, date: transaction.date });
 
     res.json({ success: true, message: 'Transaction deleted successfully' });
   }),

@@ -235,7 +235,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                         Row(children: [
                           Text('Level ${xpProvider.level}', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                           const SizedBox(width: 8),
-                          Text(xpProvider.levelName, style: TextStyle(fontSize: 12, color: AppColors.grey500)),
+                          Text(xpProvider.levelName, style: const TextStyle(fontSize: 12, color: AppColors.grey500)),
                         ]),
                         const SizedBox(height: 6),
                         ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: levelProgress / 100, backgroundColor: AppColors.grey100, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.warning), minHeight: 6)),
@@ -393,7 +393,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
 
   List<Widget> _buildRecentTransactions(BuildContext context, List<TransactionModel> transactions, NumberFormat format, {bool isDark = false}) {
     if (transactions.isEmpty) {
-      return [FadeInUp(child: EmptyState(icon: Icons.receipt_long_outlined, title: 'No transactions yet', subtitle: 'Tap + to add your first transaction'))];
+      return [FadeInUp(child: const EmptyState(icon: Icons.receipt_long_outlined, title: 'No transactions yet', subtitle: 'Tap + to add your first transaction'))];
     }
 
     return transactions.take(5).map((tx) => FadeInUp(

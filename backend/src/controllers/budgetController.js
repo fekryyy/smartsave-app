@@ -2,6 +2,7 @@ const Budget = require('../models/Budget');
 const Transaction = require('../models/Transaction');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
+const { auditFromRequest } = require('../utils/audit');
 
 const budgetController = {
   getAll: asyncHandler(async (req, res) => {
@@ -78,6 +79,9 @@ const budgetController = {
       await budget.save();
     }
 
+    auditFromRequest(req, 'create', 'budget', budget._id,
+      `Created budget of $${amount} for ${category} (${period})`);
+
     res.status(201).json({ success: true, message: 'Budget created', data: budget });
   }),
 
@@ -92,6 +96,8 @@ const budgetController = {
     if (notifications !== undefined) budget.notifications = notifications;
 
     await budget.save();
+    auditFromRequest(req, 'update', 'budget', budget._id,
+      `Updated budget ${budget.category}: amount → $${budget.amount}`);
     res.json({ success: true, message: 'Budget updated', data: budget });
   }),
 
@@ -100,6 +106,9 @@ const budgetController = {
     if (!budget) {
       throw new AppError('Budget not found', 404);
     }
+    auditFromRequest(req, 'delete', 'budget', budget._id,
+      `Deleted budget ${budget.category} ($${budget.amount}/${budget.period})`,
+      { category: budget.category, amount: budget.amount, period: budget.period });
     res.json({ success: true, message: 'Budget deleted' });
   }),
 

@@ -187,14 +187,14 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
         ]),
         const SizedBox(height: 12),
         Row(children: [
-          Icon(Icons.schedule_rounded, size: 14, color: AppColors.grey500),
+          const Icon(Icons.schedule_rounded, size: 14, color: AppColors.grey500),
           const SizedBox(width: 4),
-          Text(rule.frequency, style: TextStyle(fontSize: 12, color: AppColors.grey500)),
+          Text(rule.frequency, style: const TextStyle(fontSize: 12, color: AppColors.grey500)),
           if (rule.paydayDay != null) ...[
             const SizedBox(width: 12),
-            Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.grey500),
+            const Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.grey500),
             const SizedBox(width: 4),
-            Text('Day ${rule.paydayDay}', style: TextStyle(fontSize: 12, color: AppColors.grey500)),
+            Text('Day ${rule.paydayDay}', style: const TextStyle(fontSize: 12, color: AppColors.grey500)),
           ],
           const Spacer(),
           Container(
@@ -215,7 +215,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(color: isDark ? AppColors.darkCardAlt : AppColors.grey50, borderRadius: BorderRadius.circular(10)),
           child: Row(children: [
-            Icon(Icons.savings_outlined, size: 14, color: AppColors.primary),
+            const Icon(Icons.savings_outlined, size: 14, color: AppColors.primary),
             const SizedBox(width: 6),
             Text('Total contributed: ${format.format(rule.totalContributed)}', style: TextStyle(fontSize: 12, color: isDark ? AppColors.grey400 : AppColors.grey600)),
           ]),
@@ -249,7 +249,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
           ElevatedButton.icon(
             onPressed: () async {
               await provider.triggerContribution(rule.id);
-              if (mounted) {
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Contribution triggered')));
               }
             },
@@ -282,7 +282,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
     final formKey = GlobalKey<FormState>();
     final nameCtrl = TextEditingController(text: rule?.name ?? '');
     final amountCtrl = TextEditingController(text: rule?.amount != 0 ? rule!.amount.toString() : '');
-    final percentageCtrl = TextEditingController(text: rule?.percentage != 0 ? '${rule!.percentage.toStringAsFixed(1)}' : '');
+    final percentageCtrl = TextEditingController(text: rule?.percentage != 0 ? rule!.percentage.toStringAsFixed(1) : '');
 
     String selectedType = rule?.type ?? 'Percentage of Income';
     String selectedFrequency = rule?.frequency ?? 'monthly';
@@ -338,7 +338,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedType,
+                    initialValue: selectedType,
                     decoration: InputDecoration(
                       labelText: 'Type',
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -382,7 +382,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
                     ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: selectedFrequency,
+                    initialValue: selectedFrequency,
                     decoration: InputDecoration(
                       labelText: 'Frequency',
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),

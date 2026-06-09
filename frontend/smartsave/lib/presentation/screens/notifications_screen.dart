@@ -63,7 +63,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> with RouteAwa
           : notifications.isEmpty
               ? Center(
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    Icon(Icons.notifications_none, size: 64, color: AppColors.grey400),
+                    const Icon(Icons.notifications_none, size: 64, color: AppColors.grey400),
                     const SizedBox(height: 16),
                     Text('No notifications', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.grey500)),
                     const SizedBox(height: 8),
