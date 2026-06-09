@@ -11,6 +11,7 @@ import '../widgets/common/empty_state.dart';
 import '../widgets/fintech/payment_method_badge.dart';
 import '../../services/download_service.dart';
 import '../../app/routes.dart';
+import '../../app/app.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -19,7 +20,7 @@ class TransactionsScreen extends StatefulWidget {
   State<TransactionsScreen> createState() => _TransactionsScreenState();
 }
 
-class _TransactionsScreenState extends State<TransactionsScreen> with SingleTickerProviderStateMixin {
+class _TransactionsScreenState extends State<TransactionsScreen> with SingleTickerProviderStateMixin, RouteAware {
   late TabController _tabController;
   String? _selectedType;
   String? _selectedPaymentMethod;
@@ -46,10 +47,22 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _load();
   }
 
   void _load() {
@@ -209,9 +222,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: hasRange ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+          color: hasRange ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: hasRange ? AppColors.primary.withOpacity(0.4) : AppColors.grey200),
+          border: Border.all(color: hasRange ? AppColors.primary.withValues(alpha: 0.4) : AppColors.grey200),
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Icon(Icons.date_range_rounded, size: 14, color: hasRange ? AppColors.primary : hintCol),
@@ -237,9 +250,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
-            color: isSelected ? color.withOpacity(0.12) : Colors.transparent,
+            color: isSelected ? color.withValues(alpha: 0.12) : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isSelected ? color.withOpacity(0.5) : AppColors.grey200),
+            border: Border.all(color: isSelected ? color.withValues(alpha: 0.5) : AppColors.grey200),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(icon, size: 13, color: isSelected ? color : AppColors.grey500),
@@ -261,27 +274,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
+            color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: isSelected ? AppColors.primary.withOpacity(0.4) : AppColors.grey200),
+            border: Border.all(color: isSelected ? AppColors.primary.withValues(alpha: 0.4) : AppColors.grey200),
           ),
           child: Text(label, style: TextStyle(fontSize: 11, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: isSelected ? AppColors.primary : AppColors.grey600)),
         ),
       ),
     );
   }
-
-  // Filtered by search text
-  List<TransactionModel> _filtered(List<TransactionModel> all) {
-    final q = _searchController.text.toLowerCase().trim();
-    if (q.isEmpty) return all;
-    return all.where((tx) =>
-      tx.category.toLowerCase().contains(q) ||
-      tx.description.toLowerCase().contains(q) ||
-      tx.paymentMethod.toLowerCase().contains(q)
-    ).toList();
-  }
-
   Widget _buildTransactionCard(TransactionModel tx, NumberFormat format) {
     final isIncome = tx.type == 'income';
     final color = isIncome ? AppColors.success : AppColors.danger;
@@ -292,7 +293,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> with SingleTick
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.grey100)),
         child: Row(children: [
-          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getCategoryIcon(tx.category), color: color, size: 22)),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getCategoryIcon(tx.category), color: color, size: 22)),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [

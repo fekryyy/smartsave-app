@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/currency_util.dart';
@@ -8,7 +7,7 @@ import '../../presentation/providers/goal_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../data/models/goal_model.dart';
 import '../widgets/common/empty_state.dart';
-import '../../app/routes.dart';
+import '../../app/app.dart';
 
 class GoalsScreen extends StatefulWidget {
   const GoalsScreen({super.key});
@@ -17,13 +16,32 @@ class GoalsScreen extends StatefulWidget {
   State<GoalsScreen> createState() => _GoalsScreenState();
 }
 
-class _GoalsScreenState extends State<GoalsScreen> {
+class _GoalsScreenState extends State<GoalsScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GoalProvider>().loadGoals();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<GoalProvider>().loadGoals();
   }
 
   @override
@@ -65,7 +83,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(gradient: AppColors.successGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.success.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))]),
+      decoration: BoxDecoration(gradient: AppColors.successGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.success.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))]),
       child: Column(children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text('Total Saved', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
@@ -76,7 +94,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
         const SizedBox(height: 4),
         Text('of ${format.format(totalTarget)}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
         const SizedBox(height: 16),
-        ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: progress, backgroundColor: Colors.white.withOpacity(0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
+        ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: progress, backgroundColor: Colors.white.withValues(alpha: 0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
       ]),
     );
   }
@@ -91,7 +109,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
       decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.grey100)),
       child: Column(children: [
         Row(children: [
-          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: goalColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getGoalIcon(goal.icon), color: goalColor)),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: goalColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getGoalIcon(goal.icon), color: goalColor)),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(goal.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),

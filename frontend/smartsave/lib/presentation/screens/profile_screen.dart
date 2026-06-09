@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/currency_util.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../presentation/providers/analytics_provider.dart';
 import '../../app/routes.dart';
-import '../widgets/common/loading_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -30,19 +28,19 @@ class ProfileScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))],
+              boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))],
             ),
             child: Column(children: [
               CircleAvatar(
                 radius: 40,
-                backgroundColor: Colors.white.withOpacity(0.2),
+                backgroundColor: Colors.white.withValues(alpha: 0.2),
                 child: Text(user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : 'S', style: const TextStyle(fontSize: 32, color: Colors.white, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 12),
               Text(user?.name ?? 'Smart Saver', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
               Text(user?.email ?? '', style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 4),
-              Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)), child: Text(user?.currency ?? 'USD', style: const TextStyle(color: Colors.white, fontSize: 12))),
+              Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)), child: Text(user?.currency ?? 'USD', style: const TextStyle(color: Colors.white, fontSize: 12))),
             ]),
           ),
           const SizedBox(height: 20),

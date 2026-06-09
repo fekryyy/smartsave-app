@@ -212,7 +212,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: _receiptImage != null ? AppColors.success.withOpacity(0.15) : (isDark ? AppColors.darkCardAlt : const Color(0xFFF1F5F9)),
+                                color: _receiptImage != null ? AppColors.success.withValues(alpha: 0.15) : (isDark ? AppColors.darkCardAlt : const Color(0xFFF1F5F9)),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: _scanning
@@ -369,7 +369,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                       // === ERROR ===
                       if (txProvider.errorMessage != null)
                         Container(width: double.infinity, padding: const EdgeInsets.all(14), margin: const EdgeInsets.only(bottom: 4),
-                          decoration: BoxDecoration(color: AppColors.danger.withOpacity(0.12), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.danger.withOpacity(0.2))),
+                          decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.danger.withValues(alpha: 0.2))),
                           child: Row(children: [
                             Icon(Icons.error_outline_rounded, size: 18, color: AppColors.danger),
                             const SizedBox(width: 10),
@@ -384,11 +384,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.danger,
                             foregroundColor: Colors.white,
-                            disabledBackgroundColor: AppColors.danger.withOpacity(0.4),
+                            disabledBackgroundColor: AppColors.danger.withValues(alpha: 0.4),
                             disabledForegroundColor: Colors.white60,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                             elevation: 0,
-                            shadowColor: AppColors.danger.withOpacity(0.3),
+                            shadowColor: AppColors.danger.withValues(alpha: 0.3),
                           ),
                           child: txProvider.isLoading
                               ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
@@ -411,7 +411,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
           if (_showSuccess)
             Positioned.fill(
               child: Container(
-                color: bg.withOpacity(0.95),
+                color: bg.withValues(alpha: 0.95),
                 child: Center(
                   child: TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
@@ -420,7 +420,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> with SingleTickerPr
                     builder: (ctx, value, _) => Transform.scale(
                       scale: value,
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AppColors.success, shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppColors.success.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 8))]),
+                        Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AppColors.success, shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppColors.success.withValues(alpha: 0.3), blurRadius: 30, offset: const Offset(0, 8))]),
                           child: const Icon(Icons.check_rounded, color: Colors.white, size: 48)),
                         const SizedBox(height: 20),
                         Text('Expense Added!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: textCol)),

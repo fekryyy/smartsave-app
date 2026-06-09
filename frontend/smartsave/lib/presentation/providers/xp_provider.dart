@@ -22,6 +22,22 @@ class XpProvider extends ChangeNotifier with ProviderErrorHandler {
   int get totalTransactions => _totalTransactions;
   bool get isLoading => _isLoading;
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _level = 1;
+    _levelName = 'Beginner Saver';
+    _xp = 0;
+    _currentThreshold = 0;
+    _nextThreshold = 0;
+    _progress = 0;
+    _totalTransactions = 0;
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   Future<void> load() async {
     _isLoading = true;
     notifyListeners();

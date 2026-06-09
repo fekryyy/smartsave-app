@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/currency_util.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/auth_provider.dart';
+import '../../app/app.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -12,7 +13,7 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen> with RouteAware {
   late DateTime _currentMonth;
   final _today = DateTime.now();
 
@@ -21,6 +22,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     _currentMonth = DateTime(_today.year, _today.month, 1);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
   }
 
   void _loadData() => context.read<CalendarProvider>().loadData(_currentMonth.year, _currentMonth.month);
@@ -83,7 +101,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     margin: const EdgeInsets.all(2),
                                     padding: const EdgeInsets.symmetric(vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: isToday ? AppColors.primary.withOpacity(0.15) : isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.04),
+                                      color: isToday ? AppColors.primary.withValues(alpha: 0.15) : isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.04),
                                       borderRadius: BorderRadius.circular(12),
                                       border: isToday ? Border.all(color: AppColors.primary, width: 1.5) : null,
                                     ),
@@ -110,7 +128,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(color: isDark ? Colors.white.withOpacity(0.04) : Colors.grey.withOpacity(0.04), borderRadius: BorderRadius.circular(14)),
+                          decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(14)),
                           child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
                             ...[AppColors.success, AppColors.danger, AppColors.primaryLight, AppColors.primary]
                               .asMap().entries.map((e) => Row(mainAxisSize: MainAxisSize.min, children: [
@@ -144,7 +162,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
           child: ListView(controller: scrollController, children: [
-            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: AppColors.grey500.withOpacity(0.3), borderRadius: BorderRadius.circular(2)))),
+            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: AppColors.grey500.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
             Text(DateFormat('EEEE, MMMM d, yyyy').format(date), style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 16),
             Row(children: [
@@ -162,9 +180,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 final isInc = t['type'] == 'income';
                 final c = isInc ? AppColors.success : AppColors.danger;
                 return Container(margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: isDark ? Colors.white.withOpacity(0.04) : Colors.grey.withOpacity(0.04), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.04), borderRadius: BorderRadius.circular(12)),
                   child: Row(children: [
-                    Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: c.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+                    Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: c.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
                       child: Icon(isInc ? Icons.arrow_upward : Icons.arrow_downward, color: c, size: 16)),
                     const SizedBox(width: 12),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -175,7 +193,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ]));
               }),
             ] else
-              Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.grey500.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
+              Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.grey500.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
                 child: Center(child: Text('No transactions for this day', style: TextStyle(color: AppColors.grey500)))),
             if (calendar.calendarData != null) ...[
               _buildRecurringDeadlines(context, calendar.calendarData!.upcomingRecurring, date, format, isDark, Icons.repeat, AppColors.primary, 'Recurring'),
@@ -189,7 +207,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _chip(BuildContext context, String label, String value, Color color, IconData icon) {
     return Expanded(child: Container(padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
       child: Column(children: [Icon(icon, color: color, size: 18), const SizedBox(height: 4),
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13)),
         Text(label, style: TextStyle(color: AppColors.grey500, fontSize: 10))])));
@@ -210,9 +228,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final sub = r['frequency'] ?? r['status'] ?? '';
         final amt = (r['amount'] as num?)?.toDouble() ?? 0;
         return Container(margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
           child: Row(children: [
-            Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+            Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
               child: Icon(icon, color: color, size: 16)),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

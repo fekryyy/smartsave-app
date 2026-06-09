@@ -27,6 +27,17 @@ class NetWorthProvider extends ChangeNotifier with ProviderErrorHandler {
     notifyListeners();
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _netWorth = null;
+    _history = [];
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   Future<bool> addEntry(Map<String, dynamic> data) async {
     try {
       _netWorth = await _repository.addEntry(data);

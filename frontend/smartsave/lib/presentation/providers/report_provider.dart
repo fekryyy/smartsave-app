@@ -57,6 +57,19 @@ class ReportProvider extends ChangeNotifier with ProviderErrorHandler {
     notifyListeners();
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _currentReport = null;
+    _comparison = [];
+    _trends = null;
+    _heatmap = null;
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   Future<void> loadHeatmap(int year) async {
     _isLoading = true;
     notifyListeners();

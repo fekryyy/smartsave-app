@@ -14,6 +14,7 @@ import '../widgets/fintech/insight_card.dart';
 import '../widgets/fintech/chart_card.dart';
 import '../../services/download_service.dart';
 import '../../app/routes.dart';
+import '../../app/app.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -22,22 +23,36 @@ class AnalyticsScreen extends StatefulWidget {
   State<AnalyticsScreen> createState() => _AnalyticsScreenState();
 }
 
-class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProviderStateMixin {
+class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProviderStateMixin, RouteAware {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AnalyticsProvider>().loadAllAnalytics();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<AnalyticsProvider>().loadAllAnalytics();
   }
 
   @override
@@ -89,7 +104,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
               indicator: BoxDecoration(
                 color: isDark ? AppColors.darkCard : Colors.white,
                 borderRadius: BorderRadius.circular(11),
-                boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
+                boxShadow: isDark ? [] : [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
@@ -183,7 +198,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         AnalyticsChartCard(
           title: 'Income vs Expenses',
           height: 220,
-          trailing: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+          trailing: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Container(width: 8, height: 8, decoration: const BoxDecoration(color: AppColors.success, shape: BoxShape.circle)),
               const SizedBox(width: 4),
@@ -231,7 +246,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                     const SizedBox(width: 8),
                     Expanded(flex: 2, child: Text(pm.paymentMethod, style: TextStyle(fontSize: 13, color: isDark ? Colors.white : const Color(0xFF0F172A)))),
                     Expanded(flex: 3, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct / 100, backgroundColor: color.withOpacity(0.1), valueColor: AlwaysStoppedAnimation<Color>(color), minHeight: 5)),
+                      ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct / 100, backgroundColor: color.withValues(alpha: 0.1), valueColor: AlwaysStoppedAnimation<Color>(color), minHeight: 5)),
                       Text('${pct.toStringAsFixed(0)}%', style: TextStyle(fontSize: 10, color: isDark ? AppColors.grey500 : AppColors.grey400)),
                     ])),
                     const SizedBox(width: 12),
@@ -256,7 +271,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         AnalyticsChartCard(
           title: 'Savings Growth',
           height: 220,
-          trailing: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+          trailing: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(Icons.trending_up, size: 14, color: AppColors.success),
               const SizedBox(width: 4),
@@ -277,7 +292,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                 border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
               ),
               child: Column(children: [
-                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                   child: const Icon(Icons.arrow_upward_rounded, color: AppColors.success, size: 18)),
                 const SizedBox(height: 8),
                 Text('Best Month', style: TextStyle(fontSize: 11, color: isDark ? AppColors.grey500 : AppColors.grey400)),
@@ -296,7 +311,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
                 border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
               ),
               child: Column(children: [
-                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.danger.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                   child: const Icon(Icons.arrow_downward_rounded, color: AppColors.danger, size: 18)),
                 const SizedBox(height: 8),
                 Text('Worst Month', style: TextStyle(fontSize: 11, color: isDark ? AppColors.grey500 : AppColors.grey400)),
@@ -310,7 +325,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
 
         // Smart Insights
         Row(children: [
-          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
             child: const Icon(Icons.auto_awesome_rounded, color: AppColors.warning, size: 18)),
           const SizedBox(width: 10),
           Text('Smart Insights', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF0F172A))),
@@ -385,7 +400,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         Text('Quick Reports', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 12),
         ListTile(
-          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.danger.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
             child: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.danger)),
           title: const Text('Generate Monthly Report'),
           subtitle: const Text('PDF with income, expenses & savings'),
@@ -394,7 +409,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         ),
         const Divider(),
         ListTile(
-          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
             child: const Icon(Icons.compare_arrows_rounded, color: AppColors.primary)),
           title: const Text('Month-over-Month Comparison'),
           subtitle: const Text('Compare income, expenses & categories'),
@@ -403,7 +418,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         ),
         const Divider(),
         ListTile(
-          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          leading: Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
             child: const Icon(Icons.grid_view_rounded, color: AppColors.success)),
           title: const Text('Spending Heatmap'),
           subtitle: const Text('GitHub-style yearly spending view'),
@@ -443,7 +458,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.grey100),
       ),
       child: Row(children: [
-        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, color: color, size: 18)),
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -525,7 +540,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> with SingleTickerProv
         alignment: BarChartAlignment.spaceAround,
         maxY: maxVal * 1.15,
         barTouchData: BarTouchData(enabled: false),
-        gridData: FlGridData(show: true, drawVerticalLine: false, horizontalInterval: step, getDrawingHorizontalLine: (v) => FlLine(color: Colors.white.withOpacity(0.04), strokeWidth: 1)),
+        gridData: FlGridData(show: true, drawVerticalLine: false, horizontalInterval: step, getDrawingHorizontalLine: (v) => FlLine(color: Colors.white.withValues(alpha: 0.04), strokeWidth: 1)),
         titlesData: FlTitlesData(
           show: true,
           bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 22, getTitlesWidget: (v, m) {

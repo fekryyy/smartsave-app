@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/utils/currency_util.dart';
 import '../../presentation/providers/auto_save_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../data/models/auto_save_model.dart';
 import '../widgets/common/empty_state.dart';
-import '../../app/routes.dart';
+import '../../app/app.dart';
 
 class AutoSaveScreen extends StatefulWidget {
   const AutoSaveScreen({super.key});
@@ -17,13 +16,32 @@ class AutoSaveScreen extends StatefulWidget {
   State<AutoSaveScreen> createState() => _AutoSaveScreenState();
 }
 
-class _AutoSaveScreenState extends State<AutoSaveScreen> {
+class _AutoSaveScreenState extends State<AutoSaveScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AutoSaveProvider>().loadAll();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<AutoSaveProvider>().loadAll();
   }
 
   @override
@@ -100,22 +118,22 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> {
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))],
+        boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))],
       ),
       child: Row(children: [
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Total Projected Savings', style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7))),
+            Text('Total Projected Savings', style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
             const SizedBox(height: 4),
             Text(format.format(totalProjected), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
           ]),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
           child: Column(children: [
             Text('$activeCount', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-            Text('Active', style: TextStyle(fontSize: 11, color: Colors.white.withOpacity(0.7))),
+            Text('Active', style: TextStyle(fontSize: 11, color: Colors.white.withValues(alpha: 0.7))),
           ]),
         ),
       ]),
@@ -143,7 +161,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> {
         Row(children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
             child: Icon(_getTypeIcon(rule.type), color: color, size: 22),
           ),
           const SizedBox(width: 14),
@@ -153,7 +171,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> {
                 Expanded(child: Text(rule.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600))),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                   child: Text(rule.type, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
                 ),
               ]),
@@ -182,7 +200,7 @@ class _AutoSaveScreenState extends State<AutoSaveScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: rule.isActive ? AppColors.success.withOpacity(0.1) : AppColors.grey200,
+              color: rule.isActive ? AppColors.success.withValues(alpha: 0.1) : AppColors.grey200,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

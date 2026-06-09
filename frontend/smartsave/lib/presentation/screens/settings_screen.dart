@@ -48,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: isDark ? AppColors.grey800 : AppColors.grey100)),
             child: ListTile(
-              leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.attach_money, color: AppColors.primary)),
+              leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.attach_money, color: AppColors.primary)),
               title: const Text('Default Currency'),
               subtitle: Text('${user?.currency ?? 'USD'} (${CurrencyUtil.getSymbol(user?.currency)})'),
               trailing: const Icon(Icons.chevron_right, color: AppColors.grey400),
@@ -80,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: isDark ? AppColors.grey800 : AppColors.grey100)),
             child: ListTile(
-              leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.danger.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.lock_outline, color: AppColors.danger)),
+              leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.danger.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.lock_outline, color: AppColors.danger)),
               title: const Text('Change Password'),
               trailing: const Icon(Icons.chevron_right, color: AppColors.grey400),
               onTap: () => _showChangePasswordDialog(context),

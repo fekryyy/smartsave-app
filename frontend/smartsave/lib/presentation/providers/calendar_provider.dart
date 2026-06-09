@@ -26,6 +26,16 @@ class CalendarProvider extends ChangeNotifier with ProviderErrorHandler {
     notifyListeners();
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _calendarData = null;
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   void selectDate(DateTime date) {
     _selectedDate = date;
     notifyListeners();

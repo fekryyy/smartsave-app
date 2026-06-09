@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -9,6 +8,7 @@ import '../../presentation/providers/budget_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../data/models/budget_model.dart';
 import '../widgets/common/empty_state.dart';
+import '../../app/app.dart';
 
 class BudgetScreen extends StatefulWidget {
   const BudgetScreen({super.key});
@@ -17,13 +17,32 @@ class BudgetScreen extends StatefulWidget {
   State<BudgetScreen> createState() => _BudgetScreenState();
 }
 
-class _BudgetScreenState extends State<BudgetScreen> {
+class _BudgetScreenState extends State<BudgetScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BudgetProvider>().loadOverview();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<BudgetProvider>().loadOverview();
   }
 
   @override
@@ -59,7 +78,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 5))]),
+                        decoration: BoxDecoration(gradient: AppColors.primaryGradient, borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 15, offset: const Offset(0, 5))]),
                         child: Column(children: [
                           Text('Monthly Budget', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
                           const SizedBox(height: 8),
@@ -67,7 +86,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
                           const SizedBox(height: 4),
                           Text('Spent: ${format.format(summary?['totalSpent'] ?? 0)}  |  Remaining: ${format.format(summary?['remaining'] ?? 0)}', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
                           const SizedBox(height: 16),
-                          ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: ((summary?['percentageUsed'] ?? 0) / 100).clamp(0.0, 1.0), backgroundColor: Colors.white.withOpacity(0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
+                          ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: ((summary?['percentageUsed'] ?? 0) / 100).clamp(0.0, 1.0), backgroundColor: Colors.white.withValues(alpha: 0.3), valueColor: const AlwaysStoppedAnimation(Colors.white), minHeight: 8)),
                           const SizedBox(height: 4),
                           Text('${summary?['percentageUsed'] ?? 0}% used', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70)),
                         ]),
@@ -111,7 +130,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.grey100)),
       child: Column(children: [
         Row(children: [
-          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: barColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getCategoryIcon(budget.category), color: barColor)),
+          Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: barColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(_getCategoryIcon(budget.category), color: barColor)),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(budget.category, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),

@@ -25,6 +25,7 @@ class GoalRepositoryImpl with CacheableRepository implements GoalRepository {
   Future<GoalModel> createGoal(Map<String, dynamic> data) async {
     final response = await _apiClient.post(ApiConstants.goals, data: data).dataOrThrow;
     await invalidateCache('goals:');
+    await invalidateCache('analytics:');
     return GoalModel.fromJson(response['data']);
   }
 
@@ -32,6 +33,7 @@ class GoalRepositoryImpl with CacheableRepository implements GoalRepository {
   Future<GoalModel> updateGoal(String id, Map<String, dynamic> data) async {
     final response = await _apiClient.put('${ApiConstants.goals}/$id', data: data).dataOrThrow;
     await invalidateCache('goals:');
+    await invalidateCache('analytics:');
     return GoalModel.fromJson(response['data']);
   }
 
@@ -39,6 +41,7 @@ class GoalRepositoryImpl with CacheableRepository implements GoalRepository {
   Future<void> deleteGoal(String id) async {
     await _apiClient.delete('${ApiConstants.goals}/$id').dataOrThrow;
     await invalidateCache('goals:');
+    await invalidateCache('analytics:');
   }
 
   @override
@@ -47,6 +50,7 @@ class GoalRepositoryImpl with CacheableRepository implements GoalRepository {
       'amount': amount,
     }).dataOrThrow;
     await invalidateCache('goals:');
+    await invalidateCache('analytics:');
     return GoalModel.fromJson(response['data']);
   }
 

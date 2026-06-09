@@ -75,6 +75,17 @@ class NotificationProvider extends ChangeNotifier {
     } catch (_) {}
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _notifications = [];
+    _unreadCount = 0;
+    _isLoading = false;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

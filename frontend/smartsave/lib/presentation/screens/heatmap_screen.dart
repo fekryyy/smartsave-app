@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/constants/app_constants.dart';
-import '../../core/utils/currency_util.dart';
 import '../providers/report_provider.dart';
 
 class HeatmapScreen extends StatefulWidget {
@@ -181,15 +179,15 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
     Color cellColor;
     if (amount == 0) {
-      cellColor = isDark ? AppColors.darkCardAlt.withOpacity(0.5) : AppColors.grey100;
+      cellColor = isDark ? AppColors.darkCardAlt.withValues(alpha: 0.5) : AppColors.grey100;
     } else if (intensity <= 0.25) {
-      cellColor = AppColors.success.withOpacity(0.3);
+      cellColor = AppColors.success.withValues(alpha: 0.3);
     } else if (intensity <= 0.50) {
-      cellColor = AppColors.success.withOpacity(0.5);
+      cellColor = AppColors.success.withValues(alpha: 0.5);
     } else if (intensity <= 0.75) {
-      cellColor = AppColors.success.withOpacity(0.7);
+      cellColor = AppColors.success.withValues(alpha: 0.7);
     } else {
-      cellColor = AppColors.success.withOpacity(0.95);
+      cellColor = AppColors.success.withValues(alpha: 0.95);
     }
 
     return GestureDetector(
@@ -218,11 +216,11 @@ class _HeatmapScreenState extends State<HeatmapScreen> {
 
   Widget _buildLegend(bool isDark) {
     final levels = [
-      ('No Spend', isDark ? AppColors.darkCardAlt.withOpacity(0.5) : AppColors.grey100),
-      ('Low', AppColors.success.withOpacity(0.3)),
-      ('Medium', AppColors.success.withOpacity(0.5)),
-      ('High', AppColors.success.withOpacity(0.7)),
-      ('Very High', AppColors.success.withOpacity(0.95)),
+      ('No Spend', isDark ? AppColors.darkCardAlt.withValues(alpha: 0.5) : AppColors.grey100),
+      ('Low', AppColors.success.withValues(alpha: 0.3)),
+      ('Medium', AppColors.success.withValues(alpha: 0.5)),
+      ('High', AppColors.success.withValues(alpha: 0.7)),
+      ('Very High', AppColors.success.withValues(alpha: 0.95)),
     ];
 
     return Container(

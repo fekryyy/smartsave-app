@@ -117,7 +117,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Container(
           padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(color: data.color.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: data.color.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: Icon(data.icon, size: 72, color: data.color),
         ),
         const SizedBox(height: 40),

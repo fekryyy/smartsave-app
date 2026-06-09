@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/constants/app_constants.dart';
-import '../../core/utils/currency_util.dart';
 import '../providers/xp_provider.dart';
 
 class LevelScreen extends StatefulWidget {
@@ -63,7 +61,7 @@ class _LevelScreenState extends State<LevelScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
+            color: AppColors.primary.withValues(alpha: 0.3),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -98,7 +96,7 @@ class _LevelScreenState extends State<LevelScreen> {
               builder: (context, value, child) {
                 return LinearProgressIndicator(
                   value: value,
-                  backgroundColor: Colors.white.withOpacity(0.15),
+                  backgroundColor: Colors.white.withValues(alpha: 0.15),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                   minHeight: 10,
                 );
@@ -140,7 +138,7 @@ class _LevelScreenState extends State<LevelScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -205,7 +203,7 @@ class _LevelScreenState extends State<LevelScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -224,7 +222,7 @@ class _LevelScreenState extends State<LevelScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.15),
+              color: AppColors.success.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(

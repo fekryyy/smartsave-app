@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:meta/meta.dart';
 import '../../core/di/service_locator.dart';
 import '../../core/errors/failures.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/datasources/remote/challenge_remote_datasource.dart';
+import '../../data/datasources/local/local_database.dart';
 import '../../services/google_auth_service.dart';
+import '../../services/cache_manager.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -39,6 +42,12 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _googleSignInSupported = true;
 
+  /// Monotonically increasing session counter.
+  /// Incremented on every auth change (login, register, googleLogin, logout).
+  /// Data providers watch this to detect when they need to clear stale data
+  /// from a previous user's session.
+  int _sessionId = 0;
+
   /// Constructor accepts an optional [GoogleAuthService].
   /// If not provided, it resolves from the service locator.
   AuthProvider({GoogleAuthService? googleAuthService})
@@ -49,6 +58,11 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
+
+  /// Monotonically increasing session counter.
+  /// Providers compare this to their cached value to detect auth changes
+  /// and clear stale data from a previous user's session.
+  int get sessionId => _sessionId;
 
   /// Whether Google Sign-In is available on the current device.
   /// Returns false when Firebase isn't configured or Google Play Services
@@ -75,8 +89,9 @@ class AuthProvider extends ChangeNotifier {
         try {
           _user = await _authRepository.getProfile();
           _status = AuthStatus.authenticated;
+          _sessionId++; // Fresh session — providers must reload
           notifyListeners();
-          _recordLoginSafe();
+          _recordLoginSafe().catchError((_) {});
           return; // JWT session restored — done
         } catch (_) {
           // JWT expired or invalid — fall through to Phase 2
@@ -88,8 +103,9 @@ class AuthProvider extends ChangeNotifier {
       if (_googleAuthService.isAvailable) {
         final restored = await _tryRestoreFirebaseSession();
         if (restored) {
+          _sessionId++; // Fresh session — providers must reload
           notifyListeners();
-          _recordLoginSafe();
+          _recordLoginSafe().catchError((_) {});
           return;
         }
       }
@@ -101,7 +117,7 @@ class AuthProvider extends ChangeNotifier {
     }
     notifyListeners();
     // Fire-and-forget: gamification should never break auth flow
-    _recordLoginSafe();
+    _recordLoginSafe().catchError((_) {});
   }
 
   /// Tries to restore a Firebase Auth session and exchange it for a JWT.
@@ -151,9 +167,10 @@ class AuthProvider extends ChangeNotifier {
       _user = await _authRepository.login(email, password);
       _status = AuthStatus.authenticated;
       _isLoading = false;
+      _sessionId++; // Signal all providers to clear stale data
       notifyListeners();
       // Fire-and-forget: gamification should never break auth flow
-      _recordLoginSafe();
+      _recordLoginSafe().catchError((_) {});
       return true;
     } on Failure catch (e) {
       _errorMessage = e.message;
@@ -211,9 +228,10 @@ class AuthProvider extends ChangeNotifier {
       _user = await _authRepository.googleLogin(idToken);
       _status = AuthStatus.authenticated;
       _isLoading = false;
+      _sessionId++; // Signal all providers to clear stale data
       notifyListeners();
       // Fire-and-forget: gamification should never break auth flow
-      _recordLoginSafe();
+      _recordLoginSafe().catchError((_) {});
       return true;
     } on Failure catch (e) {
       _errorMessage = e.message;
@@ -240,9 +258,10 @@ class AuthProvider extends ChangeNotifier {
       _user = await _authRepository.register(name, email, password);
       _status = AuthStatus.authenticated;
       _isLoading = false;
+      _sessionId++; // Signal all providers to clear stale data
       notifyListeners();
       // Fire-and-forget: gamification should never break auth flow
-      _recordLoginSafe();
+      _recordLoginSafe().catchError((_) {});
       return true;
     } on Failure catch (e) {
       _errorMessage = e.message;
@@ -278,9 +297,31 @@ class AuthProvider extends ChangeNotifier {
     // Sign out of Google/Firebase if available (fire-and-forget)
     _signOutGoogle();
 
+    // Clear all caches and local DB
+    await _clearCaches();
+
     _user = null;
     _status = AuthStatus.unauthenticated;
+    _sessionId++; // Signal all providers to clear stale data
     notifyListeners();
+  }
+
+  /// Clears all local caches for the current session.
+  /// Never throws. Clears:
+  ///   - CacheManager entries (shared HTTP response cache)
+  ///   - Local DB user data tables (transactions, goals, budgets,
+  ///     pending_operations) to prevent data leakage between users
+  Future<void> _clearCaches() async {
+    try {
+      await CacheManager().invalidateAll();
+    } catch (_) {
+      // Cache invalidation is non-critical
+    }
+    try {
+      await LocalDatabase.instance.clearAllUserData();
+    } catch (_) {
+      // Local DB clear is non-critical
+    }
   }
 
   /// Signs out of Firebase and Google (fire-and-forget).
@@ -350,8 +391,14 @@ class AuthProvider extends ChangeNotifier {
     return 'Request failed. Please try again.';
   }
 
+  /// When true, disables gamification recording (intended for unit tests
+  /// where platform channels and HTTP are unavailable).
+  @visibleForTesting
+  static bool disableGamification = false;
+
   /// Fire-and-forget gamification tracking that never throws.
   Future<void> _recordLoginSafe() async {
+    if (disableGamification) return;
     try {
       await _challengeRemote.recordLogin();
     } catch (_) {

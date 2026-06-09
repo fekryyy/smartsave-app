@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../providers/financial_advisor_provider.dart';
 import '../../data/models/financial_advisor_models.dart';
+import '../../app/app.dart';
 
 class FinancialAdvisorScreen extends StatefulWidget {
   const FinancialAdvisorScreen({super.key});
@@ -13,7 +14,7 @@ class FinancialAdvisorScreen extends StatefulWidget {
   State<FinancialAdvisorScreen> createState() => _FinancialAdvisorScreenState();
 }
 
-class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
+class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with RouteAware {
   final TextEditingController _chatController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _chatFocus = FocusNode();
@@ -32,17 +33,31 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FinancialAdvisorProvider>().loadAll();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _chatController.dispose();
     _scrollController.dispose();
     _chatFocus.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<FinancialAdvisorProvider>().loadAll();
   }
 
   void _scrollToBottom() {

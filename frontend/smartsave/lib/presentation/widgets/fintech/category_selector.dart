@@ -34,10 +34,10 @@ class CategorySelector extends StatelessWidget {
             curve: Curves.easeOut,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected ? col.withOpacity(0.12) : (isDark ? AppColors.darkCard : Colors.white),
+              color: isSelected ? col.withValues(alpha: 0.12) : (isDark ? AppColors.darkCard : Colors.white),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: isSelected ? col.withOpacity(0.4) : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
+                color: isSelected ? col.withValues(alpha: 0.4) : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
                 width: isSelected ? 1.5 : 1,
               ),
             ),

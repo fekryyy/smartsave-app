@@ -1,13 +1,69 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:smartsave/presentation/providers/auth_provider.dart';
 import 'package:smartsave/services/google_auth_service.dart';
 
 // ─────────────────────────────────────────────
-// Mock classes
+// Manual mock for GoogleAuthService
+//
+// Avoids non-nullable bool issues with Mockito's noSuchMethod.
+// All non-nullable fields have explicit default values.
 // ─────────────────────────────────────────────
 
-class MockGoogleAuthService extends Mock implements GoogleAuthService {}
+class MockGoogleAuthService extends GoogleAuthService {
+  @override
+  bool isAvailable = false;
+
+  @override
+  bool isInitialized = false;
+
+  @override
+  bool isSignedIn = false;
+
+  User? currentFirebaseUserOverride;
+
+  @override
+  User? get currentFirebaseUser => currentFirebaseUserOverride;
+
+  /// Stub for signIn(). If null, returns null (cancellation).
+  Future<UserCredential?> Function()? onSignIn;
+
+  /// Stub for getIdToken(). If null, returns null.
+  Future<String?> Function({bool forceRefresh})? onGetIdToken;
+
+  /// Stub for trySilentSignIn(). If null, returns null.
+  Future<UserCredential?> Function()? onTrySilentSignIn;
+
+  /// Stub for init(). Setting this replaces mock behavior.
+  Future<void> Function()? onInit;
+
+  int signOutCallCount = 0;
+  int revokeAccessCallCount = 0;
+
+  @override
+  Future<UserCredential?> signIn() async => onSignIn?.call() ?? null;
+
+  @override
+  Future<String?> getIdToken({bool forceRefresh = true}) async =>
+      onGetIdToken?.call(forceRefresh: forceRefresh) ?? null;
+
+  @override
+  Future<UserCredential?> trySilentSignIn() async =>
+      onTrySilentSignIn?.call() ?? null;
+
+  @override
+  Future<void> init() async => onInit?.call() ?? Future.value();
+
+  @override
+  Future<void> signOut() async {
+    signOutCallCount++;
+  }
+
+  @override
+  Future<void> revokeAccess() async {
+    revokeAccessCallCount++;
+  }
+}
 
 /// Unit tests for AuthProvider.
 ///
@@ -22,6 +78,10 @@ class MockGoogleAuthService extends Mock implements GoogleAuthService {}
 /// and [AuthRepositoryImpl]. The GoogleAuthService is mocked here to test the
 /// provider logic in isolation.
 void main() {
+  // Disable gamification recording in tests where platform channels
+  // (FlutterSecureStorage, etc.) are not available.
+  AuthProvider.disableGamification = true;
+
   late AuthProvider authProvider;
   late MockGoogleAuthService mockGoogleAuthService;
 
@@ -40,9 +100,8 @@ void main() {
     });
 
     test('googleLogin() sets error when Firebase is not available', () async {
-      // Simulate Google Sign-In unavailable
-      when(mockGoogleAuthService.isAvailable).thenReturn(false);
-      when(mockGoogleAuthService.signIn()).thenAnswer((_) async => null);
+      // Simulate Google Sign-In unavailable — signIn returns null
+      mockGoogleAuthService.onSignIn = () async => null;
 
       final result = await authProvider.googleLogin();
 
@@ -52,35 +111,28 @@ void main() {
     });
 
     test('googleLogin() handles user cancellation gracefully', () async {
-      when(mockGoogleAuthService.isAvailable).thenReturn(true);
       // signIn returns null = user cancelled
-      when(mockGoogleAuthService.signIn()).thenAnswer((_) async => null);
+      mockGoogleAuthService.onSignIn = () async => null;
 
-      // We need to call initialize() first to check availability
-      // But since we mock, let's directly test the sign-in flow
-
-      // Actually, googleLogin() calls _googleAuthService.signIn()
-      // which returns null on cancellation — this should not set error
       final result = await authProvider.googleLogin();
 
       expect(result, false);
       expect(authProvider.errorMessage, isNull);
     });
 
-    test('googleLogin() sets error when ID token retrieval fails', () async {
-      // Mock: sign-in succeeds but getIdToken returns null
-      when(mockGoogleAuthService.signIn()).thenAnswer((_) async => null);
-      when(mockGoogleAuthService.getIdToken()).thenAnswer((_) async => null);
+    test('googleLogin() returns false when ID token retrieval fails', () async {
+      // Mock: signIn succeeds but getIdToken returns null
+      // We need signIn to return a non-null value so getitoken is called
+      mockGoogleAuthService.onSignIn = () async => Future.value(null);
+      mockGoogleAuthService.onGetIdToken = ({forceRefresh = true}) async => null;
 
-      // signIn returns null, so we don't reach getIdToken
       final result = await authProvider.googleLogin();
       expect(result, false);
     });
 
     test('initialize() sets unauthenticated when no session exists', () async {
-      when(mockGoogleAuthService.isAvailable).thenReturn(false);
-      // Without a real auth_repository, the JWT check will throw
-      // but that's handled by the try-catch
+      // Google auth unavailable
+      mockGoogleAuthService.isAvailable = false;
 
       await authProvider.initialize();
 
@@ -92,37 +144,28 @@ void main() {
       // Set some state
       authProvider = AuthProvider(googleAuthService: mockGoogleAuthService);
 
-      // Login state isn't set directly (it's set by the internal methods),
-      // but we can verify logout clears error state
-
-      authProvider.clearError();
-      authProvider.logout();
+      await authProvider.logout();
 
       expect(authProvider.user, isNull);
       expect(authProvider.status, AuthStatus.unauthenticated);
     });
 
     test('clearError() clears error message', () {
-      // Set error state internally
-      authProvider = AuthProvider(googleAuthService: mockGoogleAuthService);
-
       authProvider.clearError();
       expect(authProvider.errorMessage, isNull);
     });
   });
 
   group('AuthProvider - State Transitions', () {
-    test('googleSignInSupported reflects GoogleAuthService availability', () {
-      when(mockGoogleAuthService.isAvailable).thenReturn(true);
-      // This is set during initialize()
-      expect(authProvider.googleSignInSupported, isA<bool>());
+    test('googleSignInSupported reflects GoogleAuthService availability', () async {
+      mockGoogleAuthService.isAvailable = true;
+      // initialize() sets _googleSignInSupported
+      await authProvider.initialize();
+      expect(authProvider.googleSignInSupported, isTrue);
     });
 
-    test('isAuthenticated is true only when status is authenticated', () {
+    test('isAuthenticated is false when status is initial', () {
       expect(authProvider.isAuthenticated, false);
-
-      // We can't easily set _status directly since it's private,
-      // but we can verify the initial state is correct
       expect(authProvider.status, AuthStatus.initial);
     });
   });

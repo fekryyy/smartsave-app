@@ -51,6 +51,16 @@ class RecurringProvider extends ChangeNotifier {
     }
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _recurring = [];
+    _isLoading = false;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

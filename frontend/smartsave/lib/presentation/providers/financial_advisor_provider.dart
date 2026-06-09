@@ -2,10 +2,20 @@ import 'package:flutter/material.dart';
 import '../../data/repositories/financial_advisor_repository_impl.dart';
 import '../../data/models/financial_advisor_models.dart';
 
+/// State provider for the Financial Advisor feature.
+///
+/// ## Architecture
+/// - Score loads first (fast, deterministic, no AI calls)
+/// - AI sections (insights, plans, predictions) load in parallel incrementally
+/// - Chat requests are serialised with a queue to preserve response ordering
+/// - Sequence-number guarding prevents stale responses from overlapping
+///   [loadAll] calls and cross-user data leakage after [resetState]
 class FinancialAdvisorProvider extends ChangeNotifier {
-  final FinancialAdvisorRepositoryImpl _repository = FinancialAdvisorRepositoryImpl();
+  final FinancialAdvisorRepositoryImpl _repository =
+      FinancialAdvisorRepositoryImpl();
 
-  // State
+  // ── Core state ──
+
   FullFinancialAnalysis? _analysis;
   FinancialScore? _score;
   List<FinancialInsight> _insights = [];
@@ -13,10 +23,31 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   List<FinancialPrediction> _predictions = [];
   List<ConversationResponse> _chatHistory = [];
   bool _isLoading = false;
-  bool _isChatLoading = false;
   String? _errorMessage;
 
-  // Getters
+  // ── Re-entrancy guards ──
+
+  /// Incremented on each [loadAll] call. Background loaders check this
+  /// before mutating state; stale responses are discarded.
+  int _loadSequence = 0;
+
+  /// Whether a chat request is currently in-flight.
+  bool _isChatPending = false;
+
+  /// Queued chat questions submitted while another request was in-flight.
+  final List<String> _chatQueue = [];
+
+  /// Chat loading count — uses a counter so the spinner stays visible
+  /// when the next queued question fires before the current one settles.
+  int _chatLoadingCount = 0;
+
+  /// Per-section error flags (set on network failure, cleared on next load).
+  bool _insightError = false;
+  bool _actionPlanError = false;
+  bool _predictionError = false;
+
+  // ── Getters ──
+
   FullFinancialAnalysis? get analysis => _analysis;
   FinancialScore? get score => _score;
   List<FinancialInsight> get insights => _insights;
@@ -24,91 +55,158 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   List<FinancialPrediction> get predictions => _predictions;
   List<ConversationResponse> get chatHistory => _chatHistory;
   bool get isLoading => _isLoading;
-  bool get isChatLoading => _isChatLoading;
   String? get errorMessage => _errorMessage;
+  bool get isChatLoading => _chatLoadingCount > 0;
 
-  // Load all data — primary path: single /analysis call (it returns everything)
+  bool get insightError => _insightError;
+  bool get actionPlanError => _actionPlanError;
+  bool get predictionError => _predictionError;
+
+  // ── Data loading ──
+
+  /// Loads all Financial Advisor data incrementally:
+  ///
+  /// 1. Score (fast — deterministic backend, no AI) — displayed immediately
+  /// 2. AI sections (insights, plans, predictions) — loaded in parallel,
+  ///    each appearing as its data arrives
+  ///
+  /// If the user switches users or a second [loadAll] is called while the
+  /// first is still in-flight, stale responses are silently discarded via
+  /// the [_loadSequence] guard.
   Future<void> loadAll() async {
-    _isLoading = true;
+    final sequence = ++_loadSequence;
+
     _errorMessage = null;
+    _isLoading = true;
     notifyListeners();
 
     try {
-      _analysis = await _repository.getFullAnalysis();
-      _score = _analysis!.score;
-      _insights = _analysis!.insights;
-      _actionPlans = _analysis!.actionPlans;
-      _predictions = _analysis!.predictions;
-    } catch (e) {
-      // Primary /analysis call failed — try individual endpoints
-      await _loadIndividually();
-    }
+      // Step 1: Load score first (fast — no AI calls)
+      _score = await _repository.getScore();
+      if (sequence != _loadSequence) return; // Stale — discard
+      _analysis = FullFinancialAnalysis(
+        score: _score!,
+        health: FinancialHealth(status: 'needs_attention'),
+      );
+      _isLoading = false;
+      notifyListeners();
 
-    _isLoading = false;
-    notifyListeners();
+      // Step 2: Fire AI-powered sections in parallel (each guarded by
+      // the sequence to prevent stale writes from overlapping calls).
+      _loadInsights(sequence);
+      _loadActionPlans(sequence);
+      _loadPredictions(sequence);
+    } catch (e) {
+      if (sequence != _loadSequence) return; // Stale — discard
+      _isLoading = false;
+      if (_analysis == null) {
+        _errorMessage = 'Unable to load financial data';
+      }
+      notifyListeners();
+    }
   }
 
-  /// Fallback: load each data piece from its own endpoint
-  Future<void> _loadIndividually() async {
-    bool anyLoaded = false;
-
-    try {
-      _score = await _repository.getScore();
-      anyLoaded = true;
-    } catch (_) {}
+  /// Loads insights in the background.
+  ///
+  /// Clears the list before fetching and sets [_insightError] on failure.
+  /// If [sequence] is stale (a newer [loadAll] was started), the result is
+  /// silently discarded.
+  Future<void> _loadInsights(int sequence) async {
+    _insights = [];
+    _insightError = false;
+    notifyListeners();
     try {
       _insights = await _repository.getInsights();
-    } catch (_) {}
-    try {
-      _actionPlans = await _repository.getActionPlans();
-    } catch (_) {}
-    try {
-      _predictions = await _repository.getPredictions();
-    } catch (_) {}
-
-    if (anyLoaded) {
-      // Construct a partial analysis so the screen can render
-      _analysis = FullFinancialAnalysis(
-        score: _score ?? FinancialScore(score: 0, level: 'N/A'),
-        health: FinancialHealth(status: 'needs_attention'),
-        insights: _insights,
-        actionPlans: _actionPlans,
-        predictions: _predictions,
-      );
-      _errorMessage = null;
-    } else {
-      _errorMessage = _errorMessage ?? 'Unable to load financial data';
+      if (sequence != _loadSequence) return; // Stale — discard
+      notifyListeners();
+    } catch (_) {
+      _insightError = true;
+      if (sequence == _loadSequence) notifyListeners();
     }
   }
 
-  // Reload specific sections
+  /// Loads action plans in the background.
+  ///
+  /// Clears the list before fetching and sets [_actionPlanError] on failure.
+  /// Stale responses are discarded via the sequence guard.
+  Future<void> _loadActionPlans(int sequence) async {
+    _actionPlans = [];
+    _actionPlanError = false;
+    notifyListeners();
+    try {
+      _actionPlans = await _repository.getActionPlans();
+      if (sequence != _loadSequence) return; // Stale — discard
+      notifyListeners();
+    } catch (_) {
+      _actionPlanError = true;
+      if (sequence == _loadSequence) notifyListeners();
+    }
+  }
+
+  /// Loads predictions in the background.
+  ///
+  /// Clears the list before fetching and sets [_predictionError] on failure.
+  /// Stale responses are discarded via the sequence guard.
+  Future<void> _loadPredictions(int sequence) async {
+    _predictions = [];
+    _predictionError = false;
+    notifyListeners();
+    try {
+      _predictions = await _repository.getPredictions();
+      if (sequence != _loadSequence) return; // Stale — discard
+      notifyListeners();
+    } catch (_) {
+      _predictionError = true;
+      if (sequence == _loadSequence) notifyListeners();
+    }
+  }
+
+  // ── Refresh (best-effort) ──
+
   Future<void> refreshScore() async {
     try {
       _score = await _repository.getScore();
       notifyListeners();
-    } catch (_) {}
+    } catch (_) {
+      // Score refresh is best-effort
+    }
   }
 
   Future<void> refreshInsights() async {
     try {
       _insights = await _repository.getInsights();
       notifyListeners();
-    } catch (_) {}
+    } catch (_) {
+      // Insight refresh is best-effort
+    }
   }
 
-  // Chat
+  // ── Chat (serialised) ──
+
+  /// Sends a question to the AI Financial Advisor and appends the response
+  /// to the chat history.
+  ///
+  /// ## Ordering guarantee
+  /// If a chat request is already in-flight, the question is queued and
+  /// processed in FIFO order after the current request completes. This
+  /// prevents out-of-order responses in the chat history.
   Future<void> askQuestion(String question) async {
     if (question.trim().isEmpty) return;
 
-    _isChatLoading = true;
-    notifyListeners();
+    if (_isChatPending) {
+      _chatQueue.add(question);
+      return;
+    }
 
-    // Add user message placeholder
-    final userResponse = ConversationResponse(
-      answer: question,
-      type: 'user',
-    );
-    _chatHistory.add(userResponse);
+    _isChatPending = true;
+    _chatLoadingCount++;
+    notifyListeners();
+    await _processChat(question);
+  }
+
+  /// Processes a single chat question and handles the queue recursively.
+  Future<void> _processChat(String question) async {
+    _chatHistory.add(ConversationResponse(answer: question, type: 'user'));
     notifyListeners();
 
     try {
@@ -117,6 +215,7 @@ class FinancialAdvisorProvider extends ChangeNotifier {
 
       // Refresh data after question if it might have changed
       if (result.type == 'advice' || result.type == 'analysis') {
+        // Fire-and-forget: these are best-effort refreshes
         refreshScore();
         refreshInsights();
       }
@@ -127,7 +226,45 @@ class FinancialAdvisorProvider extends ChangeNotifier {
       ));
     }
 
-    _isChatLoading = false;
+    _chatLoadingCount--;
+
+    if (_chatQueue.isNotEmpty) {
+      final next = _chatQueue.removeAt(0);
+      _chatLoadingCount++;
+      notifyListeners();
+      await _processChat(next);
+    } else {
+      _isChatPending = false;
+      notifyListeners();
+    }
+  }
+
+  // ── Lifecycle ──
+
+  /// Resets all state to initial values.
+  ///
+  /// Called when the authenticated user changes. Increments
+  /// [_loadSequence] so any in-flight background loaders from the previous
+  /// session discard their results, preventing cross-user data leakage.
+  void resetState() {
+    // Increment sequence to discard in-flight background loads
+    _loadSequence++;
+    // Clear pending chat queue so stale questions don't fire
+    _chatQueue.clear();
+    _isChatPending = false;
+    _chatLoadingCount = 0;
+
+    _analysis = null;
+    _score = null;
+    _insights = [];
+    _actionPlans = [];
+    _predictions = [];
+    _chatHistory = [];
+    _isLoading = false;
+    _errorMessage = null;
+    _insightError = false;
+    _actionPlanError = false;
+    _predictionError = false;
     notifyListeners();
   }
 

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../presentation/providers/notification_provider.dart';
-import '../../data/models/notification_model.dart';
+import '../../app/app.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -12,13 +12,32 @@ class NotificationsScreen extends StatefulWidget {
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen> {
+class _NotificationsScreenState extends State<NotificationsScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationProvider>().loadNotifications();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<NotificationProvider>().loadNotifications();
   }
 
   @override
@@ -77,14 +96,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             margin: const EdgeInsets.only(bottom: 8),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: notif.isRead ? Theme.of(context).cardColor : (isDark ? AppColors.darkCard : AppColors.primary.withOpacity(0.05)),
+                              color: notif.isRead ? Theme.of(context).cardColor : (isDark ? AppColors.darkCard : AppColors.primary.withValues(alpha: 0.05)),
                               borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: notif.isRead ? (isDark ? AppColors.grey800 : AppColors.grey100) : AppColors.primary.withOpacity(0.2)),
+                              border: Border.all(color: notif.isRead ? (isDark ? AppColors.grey800 : AppColors.grey100) : AppColors.primary.withValues(alpha: 0.2)),
                             ),
                             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                               Container(
                                 padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(color: _getColor(notif.type).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                                decoration: BoxDecoration(color: _getColor(notif.type).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                                 child: Icon(_getIcon(notif.type), color: _getColor(notif.type), size: 20),
                               ),
                               const SizedBox(width: 12),

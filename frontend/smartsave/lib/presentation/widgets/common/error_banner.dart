@@ -11,15 +11,15 @@ class OfflineBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: AppColors.warning.withOpacity(0.15),
+      color: AppColors.warning.withValues(alpha: 0.15),
       child: Row(
         children: [
-          Icon(Icons.cloud_off_rounded, size: 16, color: AppColors.warning),
+          const Icon(Icons.cloud_off_rounded, size: 16, color: AppColors.warning),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               'You\'re offline. Changes will sync when connected.',
-              style: TextStyle(fontSize: 12, color: AppColors.warning.withOpacity(0.9)),
+              style: TextStyle(fontSize: 12, color: AppColors.warning.withValues(alpha: 0.9)),
             ),
           ),
         ],
@@ -47,9 +47,9 @@ class ErrorBanner extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.danger.withOpacity(0.08),
+        color: AppColors.danger.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.danger.withOpacity(0.15)),
+        border: Border.all(color: AppColors.danger.withValues(alpha: 0.15)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +77,7 @@ class ErrorBanner extends StatelessWidget {
                       label: const Text('Retry', style: TextStyle(fontSize: 12)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.danger,
-                        side: BorderSide(color: AppColors.danger.withOpacity(0.3)),
+                        side: BorderSide(color: AppColors.danger.withValues(alpha: 0.3)),
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                       ),
                     ),
@@ -88,7 +88,7 @@ class ErrorBanner extends StatelessWidget {
           ),
           InkWell(
             onTap: onRetry, // Same as retry — dismiss + retry
-            child: Icon(Icons.close, size: 16, color: AppColors.danger.withOpacity(0.5)),
+            child: Icon(Icons.close, size: 16, color: AppColors.danger.withValues(alpha: 0.5)),
           ),
         ],
       ),

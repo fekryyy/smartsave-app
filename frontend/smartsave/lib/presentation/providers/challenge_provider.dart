@@ -53,6 +53,18 @@ class ChallengeProvider extends ChangeNotifier with ProviderErrorHandler {
     }
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _challenges = [];
+    _achievements = [];
+    _streak = null;
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   /// Fire-and-forget: never surface errors for background operations.
   Future<void> recordLogin() async {
     try { await _repository.recordLogin(); } catch (_) {}

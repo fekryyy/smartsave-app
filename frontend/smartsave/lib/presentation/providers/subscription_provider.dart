@@ -17,6 +17,19 @@ class SubscriptionProvider extends ChangeNotifier with ProviderErrorHandler {
   List<Map<String, dynamic>> get upcoming => _upcoming;
   bool get isLoading => _isLoading;
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _subscriptions = [];
+    _monthlyTotal = 0;
+    _yearlyTotal = 0;
+    _upcoming = [];
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   Future<void> loadAll() async {
     _isLoading = true;
     notifyListeners();

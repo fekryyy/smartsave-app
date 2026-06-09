@@ -6,6 +6,7 @@ import '../../core/utils/currency_util.dart';
 import '../providers/subscription_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../data/models/subscription_model.dart';
+import '../../app/app.dart';
 
 class SubscriptionsScreen extends StatefulWidget {
   const SubscriptionsScreen({super.key});
@@ -14,13 +15,32 @@ class SubscriptionsScreen extends StatefulWidget {
   State<SubscriptionsScreen> createState() => _SubscriptionsScreenState();
 }
 
-class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
+class _SubscriptionsScreenState extends State<SubscriptionsScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SubscriptionProvider>().loadAll();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<SubscriptionProvider>().loadAll();
   }
 
   @override
@@ -91,12 +111,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [color.withOpacity(0.2), color.withOpacity(0.05)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        gradient: LinearGradient(colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.05)], begin: Alignment.topLeft, end: Alignment.bottomRight),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.15)),
+        border: Border.all(color: color.withValues(alpha: 0.15)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(10)),
+        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
           child: Icon(icon, color: color, size: 20)),
         const SizedBox(height: 12),
         Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: isDark ? Colors.white : null)),
@@ -135,7 +155,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : AppColors.grey100),
+          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : AppColors.grey100),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +163,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
             Row(children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
                 child: Icon(Icons.subscriptions_outlined, color: color, size: 22),
               ),
               const SizedBox(width: 12),
@@ -154,7 +174,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                   if (sub.category != 'Other')
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                      decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(6)),
                       child: Text(sub.category, style: const TextStyle(color: AppColors.primary, fontSize: 9, fontWeight: FontWeight.w600)),
                     ),
                 ]),
@@ -167,7 +187,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                   width: 42, height: 24,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    color: sub.isActive ? AppColors.success : AppColors.grey500.withOpacity(0.3),
+                    color: sub.isActive ? AppColors.success : AppColors.grey500.withValues(alpha: 0.3),
                   ),
                   child: AnimatedAlign(
                     duration: const Duration(milliseconds: 200),
@@ -231,7 +251,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                 Center(child: Container(
                   width: 40, height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(color: AppColors.grey500.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+                  decoration: BoxDecoration(color: AppColors.grey500.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)),
                 )),
                 Text(existing == null ? 'Add Subscription' : 'Edit Subscription',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),

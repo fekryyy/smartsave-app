@@ -45,7 +45,7 @@ class FintechAmountCard extends StatelessWidget {
               style: TextStyle(fontSize: 44, fontWeight: FontWeight.w700, color: textCol, letterSpacing: -1),
               decoration: InputDecoration(
                 hintText: '0.00',
-                hintStyle: TextStyle(fontSize: 44, fontWeight: FontWeight.w700, color: hintCol.withOpacity(0.2), letterSpacing: -1),
+                hintStyle: TextStyle(fontSize: 44, fontWeight: FontWeight.w700, color: hintCol.withValues(alpha: 0.2), letterSpacing: -1),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,

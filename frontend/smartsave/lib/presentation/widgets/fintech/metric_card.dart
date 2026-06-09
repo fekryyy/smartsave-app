@@ -30,11 +30,11 @@ class MetricCard extends StatelessWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, size: 16, color: iconColor)),
           if (trend != null) ...[
             const Spacer(),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: (trend!.startsWith('+') ? AppColors.success : AppColors.danger).withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: (trend!.startsWith('+') ? AppColors.success : AppColors.danger).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(trend!.startsWith('+') ? Icons.arrow_upward : Icons.arrow_downward, size: 10, color: trend!.startsWith('+') ? AppColors.success : AppColors.danger),
                 const SizedBox(width: 2),

@@ -90,6 +90,21 @@ class AnalyticsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _dashboardData = null;
+    _categoryBreakdown = [];
+    _monthlyTrend = [];
+    _incomeVsExpenses = null;
+    _savingsGrowth = null;
+    _recommendations = [];
+    _isLoading = false;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   void clearError() {
     _errorMessage = null;
     notifyListeners();

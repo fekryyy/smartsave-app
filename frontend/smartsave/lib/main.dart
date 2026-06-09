@@ -24,6 +24,7 @@ import 'data/datasources/local/local_database.dart';
 import 'services/cache_manager.dart';
 import 'services/google_auth_service.dart';
 import 'services/sync_service.dart';
+import 'presentation/widgets/auth/session_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,7 +77,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => XpProvider()),
         ChangeNotifierProvider(create: (_) => FinancialAdvisorProvider()),
       ],
-      child: const SmartSaveApp(),
+      child: const SessionGuard(child: SmartSaveApp()),
     ),
   );
 }

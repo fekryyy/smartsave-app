@@ -65,9 +65,9 @@ class AppColors {
   };
 
   // Glass
-  static Color glassLight = Colors.white.withOpacity(0.06);
-  static Color glassMedium = Colors.white.withOpacity(0.10);
-  static Color glassBorder = Colors.white.withOpacity(0.12);
+  static Color glassLight = Colors.white.withValues(alpha: 0.06);
+  static Color glassMedium = Colors.white.withValues(alpha: 0.10);
+  static Color glassBorder = Colors.white.withValues(alpha: 0.12);
 
   // Chart colors
   static const List<Color> chartColors = [

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../presentation/providers/challenge_provider.dart';
 import '../../data/models/gamification_model.dart';
+import '../../app/app.dart';
 
 class GamificationScreen extends StatefulWidget {
   const GamificationScreen({super.key});
@@ -12,22 +13,36 @@ class GamificationScreen extends StatefulWidget {
   State<GamificationScreen> createState() => _GamificationScreenState();
 }
 
-class _GamificationScreenState extends State<GamificationScreen> with SingleTickerProviderStateMixin {
+class _GamificationScreenState extends State<GamificationScreen> with SingleTickerProviderStateMixin, RouteAware {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChallengeProvider>().loadAll();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
   }
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<ChallengeProvider>().loadAll();
   }
 
   @override
@@ -125,7 +140,7 @@ class _GamificationScreenState extends State<GamificationScreen> with SingleTick
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkCard : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDone ? AppColors.success.withOpacity(0.3) : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0))),
+        border: Border.all(color: isDone ? AppColors.success.withValues(alpha: 0.3) : (isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0))),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -134,14 +149,14 @@ class _GamificationScreenState extends State<GamificationScreen> with SingleTick
           Expanded(child: Text(c.title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF0F172A)))),
           if (c.points > 0)
             Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
               child: Text('+${c.points} pts', style: TextStyle(fontSize: 11, color: AppColors.warning, fontWeight: FontWeight.w600))),
         ]),
         if (c.description.isNotEmpty) ...[const SizedBox(height: 6), Text(c.description, style: TextStyle(fontSize: 12, color: isDark ? AppColors.grey400 : AppColors.grey500))],
         const SizedBox(height: 12),
         ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(
           value: c.progressPct,
-          backgroundColor: isDone ? AppColors.success.withOpacity(0.1) : (isDark ? AppColors.darkCardAlt : const Color(0xFFF1F5F9)),
+          backgroundColor: isDone ? AppColors.success.withValues(alpha: 0.1) : (isDark ? AppColors.darkCardAlt : const Color(0xFFF1F5F9)),
           valueColor: AlwaysStoppedAnimation<Color>(isDone ? AppColors.success : AppColors.primary),
           minHeight: 8,
         )),
@@ -186,7 +201,7 @@ class _GamificationScreenState extends State<GamificationScreen> with SingleTick
         border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
       ),
       child: Column(children: [
-        Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.1), shape: BoxShape.circle),
+        Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: const Icon(Icons.emoji_events_rounded, color: AppColors.warning, size: 28)),
         const SizedBox(height: 10),
         Text(a.title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: isDark ? Colors.white : const Color(0xFF0F172A)), textAlign: TextAlign.center),

@@ -1,16 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/constants/app_constants.dart';
 import '../../core/utils/currency_util.dart';
 import '../../presentation/providers/report_provider.dart';
 import '../../presentation/providers/auth_provider.dart';
 import '../../data/models/report_model.dart';
 import '../../core/network/api_client.dart';
-import '../../app/routes.dart';
+import '../../app/app.dart';
 
 class ReportScreen extends StatefulWidget {
   final String? mode;
@@ -20,7 +18,7 @@ class ReportScreen extends StatefulWidget {
   State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState extends State<ReportScreen> {
+class _ReportScreenState extends State<ReportScreen> with RouteAware {
   late int _year;
   late int _month;
   bool _exporting = false;
@@ -34,6 +32,23 @@ class _ReportScreenState extends State<ReportScreen> {
     _month = now.month;
     _isComparison = widget.mode == 'comparison';
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _load();
   }
 
   Future<void> _load() async {
@@ -226,7 +241,7 @@ class _ReportScreenState extends State<ReportScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: item.color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: item.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
               child: Icon(item.icon, color: item.color, size: 20),
             ),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -322,7 +337,7 @@ class _ReportScreenState extends State<ReportScreen> {
       child: Row(children: [
         Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: iconColor.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: iconColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
           child: Icon(icon, color: iconColor, size: 22),
         ),
         const SizedBox(width: 14),
@@ -375,7 +390,7 @@ class _ReportScreenState extends State<ReportScreen> {
               const SizedBox(height: 8),
               ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(
                 value: pctClamped,
-                backgroundColor: barColor.withOpacity(0.1),
+                backgroundColor: barColor.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(barColor),
                 minHeight: 6,
               )),

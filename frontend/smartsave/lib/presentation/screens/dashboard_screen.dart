@@ -25,16 +25,36 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
+  /// Tracks the last known auth session ID to detect when the user changes.
+  /// When the session changes (e.g., switching Google accounts), all
+  /// dashboard providers must clear their stale data before reloading.
+  int _lastSessionId = -1;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TransactionProvider>().loadDashboard();
-      context.read<AnalyticsProvider>().loadDashboard();
-      context.read<NotificationProvider>().loadNotifications();
-      context.read<SubscriptionProvider>().loadAll();
-      context.read<XpProvider>().load();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDashboardData());
+  }
+
+  /// Loads all dashboard data providers.
+  /// Called on first mount and whenever the auth session changes.
+  void _loadDashboardData() {
+    context.read<TransactionProvider>().loadDashboard();
+    context.read<AnalyticsProvider>().loadDashboard();
+    context.read<NotificationProvider>().loadNotifications();
+    context.read<SubscriptionProvider>().loadAll();
+    context.read<XpProvider>().load();
+  }
+
+  /// Resets all dashboard providers to their initial empty state.
+  /// Called when the auth session changes to prevent data leakage
+  /// between user accounts (e.g., signing in with a different Google account).
+  void _resetDashboardProviders() {
+    context.read<TransactionProvider>().resetState();
+    context.read<AnalyticsProvider>().resetState();
+    context.read<NotificationProvider>().resetState();
+    context.read<SubscriptionProvider>().resetState();
+    context.read<XpProvider>().resetState();
   }
 
   @override
@@ -66,6 +86,25 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
     final notifProvider = context.watch<NotificationProvider>();
     final subProvider = context.watch<SubscriptionProvider>();
     final xpProvider = context.watch<XpProvider>();
+
+    // ── Auth session change detection ──
+    // When the authenticated user changes (e.g., switching Google accounts,
+    // logging out and logging in as a different user), all dashboard
+    // providers must clear their stale data and reload.
+    if (authProvider.sessionId != _lastSessionId) {
+      final newSessionId = authProvider.sessionId;
+      final oldSessionId = _lastSessionId;
+      _lastSessionId = newSessionId;
+      // Schedule reset + reload after this build frame to avoid
+      // calling notifyListeners() during build().
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (oldSessionId >= 0) {
+          // Only reset if this is a real session change (not the first load)
+          _resetDashboardProviders();
+        }
+        _loadDashboardData();
+      });
+    }
     final dashboard = txProvider.dashboardData;
     final currencyFormat = CurrencyUtil.getFormat(authProvider.user?.currency);
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -101,7 +140,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                         ),
                     ]),
                     IconButton(icon: const Icon(Icons.settings_outlined, color: AppColors.grey600), onPressed: () => Navigator.pushNamed(context, AppRoutes.settings)),
-                    GestureDetector(onTap: () => Navigator.pushNamed(context, AppRoutes.profile), child: CircleAvatar(radius: 16, backgroundColor: AppColors.primary.withOpacity(0.1), child: const Icon(Icons.person, size: 18, color: AppColors.primary))),
+                    GestureDetector(onTap: () => Navigator.pushNamed(context, AppRoutes.profile), child: CircleAvatar(radius: 16, backgroundColor: AppColors.primary.withValues(alpha: 0.1), child: const Icon(Icons.person, size: 18, color: AppColors.primary))),
                   ]),
                 ])),
                 const SizedBox(height: 20),
@@ -113,7 +152,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                   decoration: BoxDecoration(
                     gradient: AppColors.cardGradient,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10))],
+                    boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10))],
                   ),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('Current Balance', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white70)),
@@ -189,7 +228,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                       border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.grey100),
                     ),
                     child: Row(children: [
-                      Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.warning.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                      Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
                         child: const Icon(Icons.auto_awesome_rounded, color: AppColors.warning, size: 24)),
                       const SizedBox(width: 14),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -226,7 +265,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                       ...upcomingSubs.take(3).map((sub) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(children: [
-                          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.secondary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: AppColors.secondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                             child: const Icon(Icons.subscriptions_rounded, color: AppColors.secondary, size: 18)),
                           const SizedBox(width: 12),
                           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -248,7 +287,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(color: isDark ? AppColors.darkCard : Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.grey100)),
                     child: Row(children: [
-                      Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFF8B5CF6).withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                      Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: const Color(0xFF8B5CF6).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
                         child: const Icon(Icons.account_balance_rounded, color: Color(0xFF8B5CF6), size: 22)),
                       const SizedBox(width: 14),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -276,7 +315,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                           const SizedBox(width: 8),
                           Expanded(flex: 2, child: Text(pm.paymentMethod, style: Theme.of(context).textTheme.bodyMedium)),
                           Expanded(flex: 3, child: Column(children: [
-                            ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct / 100, backgroundColor: color.withOpacity(0.1), valueColor: AlwaysStoppedAnimation<Color>(color), minHeight: 6)),
+                            ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: pct / 100, backgroundColor: color.withValues(alpha: 0.1), valueColor: AlwaysStoppedAnimation<Color>(color), minHeight: 6)),
                             const SizedBox(height: 2),
                             Text('${pct.toStringAsFixed(0)}%', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey500)),
                           ])),
@@ -322,7 +361,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
         child: Row(children: [
           Icon(icon, color: color, size: 16),
           const SizedBox(width: 6),
@@ -344,7 +383,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
         border: Border.all(color: AppColors.grey100),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: color, size: 20)),
+        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: color, size: 20)),
         const SizedBox(height: 12),
         Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         Text(label, style: Theme.of(context).textTheme.bodySmall),

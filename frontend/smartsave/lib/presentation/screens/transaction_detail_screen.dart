@@ -79,9 +79,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           width: double.infinity,
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
+            gradient: LinearGradient(colors: [color, color.withValues(alpha: 0.8)]),
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8))],
+            boxShadow: [BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
           ),
           child: Column(children: [
             Text('${isIncome ? 'Income' : 'Expense'}', style: const TextStyle(color: Colors.white70, fontSize: 14)),
@@ -127,7 +127,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
               Text('Tags', style: TextStyle(fontSize: 13, color: hintCol)),
               const SizedBox(height: 12),
               Wrap(spacing: 8, runSpacing: 6, children: tx.tags.map((tag) => Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                 child: Text(tag, style: const TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w500)),
               )).toList()),
             ]),

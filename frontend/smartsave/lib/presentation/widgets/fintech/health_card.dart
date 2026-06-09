@@ -36,7 +36,7 @@ class FinancialHealthCard extends StatelessWidget {
             builder: (ctx, value, _) => CircularProgressIndicator(
               value: value,
               strokeWidth: 6,
-              backgroundColor: Colors.white.withOpacity(0.15),
+              backgroundColor: Colors.white.withValues(alpha: 0.15),
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               strokeCap: StrokeCap.round,
             ),
@@ -50,7 +50,7 @@ class FinancialHealthCard extends StatelessWidget {
           Text(status, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
           if (trend != null) ...[
             const SizedBox(height: 4),
-            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+            Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 Icon(trend!.startsWith('+') ? Icons.arrow_upward : Icons.arrow_downward, size: 12, color: Colors.white),
                 const SizedBox(width: 3),

@@ -75,6 +75,7 @@ class TransactionRepositoryImpl with CacheableRepository implements TransactionR
     try {
       final result = await _remoteDataSource.createTransaction(data);
       await invalidateCache('transactions:');
+      await invalidateCache('analytics:');
       return TransactionModel.fromJson(result);
     } catch (e) {
       // Queue for sync
@@ -87,6 +88,7 @@ class TransactionRepositoryImpl with CacheableRepository implements TransactionR
   Future<TransactionModel> updateTransaction(String id, Map<String, dynamic> data) async {
     final result = await _remoteDataSource.updateTransaction(id, data);
     await invalidateCache('transactions:');
+    await invalidateCache('analytics:');
     return TransactionModel.fromJson(result);
   }
 
@@ -95,5 +97,6 @@ class TransactionRepositoryImpl with CacheableRepository implements TransactionR
     await _remoteDataSource.deleteTransaction(id);
     await _localDb.delete('transactions', where: 'id = ?', whereArgs: [id]);
     await invalidateCache('transactions:');
+    await invalidateCache('analytics:');
   }
 }

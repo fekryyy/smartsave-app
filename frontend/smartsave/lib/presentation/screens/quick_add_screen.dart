@@ -357,7 +357,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
                     height: 72,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _isListening ? AppColors.danger.withOpacity(0.15) : AppColors.primary.withOpacity(0.1),
+                      color: _isListening ? AppColors.danger.withValues(alpha: 0.15) : AppColors.primary.withValues(alpha: 0.1),
                       border: Border.all(
                         color: _isListening ? AppColors.danger : AppColors.primary,
                         width: 2,
@@ -533,10 +533,10 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: _selectedType == 'expense'
-                      ? AppColors.danger.withOpacity(0.1)
+                      ? AppColors.danger.withValues(alpha: 0.1)
                       : _selectedType == 'income'
-                          ? AppColors.success.withOpacity(0.1)
-                          : AppColors.primary.withOpacity(0.1),
+                          ? AppColors.success.withValues(alpha: 0.1)
+                          : AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -658,7 +658,7 @@ class _QuickAddScreenState extends State<QuickAddScreen> with TickerProviderStat
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: type == 'income' ? AppColors.success.withOpacity(0.1) : AppColors.danger.withOpacity(0.1),
+                  color: type == 'income' ? AppColors.success.withValues(alpha: 0.1) : AppColors.danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(

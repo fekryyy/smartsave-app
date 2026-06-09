@@ -69,6 +69,17 @@ class AutoSaveProvider extends ChangeNotifier with ProviderErrorHandler {
     }
   }
 
+  /// Resets all state to initial values.
+  /// Called when the authenticated user changes to prevent data leakage
+  /// between user sessions.
+  void resetState() {
+    _rules = [];
+    _totalProjected = 0;
+    _isLoading = false;
+    clearError();
+    notifyListeners();
+  }
+
   Future<bool> triggerContribution(String id) async {
     try {
       await _repository.triggerContribution(id);

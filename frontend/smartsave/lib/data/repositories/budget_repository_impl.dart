@@ -35,6 +35,7 @@ class BudgetRepositoryImpl with CacheableRepository implements BudgetRepository 
   Future<BudgetModel> createBudget(Map<String, dynamic> data) async {
     final response = await _apiClient.post(ApiConstants.budgets, data: data).dataOrThrow;
     await invalidateCache('budgets:');
+    await invalidateCache('analytics:');
     return BudgetModel.fromJson(response['data']);
   }
 
@@ -42,6 +43,7 @@ class BudgetRepositoryImpl with CacheableRepository implements BudgetRepository 
   Future<BudgetModel> updateBudget(String id, Map<String, dynamic> data) async {
     final response = await _apiClient.put('${ApiConstants.budgets}/$id', data: data).dataOrThrow;
     await invalidateCache('budgets:');
+    await invalidateCache('analytics:');
     return BudgetModel.fromJson(response['data']);
   }
 
@@ -49,5 +51,6 @@ class BudgetRepositoryImpl with CacheableRepository implements BudgetRepository 
   Future<void> deleteBudget(String id) async {
     await _apiClient.delete('${ApiConstants.budgets}/$id').dataOrThrow;
     await invalidateCache('budgets:');
+    await invalidateCache('analytics:');
   }
 }

@@ -120,8 +120,31 @@ class LocalDatabase {
     await db.delete('pending_operations', where: 'id = ?', whereArgs: [id]);
   }
 
+  /// Clears all pending sync operations from the queue.
   Future<void> clearUnsynced() async {
     final db = await database;
     await db.delete('pending_operations');
+  }
+
+  /// Clears all user-scoped local data tables.
+  ///
+  /// Called during session changes (logout, user switch) to prevent data
+  /// leakage between users. Clears:
+  ///   - [transactions] — locally cached transactions
+  ///   - [goals] — locally cached goals
+  ///   - [budgets] — locally cached budgets
+  ///   - [pending_operations] — queued sync operations for the old user
+  ///
+  /// Does NOT clear the shared [cache_entries] table — that is managed
+  /// separately by [CacheManager.invalidateAll].
+  Future<void> clearAllUserData() async {
+    final db = await database;
+    // Clear all user-scoped tables in parallel
+    await Future.wait([
+      db.delete('transactions'),
+      db.delete('goals'),
+      db.delete('budgets'),
+      db.delete('pending_operations'),
+    ]);
   }
 }

@@ -6,6 +6,7 @@ import '../../core/utils/currency_util.dart';
 import '../providers/net_worth_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../data/models/net_worth_model.dart';
+import '../../app/app.dart';
 
 class NetWorthScreen extends StatefulWidget {
   const NetWorthScreen({super.key});
@@ -13,11 +14,32 @@ class NetWorthScreen extends StatefulWidget {
   State<NetWorthScreen> createState() => _NetWorthScreenState();
 }
 
-class _NetWorthScreenState extends State<NetWorthScreen> {
+class _NetWorthScreenState extends State<NetWorthScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<NetWorthProvider>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _loadData();
+  }
+
+  void _loadData() {
+    context.read<NetWorthProvider>().load();
   }
 
   @override
@@ -66,8 +88,8 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
     return Container(
       width: double.infinity, padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [color.withOpacity(0.3), color.withOpacity(0.05)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(24), border: Border.all(color: color.withOpacity(0.15)),
+        gradient: LinearGradient(colors: [color.withValues(alpha: 0.3), color.withValues(alpha: 0.05)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(24), border: Border.all(color: color.withValues(alpha: 0.15)),
       ),
       child: Column(children: [
         Text('Net Worth', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.grey500)),
@@ -91,7 +113,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
 
   Widget _stat(BuildContext context, String label, String value, Color color) {
     return Expanded(child: Container(padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
       child: Column(children: [
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 16)),
         Text(label, style: TextStyle(color: AppColors.grey500, fontSize: 10)),
@@ -108,7 +130,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       Text('Net Worth History', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
       const SizedBox(height: 12),
       Container(height: 140, padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(color: isDark ? Colors.white.withOpacity(0.03) : Colors.grey.withOpacity(0.03), borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.03) : Colors.grey.withValues(alpha: 0.03), borderRadius: BorderRadius.circular(16)),
         child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: List.generate(values.length, (i) {
           final ratio = ((values[i] - minVal) / range);
           final isPos = values[i] >= 0;
@@ -116,7 +138,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
             Container(
               height: (ratio * 100).clamp(4, 100.0),
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: isPos ? [AppColors.success, AppColors.success.withOpacity(0.6)] : [AppColors.danger, AppColors.danger.withOpacity(0.6)], begin: Alignment.bottomCenter, end: Alignment.topCenter),
+                gradient: LinearGradient(colors: isPos ? [AppColors.success, AppColors.success.withValues(alpha: 0.6)] : [AppColors.danger, AppColors.danger.withValues(alpha: 0.6)], begin: Alignment.bottomCenter, end: Alignment.topCenter),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -139,9 +161,9 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
       const SizedBox(height: 10),
       ...items.entries.map((e) => Container(
         margin: const EdgeInsets.only(bottom: 8), padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: isDark ? Colors.white.withOpacity(0.06) : AppColors.grey100)),
+        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(14), border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : AppColors.grey100)),
         child: Row(children: [
-          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icons[e.key] ?? Icons.circle, color: color, size: 16)),
+          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icons[e.key] ?? Icons.circle, color: color, size: 16)),
           const SizedBox(width: 12),
           Expanded(child: Text(labels[e.key] ?? e.key, style: Theme.of(context).textTheme.bodyMedium)),
           Text(format.format(e.value), style: TextStyle(fontWeight: FontWeight.w700, color: color)),
@@ -184,7 +206,7 @@ class _NetWorthScreenState extends State<NetWorthScreen> {
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
           decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
           child: ListView(controller: scrollController, children: [
-            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 16), decoration: BoxDecoration(color: AppColors.grey500.withOpacity(0.3), borderRadius: BorderRadius.circular(2)))),
+            Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 16), decoration: BoxDecoration(color: AppColors.grey500.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)))),
             Text('Add Entry', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 20),
             Text('Assets', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.success, fontWeight: FontWeight.w600)),
