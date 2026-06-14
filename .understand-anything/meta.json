@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-06-14T18:32:19.995611+00:00",
+  "projectRoot": "/Users/mohamedmahmoud/SmartSave",
+  "projectName": "smartsave-backend",
+  "gitCommitHash": "59cc748efccb77921f22e02f1b9e08942f036dce",
+  "phases": {
+    "scan": {
+      "filesScanned": 292,
+      "languages": [
+        "dart",
+        "dockerfile",
+        "html",
+        "javascript",
+        "json",
+        "kotlin",
+        "markdown",
+        "properties",
+        "swift",
+        "xml",
+        "yaml"
+      ]
+    },
+    "batch": {
+      "batches": 16
+    },
+    "analyze": {
+      "filesAnalyzed": 570
+    },
+    "assemble": {
+      "originalNodes": 655,
+      "originalEdges": 849,
+      "finalNodes": 570,
+      "finalEdges": 735,
+      "typesRemapped": 191,
+      "correctionsApplied": 1220
+    },
+    "architecture": {
+      "layers": 8
+    },
+    "tour": {
+      "steps": 10
+    }
+  },
+  "statistics": {
+    "totalNodes": 570,
+    "totalEdges": 735,
+    "layers": 8,
+    "tourSteps": 10,
+    "languages": [
+      "dart",
+      "dockerfile",
+      "html",
+      "javascript",
+      "json",
+      "kotlin",
+      "markdown",
+      "properties",
+      "swift",
+      "xml",
+      "yaml"
+    ],
+    "frameworks": [
+      "Express",
+      "Mongoose",
+      "Socket.io",
+      "Bull",
+      "Bull Board",
+      "JWT",
+      "Flutter",
+      "Firebase",
+      "Docker",
+      "Docker Compose"
+    ]
+  },
+  "schemaVersion": "1.0"
+}

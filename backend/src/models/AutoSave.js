@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const encryptFields = require('../utils/encryptFieldsPlugin');
 
 const autoSaveSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -8,18 +9,18 @@ const autoSaveSchema = new mongoose.Schema({
     enum: ['percentage_of_income', 'fixed_daily', 'fixed_payday', 'percentage_bonus', 'round_up'],
     required: true,
   },
-  amount: { type: Number },
+  amount: { type: mongoose.Schema.Types.Mixed },
   percentage: { type: Number },
   targetAccount: { type: String, default: 'savings' },
   isActive: { type: Boolean, default: true },
   frequency: { type: String, enum: ['daily', 'weekly', 'monthly', 'per_transaction'], default: 'monthly' },
   paydayDay: { type: Number },
   lastContribution: Date,
-  totalContributed: { type: Number, default: 0 },
+  totalContributed: { type: mongoose.Schema.Types.Mixed, default: 0 },
   contributionCount: { type: Number, default: 0 },
   history: [{
     date: Date,
-    amount: Number,
+    amount: mongoose.Schema.Types.Mixed,
     transactionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
   }],
 }, { timestamps: true });
@@ -27,5 +28,10 @@ const autoSaveSchema = new mongoose.Schema({
 // Compound indexes for common queries
 autoSaveSchema.index({ user: 1, isActive: 1 });
 autoSaveSchema.index({ user: 1, createdAt: -1 });
+
+// Apply field-level encryption to financial data
+encryptFields(autoSaveSchema, {
+  fields: ['amount', 'totalContributed', 'history.amount'],
+});
 
 module.exports = mongoose.model('AutoSave', autoSaveSchema);

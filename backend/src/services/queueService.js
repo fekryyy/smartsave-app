@@ -1,5 +1,6 @@
 const Bull = require('bull');
 const logger = require('../utils/logger');
+const dlq = require('./deadLetterQueue');
 
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 
@@ -81,6 +82,8 @@ function setupQueueLogging(queue, name) {
   });
   queue.on('failed', (job, err) => {
     logger.error(`Queue[${name}] Job ${job.id} failed after ${job.attemptsMade} attempts: ${err.message}`);
+    // Move to Dead Letter Queue if retries exhausted
+    dlq.handleFailed(name, job, err);
   });
   queue.on('stalled', (job) => {
     logger.warn(`Queue[${name}] Job ${job.id} stalled — will be retried`);
@@ -109,14 +112,14 @@ async function closeAll() {
 
 /**
  * Get queue statistics for monitoring.
+ * Includes DLQ (dead letter) counts.
  */
 async function getQueueStats() {
-  const queues = [
-    { name: 'ai', queue: aiQueue },
-    { name: 'export', queue: exportQueue },
-    { name: 'ocr', queue: ocrQueue },
-    { name: 'notification', queue: notificationQueue },
-  ];
+  const queueNames = ['ai', 'export', 'ocr', 'notification'];
+  const queues = queueNames.map((name) => ({
+    name,
+    queue: { ai: aiQueue, export: exportQueue, ocr: ocrQueue, notification: notificationQueue }[name],
+  }));
 
   const stats = {};
   for (const { name, queue } of queues) {
@@ -129,6 +132,17 @@ async function getQueueStats() {
     ]);
     stats[name] = { waiting, active, completed, failed, delayed };
   }
+
+  // Merge DLQ stats
+  try {
+    const dlqStats = await dlq.getAllDLQStats(queueNames);
+    for (const name of queueNames) {
+      if (stats[name]) stats[name].dead = dlqStats[name]?.dead || 0;
+    }
+  } catch {
+    // DLQ stats are best-effort
+  }
+
   return stats;
 }
 
@@ -181,4 +195,5 @@ module.exports = {
   enqueueAIAnalysis,
   enqueueExport,
   enqueueOCR,
+  dlq,
 };

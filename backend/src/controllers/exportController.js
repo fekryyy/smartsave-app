@@ -13,9 +13,9 @@ const exportController = {
 
       let data;
       if (type === 'transactions') {
-        data = await Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).sort('-date').lean();
+        data = await Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).sort('-date');
       } else {
-        data = await Goal.find({ user: req.user.id }).lean();
+        data = await Goal.find({ user: req.user.id });
       }
 
       const doc = new PDFDocument({ margin: 30, size: 'A4' });
@@ -73,7 +73,6 @@ const exportController = {
       let data;
       if (type === 'transactions') {
         data = await Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true })
-          .lean()
           .select('type amount category description date paymentMethod');
 
         const fields = ['type', 'amount', 'category', 'description', 'date', 'paymentMethod'];
@@ -84,7 +83,7 @@ const exportController = {
         res.setHeader('Content-Disposition', `attachment; filename=smartsave-transactions-${Date.now()}.csv`);
         res.send(csv);
       } else {
-        data = await Goal.find({ user: req.user.id }).lean().select('title targetAmount currentAmount status targetDate');
+        data = await Goal.find({ user: req.user.id }).select('title targetAmount currentAmount status targetDate');
 
         const fields = ['title', 'targetAmount', 'currentAmount', 'status', 'targetDate'];
         const parser = new Parser({ fields });
@@ -101,8 +100,8 @@ const exportController = {
     const { start, end } = getDateRange(period);
 
     const [transactions, goals] = await Promise.all([
-      Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }).lean(),
-      Goal.find({ user: req.user.id }).lean(),
+      Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, isActive: true }),
+      Goal.find({ user: req.user.id }),
     ]);
 
     const wb = XLSX.utils.book_new();

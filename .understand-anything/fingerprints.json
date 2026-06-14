@@ -1,0 +1,3475 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "59cc748efccb77921f22e02f1b9e08942f036dce",
+  "generatedAt": "2026-06-14T18:32:09.455Z",
+  "files": {
+    ".understand-anything/.understandignore": {
+      "filePath": ".understand-anything/.understandignore",
+      "contentHash": "5329545e9c4fc65ef5be8fefc0ff65b313eb52d7060abe5c81339da2316c1789",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": false
+    },
+    "backend/.dockerignore": {
+      "filePath": "backend/.dockerignore",
+      "contentHash": "48892aa0c89ea3efdcd0de6f43658d7bd0c711e556dad46967d53cdc039accc6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "backend/.env.example": {
+      "filePath": "backend/.env.example",
+      "contentHash": "0ca5ecad18829512d833f7b7fcfc493ea70caeacfaf18db28877dceb11dde2d2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": true
+    },
+    "backend/docker-compose.yml": {
+      "filePath": "backend/docker-compose.yml",
+      "contentHash": "4ee6e043c24b2eb4399747110b35f097b6155faa69a04a6942f3d61bed4ba009",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "backend/Dockerfile": {
+      "filePath": "backend/Dockerfile",
+      "contentHash": "8a165413e00c08ad52b00cb0a4eed00cba83aeabaa4f8844200a38ab45a063ea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 50,
+      "hasStructuralAnalysis": true
+    },
+    "backend/ecosystem.config.js": {
+      "filePath": "backend/ecosystem.config.js",
+      "contentHash": "7acc2939b5812f75b3641500b6ed2767c6ee3977e15c36417649ffa482faccdf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "backend/package.json": {
+      "filePath": "backend/package.json",
+      "contentHash": "64ccfadcdf130ed2bba11c0b6133a6b2364f0b83e63bfb7ab83b89175b0a48bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/config/ai.js": {
+      "filePath": "backend/src/config/ai.js",
+      "contentHash": "b4d6dc64cc9eb397e53836943a10dc31f1fabd79b0fc2c5dce0207a7181e9091",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 50,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/config/database.js": {
+      "filePath": "backend/src/config/database.js",
+      "contentHash": "7da005515939d515fa92847b1cda694e0d07bd371c44cbf60785c37611bc026f",
+      "functions": [
+        {
+          "name": "connectDB",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/config/index.js": {
+      "filePath": "backend/src/config/index.js",
+      "contentHash": "7db6450339d5bcc4967583fde9a62c3bd68c26031044c13c7907822c591b200b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/analyticsController.js": {
+      "filePath": "backend/src/controllers/analyticsController.js",
+      "contentHash": "8b00eb75f7d88a8db052bb979c0f3f07027472fc5a064d028f84a9538052a7d7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 272,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/authController.js": {
+      "filePath": "backend/src/controllers/authController.js",
+      "contentHash": "c0f79724b9faad3b3b5d0ad9403a4f543e1ef0101313cb1867dc9631f608f224",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 227,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/autoSaveController.js": {
+      "filePath": "backend/src/controllers/autoSaveController.js",
+      "contentHash": "13177853edba19824c28c5a8483efe2fc8cbfb50c446a14ae76eeabec2ed39d2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 97,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/budgetController.js": {
+      "filePath": "backend/src/controllers/budgetController.js",
+      "contentHash": "2e6ab6a11f65916573d18e439c22d2fad7c5c91ef22252b721cf3478df69fd33",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 154,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/calendarController.js": {
+      "filePath": "backend/src/controllers/calendarController.js",
+      "contentHash": "73a3b41258e15ae4dafef6d62134b412d0c076ff104466e75fb9623d257fe5d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/challengeController.js": {
+      "filePath": "backend/src/controllers/challengeController.js",
+      "contentHash": "2db02d4c96244bfedd62e43795b1c0ca9f041fd591167942cfa8f1198bf0e6d7",
+      "functions": [
+        {
+          "name": "checkAndAward",
+          "params": [
+            "req",
+            "badge",
+            "current"
+          ],
+          "exported": false,
+          "lineCount": 34
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 170,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/exportController.js": {
+      "filePath": "backend/src/controllers/exportController.js",
+      "contentHash": "5db6ddc8aeef0d6dcc735296e24d259e4305092c40a11ec04e87df21f2dcd73d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 155,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/financialAdvisorController.js": {
+      "filePath": "backend/src/controllers/financialAdvisorController.js",
+      "contentHash": "3300daa0d0b877258daf31f57e020968b900239dd0ad5f3a5649cfd315098d44",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 55,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/goalController.js": {
+      "filePath": "backend/src/controllers/goalController.js",
+      "contentHash": "b49f22d647d381e656242ff38bb766973392b350978b8e79be516bd663c70028",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 153,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/netWorthController.js": {
+      "filePath": "backend/src/controllers/netWorthController.js",
+      "contentHash": "5fde394af4ea88dfd8b7191eb600aae31d1d0c7f2b5b5163f10c44bd19d01118",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 50,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/notificationController.js": {
+      "filePath": "backend/src/controllers/notificationController.js",
+      "contentHash": "5cdd997c2706981710d13af86dab133049e25627fa86eb82608194372b04a947",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/ocrController.js": {
+      "filePath": "backend/src/controllers/ocrController.js",
+      "contentHash": "2cfb603e9e658d0188c7223ebbb681e2da1f420d994d67026cccc3ba4429680d",
+      "functions": [
+        {
+          "name": "extractReceiptInfo",
+          "params": [
+            "text"
+          ],
+          "exported": false,
+          "lineCount": 30
+        },
+        {
+          "name": "categorizeTransaction",
+          "params": [
+            "merchant",
+            "text"
+          ],
+          "exported": false,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/profileController.js": {
+      "filePath": "backend/src/controllers/profileController.js",
+      "contentHash": "2bfe9dfb88e04f31b0c6043761692e8b901fd79bb7c4a6eb58d7ed356387dddd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/recommendationController.js": {
+      "filePath": "backend/src/controllers/recommendationController.js",
+      "contentHash": "5980c95a66210e9deb3c8cebbb49360bbeb855bf045983688b6804189fcb33c9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 184,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/recurringController.js": {
+      "filePath": "backend/src/controllers/recurringController.js",
+      "contentHash": "a306e7427a3db6b0477107c610e4d4c547493018dac5c94cb0ebeb0da169fef7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/reportController.js": {
+      "filePath": "backend/src/controllers/reportController.js",
+      "contentHash": "0429b88babd28d285dbcc28b7bdc5febae421159c7a1a6b61dce9df875178e2f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 231,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/subscriptionController.js": {
+      "filePath": "backend/src/controllers/subscriptionController.js",
+      "contentHash": "93dcf88e3ac2d8ff563895f2c60d762a04ccbccc22f15b5bc116112a1cb326f6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/transactionController.js": {
+      "filePath": "backend/src/controllers/transactionController.js",
+      "contentHash": "42466e002806187064bd6b3eeebfb5d9d1196f11b9da9b3a7e324ec4e4f4b0b3",
+      "functions": [
+        {
+          "name": "updateBudgetSpent",
+          "params": [
+            "userId",
+            "category",
+            "amount",
+            "date"
+          ],
+          "exported": false,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 238,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/controllers/xpController.js": {
+      "filePath": "backend/src/controllers/xpController.js",
+      "contentHash": "f24ce5600e3d82fb1640aa179213e5dd8cdd3e2cdb0f26df9bf1e5d973205ed2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/middleware/auth.js": {
+      "filePath": "backend/src/middleware/auth.js",
+      "contentHash": "f62beb2a92005fd249e242339ab3f9d5a9e6a7bd5386c0638bbdc173272471ba",
+      "functions": [
+        {
+          "name": "protect",
+          "params": [
+            "req",
+            "res",
+            "next"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "optionalAuth",
+          "params": [
+            "req",
+            "res",
+            "next"
+          ],
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/middleware/errorHandler.js": {
+      "filePath": "backend/src/middleware/errorHandler.js",
+      "contentHash": "a424540bb85ed7b1b23ea44e64f0715c64bc7a02d90832ae74ea135bf23c4f72",
+      "functions": [
+        {
+          "name": "errorHandler",
+          "params": [
+            "err",
+            "req",
+            "res",
+            "next"
+          ],
+          "exported": false,
+          "lineCount": 56
+        }
+      ],
+      "classes": [
+        {
+          "name": "AppError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 8
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 74,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/middleware/idempotency.js": {
+      "filePath": "backend/src/middleware/idempotency.js",
+      "contentHash": "b5a87b8fe05dca915c37dfaaea4ad267268d9edf65a7aa756698aff954c40bcc",
+      "functions": [
+        {
+          "name": "idempotency",
+          "params": [],
+          "exported": false,
+          "lineCount": 62
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 83,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/middleware/perUserRateLimit.js": {
+      "filePath": "backend/src/middleware/perUserRateLimit.js",
+      "contentHash": "e67abe459cefaf23b02396eedf0d115e4b0cdd1eaa7b8a2103b7ab919e3db456",
+      "functions": [
+        {
+          "name": "perUserRateLimit",
+          "params": [],
+          "exported": false,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/middleware/validate.js": {
+      "filePath": "backend/src/middleware/validate.js",
+      "contentHash": "da02575400230bb8b0aedcf7b2317b65ee335a4e832af0939b2f57bdfa57168d",
+      "functions": [
+        {
+          "name": "validate",
+          "params": [
+            "req",
+            "res",
+            "next"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "validateZod",
+          "params": [
+            "schema"
+          ],
+          "exported": false,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 248,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Achievement.js": {
+      "filePath": "backend/src/models/Achievement.js",
+      "contentHash": "0f6bd6f6f52f941dbd353001a6c132dfeb0401889be3617c4298e8f8ebe510d3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/AdvisorMemory.js": {
+      "filePath": "backend/src/models/AdvisorMemory.js",
+      "contentHash": "022007623599a32c165e126bb415fcb6b6f687eb2acdda3d9ce10c2544bec87a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 55,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/AuditLog.js": {
+      "filePath": "backend/src/models/AuditLog.js",
+      "contentHash": "939cc4a2c492c06419dac13cd1ae6de7b5a766a59dc9feee3a6198b215c6c444",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/AutoSave.js": {
+      "filePath": "backend/src/models/AutoSave.js",
+      "contentHash": "d1e6f0bc2f9649b16a715fbb2b436f39f3cd82cacff8c16d2c060f6a69b14bca",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Budget.js": {
+      "filePath": "backend/src/models/Budget.js",
+      "contentHash": "43fa6d4103ef592426b7627a902d5aadd8ede9d28a892cdb7be467b7461ee3aa",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Challenge.js": {
+      "filePath": "backend/src/models/Challenge.js",
+      "contentHash": "e84bedb1e41f2ea41c3605a01e222d0c7012bd9d1f1271c94cceabe7af93f552",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Goal.js": {
+      "filePath": "backend/src/models/Goal.js",
+      "contentHash": "fa5b5cb43dc8158510e9883a2115e368e14a001edc6bb800b11ef0519780ec1c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/IdempotencyRequest.js": {
+      "filePath": "backend/src/models/IdempotencyRequest.js",
+      "contentHash": "1efce281d894def220f70b632cf0b626821c89e3729861eac617d06d3ef52a5e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/NetWorth.js": {
+      "filePath": "backend/src/models/NetWorth.js",
+      "contentHash": "0b67a23b0e37a32c2353629aa3e9ccc7c4854e6c59a000ba2b94c70207b7f308",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Notification.js": {
+      "filePath": "backend/src/models/Notification.js",
+      "contentHash": "f27b9a788977eafa686cf738f06d26daa7c64d07912b50ea3f5167c1e10be3e0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/RecurringTransaction.js": {
+      "filePath": "backend/src/models/RecurringTransaction.js",
+      "contentHash": "727a4f8ec01eecb003e151260ad2750b8fe93631a76e348dde25bac9bae2c66e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 97,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Subscription.js": {
+      "filePath": "backend/src/models/Subscription.js",
+      "contentHash": "45659871e3b7d113c1832244228d5eb99d20db247447fcb8641dafa54d262914",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 47,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/Transaction.js": {
+      "filePath": "backend/src/models/Transaction.js",
+      "contentHash": "3d9186d61fccfe1f5bdcd8c63d6452ef10c7c549b7223eaa92a2b1902873c496",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 128,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/User.js": {
+      "filePath": "backend/src/models/User.js",
+      "contentHash": "23da618a4492ce6eb3d36d05df4471e9fb80b0eee76a54081884d14c776deead",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 133,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/models/UserStreak.js": {
+      "filePath": "backend/src/models/UserStreak.js",
+      "contentHash": "5821911df7957a1306b5e35d90b9039a04479d9639b931886318a1ae23395e1f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/analyticsRoutes.js": {
+      "filePath": "backend/src/routes/analyticsRoutes.js",
+      "contentHash": "559e519a130ecf9fd6cdf1f4de0f8f6882477fd4dd67d44c13ff9b47911bb244",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/authRoutes.js": {
+      "filePath": "backend/src/routes/authRoutes.js",
+      "contentHash": "520c1eccb0d30b70bfb2cd41ade643396a60bd1ab95d6406199374c874b223cf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/autoSaveRoutes.js": {
+      "filePath": "backend/src/routes/autoSaveRoutes.js",
+      "contentHash": "534bf745d230a2397ad0cf177b7e437ff8dcec5a24de73d020b30374f51eba26",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/budgetRoutes.js": {
+      "filePath": "backend/src/routes/budgetRoutes.js",
+      "contentHash": "7a86bd71fa0a7cd061f22637a0a8d16c38e988a9ed36dc42eae09e8d61bbf62e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/calendarRoutes.js": {
+      "filePath": "backend/src/routes/calendarRoutes.js",
+      "contentHash": "51017117c2ba860d2fe6a27a8a3aea3ac09fe10fde6b3e0386e1dc292cb691bc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/challengeRoutes.js": {
+      "filePath": "backend/src/routes/challengeRoutes.js",
+      "contentHash": "4c855140cdd580bca9bf1d912e6e8c12c02a0560dc3bf1320e5afcb18ef9fbad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/exportRoutes.js": {
+      "filePath": "backend/src/routes/exportRoutes.js",
+      "contentHash": "8074b6c03e514ab6e5ee6e55c960f19302b688b7a75da48647b4610cd8437f5d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/financialAdvisorRoutes.js": {
+      "filePath": "backend/src/routes/financialAdvisorRoutes.js",
+      "contentHash": "2594af516d6c5daecf35f0a885fbea20916de5f37edf48ecdb2bfb1f7bcdd6ec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/goalRoutes.js": {
+      "filePath": "backend/src/routes/goalRoutes.js",
+      "contentHash": "29a981bd7b06e0298f8c52215ae7827d86dc798fe7ad9aaf7621b6d76af1efc2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/netWorthRoutes.js": {
+      "filePath": "backend/src/routes/netWorthRoutes.js",
+      "contentHash": "065a9b053720c5ad6563792ed5828031ed5f1dbd272debd79092151cac9a0ae0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/notificationRoutes.js": {
+      "filePath": "backend/src/routes/notificationRoutes.js",
+      "contentHash": "6f97ca55bca6aa7a10c3efa9b4adfa6fa5fdeffa38de7dfffe064e01d1a5318c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/ocrRoutes.js": {
+      "filePath": "backend/src/routes/ocrRoutes.js",
+      "contentHash": "30d9592fb3a6d908c4e89002c9ea1d9f69f82a3923127d5e8162d97118f2d7c5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/profileRoutes.js": {
+      "filePath": "backend/src/routes/profileRoutes.js",
+      "contentHash": "2e12572d60202cea42bba6011f5dcdb386311a3853e642680f1dbc9224d72806",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/recommendationRoutes.js": {
+      "filePath": "backend/src/routes/recommendationRoutes.js",
+      "contentHash": "35f61ac0c0dda92e01f8bd54c2d053310e16438a992c5abd8721668206c7ef42",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/recurringRoutes.js": {
+      "filePath": "backend/src/routes/recurringRoutes.js",
+      "contentHash": "1a5750d753b7fb756fcdb1478e0a5d904fb2e1bdd29ea41c98a0720090537b2a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/reportRoutes.js": {
+      "filePath": "backend/src/routes/reportRoutes.js",
+      "contentHash": "ac829c64576103f07c484863c1fa5929c9ca550763138286a5328ec0b8bedbad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/subscriptionRoutes.js": {
+      "filePath": "backend/src/routes/subscriptionRoutes.js",
+      "contentHash": "8d52bd490871d3736d696d94c0f462f19996ac67587d8338052c0ab701190688",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/transactionRoutes.js": {
+      "filePath": "backend/src/routes/transactionRoutes.js",
+      "contentHash": "60f1507faa140439286b5fac0e8d82417099196c611928ddfa0902e7a93e69bf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/routes/xpRoutes.js": {
+      "filePath": "backend/src/routes/xpRoutes.js",
+      "contentHash": "becc88605b0dd0f1e0be3a4ea129211e82ca6fba67cd441c1cb0f940ed3c1a3d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/server.js": {
+      "filePath": "backend/src/server.js",
+      "contentHash": "5e509f740b9cfa1507c36266bc36bc1d47e471b55e7ce1760437d192aae1b37e",
+      "functions": [
+        {
+          "name": "startServer",
+          "params": [],
+          "exported": false,
+          "lineCount": 35
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 148,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/aiContextBuilder.js": {
+      "filePath": "backend/src/services/aiContextBuilder.js",
+      "contentHash": "dacb087057c16e35e9d9dc22a92a1bfaec20d4498680dfcff90e2a304a5e9b4b",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AIContextBuilder",
+          "methods": [
+            "buildContext"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 248
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 280,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/aiService.js": {
+      "filePath": "backend/src/services/aiService.js",
+      "contentHash": "2ab88c513e48304eb20c7af6d1bcecaa200b429f68c4035f31d1f34e3afde6e2",
+      "functions": [],
+      "classes": [
+        {
+          "name": "AIFallbackError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "AIService",
+          "methods": [
+            "generate",
+            "_callOpenAI",
+            "_callClaude",
+            "_callDeepSeek",
+            "_getFallbackResponse",
+            "_fallbackScore",
+            "_fallbackInsights",
+            "_fallbackHealth",
+            "_fallbackActionPlans",
+            "_fallbackPredictions",
+            "_fallbackOpportunities",
+            "_fallbackAdvice",
+            "_fallbackChat",
+            "_sleep"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 1106
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1129,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/financialAdvisorService.js": {
+      "filePath": "backend/src/services/financialAdvisorService.js",
+      "contentHash": "567205b5680d185ac03400f4b1489f7eac3e505b6f065c4324b4b50db3155259",
+      "functions": [],
+      "classes": [
+        {
+          "name": "FinancialAdvisorService",
+          "methods": [
+            "constructor",
+            "getFullAnalysis",
+            "getScore",
+            "getSmartInsights",
+            "getActionPlans",
+            "getPredictions",
+            "getHealth",
+            "getAdvice",
+            "getSavingsOpportunities",
+            "askQuestion",
+            "_buildContext",
+            "_calculateScore",
+            "_aiScoreExplanation",
+            "_defaultExplanation",
+            "_aiInsights",
+            "_aiHealth",
+            "_aiAdvice",
+            "_aiOpportunities",
+            "_aiActionPlans",
+            "_aiPredictions",
+            "_answerWithAI",
+            "_saveMemory",
+            "_smartFallback",
+            "_extractJSON"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 1288
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1312,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/notificationService.js": {
+      "filePath": "backend/src/services/notificationService.js",
+      "contentHash": "baa5efccf1bfbc595dc66f1ce424d12cf92e1ecd9b64c73ca03100f027f611ce",
+      "functions": [],
+      "classes": [
+        {
+          "name": "NotificationService",
+          "methods": [
+            "start",
+            "createNotification",
+            "checkBudgetWarnings",
+            "sendWeeklySummary",
+            "checkGoalReminders"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 119
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 129,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/queueService.js": {
+      "filePath": "backend/src/services/queueService.js",
+      "contentHash": "f967ab2699e050edc804a795937863ec8ebb8e39a6d7c89564a43b50acaa125a",
+      "functions": [
+        {
+          "name": "setupQueueLogging",
+          "params": [
+            "queue",
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "closeAll",
+          "params": [],
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "getQueueStats",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "enqueueAIAnalysis",
+          "params": [
+            "userId",
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "enqueueExport",
+          "params": [
+            "userId",
+            "format",
+            "type",
+            "period"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "enqueueOCR",
+          "params": [
+            "userId",
+            "filePath"
+          ],
+          "exported": false,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 185,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/recurringService.js": {
+      "filePath": "backend/src/services/recurringService.js",
+      "contentHash": "f1cd28b87b08f72096a3329568ea8f5fc40470e95e379c7d2f188fa55a10adf1",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RecurringService",
+          "methods": [
+            "start",
+            "processRecurringTransactions"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 56
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/redisService.js": {
+      "filePath": "backend/src/services/redisService.js",
+      "contentHash": "e5e367a735859b170be8671860826483b129a352115a699a2b9225e3f17e3cdf",
+      "functions": [
+        {
+          "name": "connect",
+          "params": [],
+          "exported": false,
+          "lineCount": 33
+        },
+        {
+          "name": "getClient",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "isReady",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "get",
+          "params": [
+            "key"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "set",
+          "params": [
+            "key",
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "del",
+          "params": [
+            "keys"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "flushPattern",
+          "params": [
+            "pattern"
+          ],
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "cacheKey",
+          "params": [
+            "...parts"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "cacheMiddleware",
+          "params": [],
+          "exported": false,
+          "lineCount": 35
+        },
+        {
+          "name": "shutdown",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 227,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/services/socketService.js": {
+      "filePath": "backend/src/services/socketService.js",
+      "contentHash": "1feb279e1e9318ac776f2f5a639199260613b6fccfb7f360f7080743eb0ae8a7",
+      "functions": [
+        {
+          "name": "initSocket",
+          "params": [
+            "server"
+          ],
+          "exported": false,
+          "lineCount": 109
+        },
+        {
+          "name": "getIO",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "isUserOnline",
+          "params": [
+            "userId"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "emitToUser",
+          "params": [
+            "userId",
+            "event",
+            "data"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "emitToRoom",
+          "params": [
+            "room",
+            "event",
+            "data"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "sendNotification",
+          "params": [
+            "userId",
+            "notification"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "getOnlineCount",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getOnlineUserIds",
+          "params": [],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "shutdown",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/audit.js": {
+      "filePath": "backend/src/utils/audit.js",
+      "contentHash": "dc67e26fd43902cbcc122c1464db7f4473755ad8b56b7d90ba82c8f739d5f998",
+      "functions": [
+        {
+          "name": "recordAudit",
+          "params": [
+            "params"
+          ],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "auditFromRequest",
+          "params": [
+            "req",
+            "action",
+            "resource",
+            "resourceId",
+            "description",
+            "before",
+            "after"
+          ],
+          "exported": false,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/catchAsync.js": {
+      "filePath": "backend/src/utils/catchAsync.js",
+      "contentHash": "40b7cc459c648da505358a4e7df0a137d9ad7c4cecf34a20c1a03a2a00540f77",
+      "functions": [
+        {
+          "name": "asyncHandler",
+          "params": [
+            "fn"
+          ],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/email.js": {
+      "filePath": "backend/src/utils/email.js",
+      "contentHash": "56eab053f0fea09b7e4b01c0d5047dc4b36d79baf11cc8e1d914019d83112b9d",
+      "functions": [
+        {
+          "name": "sendEmail",
+          "params": [
+            "options"
+          ],
+          "exported": false,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/helpers.js": {
+      "filePath": "backend/src/utils/helpers.js",
+      "contentHash": "cf6e8a2d776e577a919bef57b0757c997c2e8f36511f8d5d3805184bc7c6ea52",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/logger.js": {
+      "filePath": "backend/src/utils/logger.js",
+      "contentHash": "3e8362b4efeb234e83e7b226d4c4d49c9c8428b61113ba77b5187e340d5f2afa",
+      "functions": [],
+      "classes": [
+        {
+          "name": "Logger",
+          "methods": [
+            "constructor",
+            "formatMessage",
+            "writeToFile",
+            "log",
+            "error",
+            "warn",
+            "info",
+            "debug"
+          ],
+          "properties": [],
+          "exported": false,
+          "lineCount": 35
+        }
+      ],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "backend/src/utils/money.js": {
+      "filePath": "backend/src/utils/money.js",
+      "contentHash": "6149fe46280d119c553bc302da1dddf9bf8b716f3edb40084d29407711742dbe",
+      "functions": [
+        {
+          "name": "roundToCents",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "toCents",
+          "params": [
+            "dollars"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "fromCents",
+          "params": [
+            "cents"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "safeSum",
+          "params": [
+            "...values"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "validatePrecision",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "maxTwoDecimals",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 99,
+      "hasStructuralAnalysis": true
+    },
+    "backend/uploads/.gitkeep": {
+      "filePath": "backend/uploads/.gitkeep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/.metadata": {
+      "filePath": "frontend/smartsave/.metadata",
+      "contentHash": "4e09b7d407e8bb43b0d670098fbac7924da27b75a68c35ba7b45f0003a7a11fe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/analysis_options.yaml": {
+      "filePath": "frontend/smartsave/analysis_options.yaml",
+      "contentHash": "e0ea485cfdbc3e12b93efb8679a5ea73ebfe20ea4ca0c473dc594fc2fb274ed5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/android/app/build.gradle.kts": {
+      "filePath": "frontend/smartsave/android/app/build.gradle.kts",
+      "contentHash": "5f3488de617d4cb45b02a7c588581ddfff7b00a04f73b096830b64ef8ace4c63",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 52,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/android/app/google-services.json": {
+      "filePath": "frontend/smartsave/android/app/google-services.json",
+      "contentHash": "1d2cff173af4c24130ca2aa91c2052ed535b5e74f8db063b20782d428fb8eb60",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/android/app/src/debug/AndroidManifest.xml": {
+      "filePath": "frontend/smartsave/android/app/src/debug/AndroidManifest.xml",
+      "contentHash": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/main/AndroidManifest.xml": {
+      "filePath": "frontend/smartsave/android/app/src/main/AndroidManifest.xml",
+      "contentHash": "30543e111e46e33d8c49d4e4d8dc90367957a2dc7fc4440561a740ada8ca438f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 51,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/main/kotlin/com/example/smartsave/MainActivity.kt": {
+      "filePath": "frontend/smartsave/android/app/src/main/kotlin/com/example/smartsave/MainActivity.kt",
+      "contentHash": "dfbb630c4717ceeb2458d2934e25b40544f5768224a493691d2a3b297fcbdc98",
+      "functions": [],
+      "classes": [
+        {
+          "name": "MainActivity",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "imports": [
+        {
+          "source": "io.flutter.embedding.android.FlutterActivity",
+          "specifiers": [
+            "FlutterActivity"
+          ]
+        }
+      ],
+      "exports": [
+        "MainActivity"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/android/app/src/main/res/drawable-v21/launch_background.xml": {
+      "filePath": "frontend/smartsave/android/app/src/main/res/drawable-v21/launch_background.xml",
+      "contentHash": "7ca6d5cec2169c5a98661a119db23a6f3399c8fef2256ff04f3a642831282478",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/main/res/drawable/launch_background.xml": {
+      "filePath": "frontend/smartsave/android/app/src/main/res/drawable/launch_background.xml",
+      "contentHash": "94433756fe10005ddd6fc55cc5c0b1e9f3c10b66a08ceac795ece6713d34e28a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/main/res/values-night/styles.xml": {
+      "filePath": "frontend/smartsave/android/app/src/main/res/values-night/styles.xml",
+      "contentHash": "8c5bad5152f217e837519f9c15211d19f39bd45f5f67faf6dd81cb4b299e518f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/main/res/values/styles.xml": {
+      "filePath": "frontend/smartsave/android/app/src/main/res/values/styles.xml",
+      "contentHash": "937d7c82f539c72eb94fd3a3773f29b3d3fef1997213c92cb632298cedf4bda9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/app/src/profile/AndroidManifest.xml": {
+      "filePath": "frontend/smartsave/android/app/src/profile/AndroidManifest.xml",
+      "contentHash": "30b0832ed8b92dfbd6ae2abfa939ccf26333d37600056b1572bd4a397a18a74b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/build.gradle.kts": {
+      "filePath": "frontend/smartsave/android/build.gradle.kts",
+      "contentHash": "5d700c4a6937e1cafbe29a908a914ad753dcdf5ffc8ce126a989f86dcf015b7a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/android/gradle.properties": {
+      "filePath": "frontend/smartsave/android/gradle.properties",
+      "contentHash": "4922e39cd2ea910bd97156fd4320b0be9217df262fc45435ce408bad534a20d0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/gradle/wrapper/gradle-wrapper.properties": {
+      "filePath": "frontend/smartsave/android/gradle/wrapper/gradle-wrapper.properties",
+      "contentHash": "297c9e63b6fa6e7e8b221900fa1787c1a0e38869d8957da66389fd0f6b00f78e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/android/settings.gradle.kts": {
+      "filePath": "frontend/smartsave/android/settings.gradle.kts",
+      "contentHash": "a9b5756048f668d4ebf355116678fd334cd5f2169b7d4518ad19b8df14d3af36",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/assets/fonts/.gitkeep": {
+      "filePath": "frontend/smartsave/assets/fonts/.gitkeep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/assets/icons/.gitkeep": {
+      "filePath": "frontend/smartsave/assets/icons/.gitkeep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/assets/images/.gitkeep": {
+      "filePath": "frontend/smartsave/assets/images/.gitkeep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/assets/lottie/.gitkeep": {
+      "filePath": "frontend/smartsave/assets/lottie/.gitkeep",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/devtools_options.yaml": {
+      "filePath": "frontend/smartsave/devtools_options.yaml",
+      "contentHash": "e8ba6877169885107d577db47d3e9eb10b32b7aded5959dfc52cae8022a5de84",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/ios/Flutter/AppFrameworkInfo.plist": {
+      "filePath": "frontend/smartsave/ios/Flutter/AppFrameworkInfo.plist",
+      "contentHash": "da12038f9b2688a8a26160fea2609fa8fcb11421448c109f09c0f573efe7698d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Flutter/Debug.xcconfig": {
+      "filePath": "frontend/smartsave/ios/Flutter/Debug.xcconfig",
+      "contentHash": "690b8a8b1ae15ddd29b241429963e971bbc6720ab22f154cf8cf6b085b6d4925",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Flutter/Release.xcconfig": {
+      "filePath": "frontend/smartsave/ios/Flutter/Release.xcconfig",
+      "contentHash": "75abb819a9de1e0e41c835e7307bc64a506cac25a9a5c0b0d8253fa1c3d5d422",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Podfile": {
+      "filePath": "frontend/smartsave/ios/Podfile",
+      "contentHash": "401a34b2223079a1a7969457638cbe218991277199c3b7ca9d087ec5765ca3f4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 80,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/project.pbxproj": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/project.pbxproj",
+      "contentHash": "0b7c6fbf6f28f493fdda6b0d4280bb50e01cbf911910185253862b210d01bd06",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 757,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "contentHash": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+      "contentHash": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "contentHash": "054af6ed3243b0a3fce07dad0bcff6ffc6a1313314293cc1a18069f037ddcd05",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+      "contentHash": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
+      "filePath": "frontend/smartsave/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme",
+      "contentHash": "9fbce429f56243561dd437a527136c9f9ed77165e3b271b923faf236cfcd0484",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 120,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcworkspace/contents.xcworkspacedata": {
+      "filePath": "frontend/smartsave/ios/Runner.xcworkspace/contents.xcworkspacedata",
+      "contentHash": "465e6de5660384eb6832e8078920ba6cd5305c445cb29a24a86a2fda4aa6b67e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "filePath": "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+      "contentHash": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved": {
+      "filePath": "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+      "contentHash": "054af6ed3243b0a3fce07dad0bcff6ffc6a1313314293cc1a18069f037ddcd05",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings": {
+      "filePath": "frontend/smartsave/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings",
+      "contentHash": "11b247bc6796892d67c9a821d18604db4dd6a880981b34f38460b9866e6b247f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner/AppDelegate.swift": {
+      "filePath": "frontend/smartsave/ios/Runner/AppDelegate.swift",
+      "contentHash": "390fb5e43cf76a93532161b5810327ed6fad7ed5d167a549cd91e22f162e8578",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "filePath": "frontend/smartsave/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "contentHash": "3b1e214f466ffedff74baa5598ad5c4421130eea6bc8d57b8fe23435e8280ae4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 123,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json": {
+      "filePath": "frontend/smartsave/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json",
+      "contentHash": "ccc7950fd5f5b82067c85f667940a9d59189151460761ece8098ca78daa19469",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md": {
+      "filePath": "frontend/smartsave/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
+      "contentHash": "a985b626c4f7546a8ba392d135e9226c3547c8e2b46895f5f2bdf40d7b14ef9f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/ios/Runner/Base.lproj/LaunchScreen.storyboard": {
+      "filePath": "frontend/smartsave/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+      "contentHash": "857e61203b3deafb05766d8fcda898b86a7cb6f3d5e385ecc9926c4d698215e9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner/Base.lproj/Main.storyboard": {
+      "filePath": "frontend/smartsave/ios/Runner/Base.lproj/Main.storyboard",
+      "contentHash": "fd367b6c43006d61b730f674970dd48b9f662c8f2264e52ffc1558102a2c9f2d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner/Info.plist": {
+      "filePath": "frontend/smartsave/ios/Runner/Info.plist",
+      "contentHash": "047f221d4768e554376a1e5085a4c33e87bda81796a4bb973cc828d4e108e9b9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 93,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/Runner/Runner-Bridging-Header.h": {
+      "filePath": "frontend/smartsave/ios/Runner/Runner-Bridging-Header.h",
+      "contentHash": "1a8d11d01d1cc92c650c9c9ed35299240052d4683a15a719a2315ef44185e074",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/ios/Runner/SceneDelegate.swift": {
+      "filePath": "frontend/smartsave/ios/Runner/SceneDelegate.swift",
+      "contentHash": "add68b905971dedfcc0d0b5b7118030de5925ba8c081ad9815463699e3a444ad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/ios/RunnerTests/RunnerTests.swift": {
+      "filePath": "frontend/smartsave/ios/RunnerTests/RunnerTests.swift",
+      "contentHash": "5e8f4908dacea6f29b2a790e4d38bf5fded69096063f9a27a2f21584d62b30c0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/app/app.dart": {
+      "filePath": "frontend/smartsave/lib/app/app.dart",
+      "contentHash": "544c5e137ffb253c7de7dcbe8a744fea51e4b66d6c333257616a2292cd496323",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/app/routes.dart": {
+      "filePath": "frontend/smartsave/lib/app/routes.dart",
+      "contentHash": "a61475641c0333790001a6e73a6abfb16d1345ca39d3091e5204b9d9cd2d6b5a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 127,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/constants/api_constants.dart": {
+      "filePath": "frontend/smartsave/lib/core/constants/api_constants.dart",
+      "contentHash": "52bfc90b883c501d4d9b9f96a1d7546c1823c2aaccc32ccd977f02d91784bf24",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 76,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/constants/app_constants.dart": {
+      "filePath": "frontend/smartsave/lib/core/constants/app_constants.dart",
+      "contentHash": "e8238c12179ae3c00563ebb2715b60b0adc7bde2ca66b2340b8b5d1024462d9e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 66,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/di/service_locator.dart": {
+      "filePath": "frontend/smartsave/lib/core/di/service_locator.dart",
+      "contentHash": "ca618f4cbd02c23188c759f5fa6977301ebb3dd391600b3d1ab92bbb268c2ec9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/errors/failures.dart": {
+      "filePath": "frontend/smartsave/lib/core/errors/failures.dart",
+      "contentHash": "90981619d3e5395cc8d4e375b67175d04ee152262732d4a80967b8e9259e2438",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/errors/provider_error_handler.dart": {
+      "filePath": "frontend/smartsave/lib/core/errors/provider_error_handler.dart",
+      "contentHash": "f058df84e616eeb574fa2ccaedd110285e5fd35a337cb44dbf63456fd0ecebca",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 110,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/network/api_client.dart": {
+      "filePath": "frontend/smartsave/lib/core/network/api_client.dart",
+      "contentHash": "8f6e36c74766b5ea9849637ba6700272e6c54ea0dcbba262541e4b8fd9d3ffd4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 435,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/network/result.dart": {
+      "filePath": "frontend/smartsave/lib/core/network/result.dart",
+      "contentHash": "34a6118c2bc62a1677f41bfb9e46987cded45d1d81589087f9adc48fa93e2e58",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 114,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/theme/app_colors.dart": {
+      "filePath": "frontend/smartsave/lib/core/theme/app_colors.dart",
+      "contentHash": "e93082bd6cd4e495688ec7f5914e0ac9317c78de0ce59ec1d377f2fc17b073d5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 116,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/theme/app_theme.dart": {
+      "filePath": "frontend/smartsave/lib/core/theme/app_theme.dart",
+      "contentHash": "660404d024256bf38040ed23d9b7868a670a6e3e12e39f7156577b849ff82482",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 220,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/core/utils/currency_util.dart": {
+      "filePath": "frontend/smartsave/lib/core/utils/currency_util.dart",
+      "contentHash": "03fd9bc0e32a52b564ea132c053690d87546fc787cd2c1f95a0e0074bbd2b13b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/local/local_database.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/local/local_database.dart",
+      "contentHash": "f2514ce60108ba2c800c335b6eb7d005393c382703fa6f9773f1fcb68fa68394",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 151,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/auth_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/auth_remote_datasource.dart",
+      "contentHash": "672ca676712ef7301c025d37a96d61074650ec50967b071f07147ce2bf873a94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/auto_save_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/auto_save_remote_datasource.dart",
+      "contentHash": "e10b3a069b0d5f4086009ad2c2df0de6250f40d74775094c7558c8dd5a02af5b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 30,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/calendar_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/calendar_remote_datasource.dart",
+      "contentHash": "6ecca701f0b9a4fe1a2446439433ebe2b136527854521b980b8bd5378c2d10c7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/challenge_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/challenge_remote_datasource.dart",
+      "contentHash": "7a0fe0c6ea2b8b42ac63c0d5a8bf0701b0032558394b21ade6ca2f4c2303a4ab",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/financial_advisor_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/financial_advisor_remote_datasource.dart",
+      "contentHash": "7ca3db7b825411c4f86342c192cfd10eb9b92c7753653186e695f25862485216",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/net_worth_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/net_worth_remote_datasource.dart",
+      "contentHash": "0f0015a26473e0591c1ebb72ccdc7f5bb4bb434fae3702b45a63e0dca448182a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/recurring_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/recurring_remote_datasource.dart",
+      "contentHash": "108752df46c9690a8b0b8ba544fe26a0d84cb804471613646bbddea623c258c5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/report_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/report_remote_datasource.dart",
+      "contentHash": "4dcdf9130055a939be661efc53c2d3e7574d5209ba79fba425b17b0e6b16ad9e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/subscription_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/subscription_remote_datasource.dart",
+      "contentHash": "cddcfac9d767463622cb8eef03eecd13e5098c5b0e747acc1269d19218f86f13",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/transaction_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/transaction_remote_datasource.dart",
+      "contentHash": "418b16b4a3b31fc2754696dcdbe12c2173728fe04e072704ae96805aa8165b08",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/datasources/remote/xp_remote_datasource.dart": {
+      "filePath": "frontend/smartsave/lib/data/datasources/remote/xp_remote_datasource.dart",
+      "contentHash": "c9931d65ad890cb8cb56fd8d4156c808d7d80af12c7c03bcbd0e329da25529d7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/analytics_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/analytics_model.dart",
+      "contentHash": "4bea6d449d3037e03c7f7b91608f5e7adb9b601ddc5d9cf9582cd08a413de3bf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 127,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/auto_save_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/auto_save_model.dart",
+      "contentHash": "bdd1997473d337d8d1ee9b5a9d8a62a633537b20a488a8f1285c8fe678338010",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 68,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/budget_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/budget_model.dart",
+      "contentHash": "3241e01fee36eb176a879bcf505fe4c72d95ae6aa54886cff0b515bd7ba68c0f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/calendar_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/calendar_model.dart",
+      "contentHash": "29a162dd1e4c61d6660dca4a35958e7e4a21578e9c22aff1a10842afbf545205",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/financial_advisor_models.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/financial_advisor_models.dart",
+      "contentHash": "29a75224ff1365978b4d34bee1678f1d4f007dc9d74cf51d086fd24a8d8ecbf0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 417,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/gamification_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/gamification_model.dart",
+      "contentHash": "ffb2406c7070bea198b34f40f00a03396f3055785adddf1320bd4e2eba2256f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 101,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/goal_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/goal_model.dart",
+      "contentHash": "157f39115b6ec3039ccf42275acf8b849985444f7fbd9edf2b4b8bb07e1a3a46",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 70,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/heatmap_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/heatmap_model.dart",
+      "contentHash": "b7884575dcc68684c0c5a9e95d953c642a0be3ce13a2dc1a5f67bd94b9758180",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/net_worth_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/net_worth_model.dart",
+      "contentHash": "ad01259431f889e2cf194bf2d560b00081a7553ab8c9f0ecac8af971b3e77732",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 81,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/notification_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/notification_model.dart",
+      "contentHash": "1d7e6600f73b0c8d86e1ae552d17051d4ec1fd933c2eed2c1190e78ff366c5b8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/recurring_transaction_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/recurring_transaction_model.dart",
+      "contentHash": "a2532295b12ed26f90d3848b17aba2fdcf8bd7604c6a2eef083f0d8f036598ee",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/report_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/report_model.dart",
+      "contentHash": "32f225900863c251a8609088144b29bb16f0f07eea591079d8c6b83e95cfc972",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 154,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/subscription_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/subscription_model.dart",
+      "contentHash": "f17da54cfab85838b918314aefea892efda616a257d73bb361cc47bcc1c8230f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/transaction_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/transaction_model.dart",
+      "contentHash": "5372dcdc690760968227700692ceac51bda653aa41fb2c86e41600870f2e48be",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/models/user_model.dart": {
+      "filePath": "frontend/smartsave/lib/data/models/user_model.dart",
+      "contentHash": "9a29232a979275a8529fcb2f48a9f3cc80f7418510e7462daf2711b65e2d3c7b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/analytics_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/analytics_repository_impl.dart",
+      "contentHash": "b07f3b3d0fcec179227429f20067dae95b43633a9adc18accb5bdef1309c705d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/auth_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/auth_repository_impl.dart",
+      "contentHash": "ef381029b647cb183ca8ee4c9b16a0a8913d6538652400f7a3718dadb3c43660",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 79,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/auto_save_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/auto_save_repository_impl.dart",
+      "contentHash": "04d9477b69baef1f2ab0553c0b8b8d1b4766859d0d2a960d7fa56276afbd0e30",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/budget_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/budget_repository_impl.dart",
+      "contentHash": "68a20157305ccc86dfd571eea68593df1b21d4c009cd2462d0f01fbc8d604b4d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/cacheable_repository.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/cacheable_repository.dart",
+      "contentHash": "8f7c5b4d8626799f9af90759d47b345567c0b790267dae2332b28632c786c6e1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 78,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/calendar_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/calendar_repository_impl.dart",
+      "contentHash": "c69980b2c07f569011e86cb3b12f150e561df7e479adeed1e8154a8ae39492cb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/challenge_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/challenge_repository_impl.dart",
+      "contentHash": "22c5681dce382b9272ddae7f3e8c1497245ab2042f9e527bf4c19d3e05e5bf2d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 38,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/financial_advisor_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/financial_advisor_repository_impl.dart",
+      "contentHash": "e2cd3b9425afc927ddad9b9d3906db6a82b00d7bbd2ac0d222f4c79c207d3a9b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/goal_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/goal_repository_impl.dart",
+      "contentHash": "ed9f4e395ae2af175c7fe177b12a8a2ac5725bffe9e1ee11c5fb62cab08618cc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/net_worth_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/net_worth_repository_impl.dart",
+      "contentHash": "91bf70e67982371df6b357f39ed425c29272117fe271c6b52bc9872f0fab5c89",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 23,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/notification_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/notification_repository_impl.dart",
+      "contentHash": "778304ca5215c137fa23ac7bc435636dee265db30a8c74ceb9c7e9a730ee539b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 46,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/recurring_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/recurring_repository_impl.dart",
+      "contentHash": "b834cfdb1c6808e86215cfd4a61f887d7cb00c06e41e8b9ba7eafafa67a9bb91",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/report_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/report_repository_impl.dart",
+      "contentHash": "1c1613b4d18b0477cacf4e93c72c12d9c5149fe15dc04873706d527f45e54272",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/subscription_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/subscription_repository_impl.dart",
+      "contentHash": "fd3edd9145817f3f8eda271250851518a90caa30c9f3a191bac7113898aea7d6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 45,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/transaction_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/transaction_repository_impl.dart",
+      "contentHash": "63532d3b5daaa7bd58940b222a89ee909522069f4fc0a9b0ee18c4d21fa31986",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 103,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/data/repositories/xp_repository_impl.dart": {
+      "filePath": "frontend/smartsave/lib/data/repositories/xp_repository_impl.dart",
+      "contentHash": "b47a420411d6ed5dfa8d42783dd1390be8bd9ed5e47177efd74041606e73b230",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/analytics_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/analytics_repository.dart",
+      "contentHash": "890c0a92d6ae3fd1890aeb656bb5944ede38087e2b4a76f8dd6a1a2aa9b78806",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/auth_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/auth_repository.dart",
+      "contentHash": "8a72091539114a9b6f158232d6c74c0eb0070b9b5589f71dbf62993f30856e21",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/budget_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/budget_repository.dart",
+      "contentHash": "b1ee09d1f00fb73ca125699e435f9dd49e163ecede2e7a2fa0ea19820c6273d3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/goal_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/goal_repository.dart",
+      "contentHash": "5f15f98fba98dda1aee5ad818d3ce268fbf6c457425a2ffc4a9c2c1462af991f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/recurring_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/recurring_repository.dart",
+      "contentHash": "c463007acae4d53a0462018fdc9b5f3900d3fb3b89c01f4cbff40e232a65dc13",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/repositories/transaction_repository.dart": {
+      "filePath": "frontend/smartsave/lib/domain/repositories/transaction_repository.dart",
+      "contentHash": "1662512a407c34584d973a32e4765cd805ee545e5e90fed4bec33d551d7b5156",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/analytics/get_dashboard_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/analytics/get_dashboard_usecase.dart",
+      "contentHash": "639838c0eca5a59763acfa1c7aa357deff9eca6d5aed6455110341849dd243c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/auth/login_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/auth/login_usecase.dart",
+      "contentHash": "ccca6b6e05b5a758a8efef31eb5f94303be5068667bbcc15a6c12aed1ca2e236",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/auth/register_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/auth/register_usecase.dart",
+      "contentHash": "c9bc1016d4c89dacf2bd44d009bd756ef6eb13348dde7d1e727edb19cc2e6a54",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/budget/set_budget_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/budget/set_budget_usecase.dart",
+      "contentHash": "dfeed50bdbd162c6d6095359411a49bca2a05ddbd4a637ff041b2196e3092a27",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/goal/add_goal_contribution_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/goal/add_goal_contribution_usecase.dart",
+      "contentHash": "f864d1400c6b121fae6c2e6bf05ea1b67e73afdb7f5b6142338668c2255b0f18",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/goal/create_goal_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/goal/create_goal_usecase.dart",
+      "contentHash": "c618ffd238ba30c955d334d3c2f3a398672a6db9cb8e2d4816f342cba142a075",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/transaction/add_transaction_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/transaction/add_transaction_usecase.dart",
+      "contentHash": "1b95c9abe86514ca20e8af5461176dcf5dc7215d6aca6b7dead74e92d8d8afb0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/domain/usecases/transaction/get_transactions_usecase.dart": {
+      "filePath": "frontend/smartsave/lib/domain/usecases/transaction/get_transactions_usecase.dart",
+      "contentHash": "872235696de60846cb543515451a4cea76201f47d7b227c6d0db23f6622edfae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/main.dart": {
+      "filePath": "frontend/smartsave/lib/main.dart",
+      "contentHash": "b7fa97bcb44db851aa5d2ae1bae188ba344e05c6ab40c745d0b25a71e27942d1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 84,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/analytics_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/analytics_provider.dart",
+      "contentHash": "fdc998eee9a5cc8118912bcd0f14b317cd6e70415d22f4157732514687d8b3d3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 113,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/auth_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/auth_provider.dart",
+      "contentHash": "f137162a485d5cdd0a0135c2712482c16bd70fa81073455f5987778f311d05c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 414,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/auto_save_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/auto_save_provider.dart",
+      "contentHash": "1045527f7fe76e1e95acb1ee14458441ea7c531ce3d70ec1ec23807b99be434a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/budget_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/budget_provider.dart",
+      "contentHash": "c433c636f1f0c6791f1ad892575d945c5d06066aa527d455f5bc03851c237236",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 111,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/calendar_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/calendar_provider.dart",
+      "contentHash": "b02743018bfa14d5ed0e26d252f7eb3c321371f0a7aec412db6aeb18db98692f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/challenge_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/challenge_provider.dart",
+      "contentHash": "39cd2ad1ca14d7610e81256fee4bc4dd1e0cb9287a01353e44f9b33153e8b73c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 78,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/financial_advisor_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/financial_advisor_provider.dart",
+      "contentHash": "0019cb637ae19dc570e58be380963380534fef02dafd1e3802f2a6ce9704b794",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 281,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/goal_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/goal_provider.dart",
+      "contentHash": "532f04b13de25a4778a573feb69be4f645479498a47b9e74d7e3f004c41ac8d4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 111,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/net_worth_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/net_worth_provider.dart",
+      "contentHash": "93e202a86efeb6c550f2ba0aa454cfdd4820f6b970365425641dbbca1eb1cde7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/notification_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/notification_provider.dart",
+      "contentHash": "fd4aa1d348769c9fff87d619f5c4f9819399c346f8c2d8da35e1a513ce192fad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/recurring_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/recurring_provider.dart",
+      "contentHash": "d8ae542d6e2312a8c02b9ebae7ff79eab7e6880f198d6482268a53f10f3e0385",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/report_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/report_provider.dart",
+      "contentHash": "b2ffe385d464738038013fa587be194d2376898c8665879cfa7b6bdef21d8aec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 86,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/subscription_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/subscription_provider.dart",
+      "contentHash": "bff760d12f1f176bd1c9037021e6bdfa8fed5f3ee16dc38345f7ef982d13ebbe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 125,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/theme_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/theme_provider.dart",
+      "contentHash": "a689edca2546f6a4715e574d6a585296fd3c10bbb6de07650e73e0e5ddcd59cf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/transaction_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/transaction_provider.dart",
+      "contentHash": "e8af030a3eea67ca1deab700218fc09bb7042ae2df0aaaab66e85f5bbc09c772",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 119,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/providers/xp_provider.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/providers/xp_provider.dart",
+      "contentHash": "2df931d3ea292e1b706187a2ba0bb4a1edf61e344f022d5788413a7795e499bc",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/add_expense_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/add_expense_screen.dart",
+      "contentHash": "3d59129f24a480d9d1c7d86e75bce3781be82f23053a6c75b373f10fc7e48cf1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 438,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/add_income_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/add_income_screen.dart",
+      "contentHash": "9fd1e32c8e244b7b64f22cf0e770c20136970b024c48b94dd3b6d8027f049560",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 382,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/analytics_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/analytics_screen.dart",
+      "contentHash": "b0c52956eeff34aaf576a5cc0c6494bc8759d958f23b9fa43cfe5c3faf649cc7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 645,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/auto_save_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/auto_save_screen.dart",
+      "contentHash": "1818139e74c91236b4150b11ffcc944a996bb6dcfe37d9f31abcad80b9a57761",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 468,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/budget_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/budget_screen.dart",
+      "contentHash": "941db29cc6c167697d566cba1cb751cc1409891448ed2d890c2cfe9d77109fb8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 222,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/calendar_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/calendar_screen.dart",
+      "contentHash": "1f886527924e01af42b7c5b9ea8574d941047db558acee90443d7a7b8e06f1fd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 246,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/dashboard_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/dashboard_screen.dart",
+      "contentHash": "84352ada9b54a82006d4c46471a6871bde6d1de233c6206a933278cad48c28d5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 447,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/financial_advisor_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/financial_advisor_screen.dart",
+      "contentHash": "9732c0cac14dcc8d90017e98f569d5af34b6058d1c988d055bf1c0590caa2a7b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1301,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/forgot_password_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/forgot_password_screen.dart",
+      "contentHash": "c8b2b26e788f2f5aa8633d068510eae4b6799eef5825cd8c8ad7676b2830742f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 72,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/gamification_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/gamification_screen.dart",
+      "contentHash": "24635e1cada4d2c6b8a1924c9c3078d1df40f66dc33c8a360d65bba93a2998c3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/goal_detail_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/goal_detail_screen.dart",
+      "contentHash": "9b3c1eb556b4cc4f90cdc3c01487fc50968ea0b7633c26bc35797f1dfed35296",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 125,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/goals_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/goals_screen.dart",
+      "contentHash": "ee02fa4981dd2b69d88412aec8cf56ba5f7bbd2ec208fc685674c00ea8b23ba5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 292,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/heatmap_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/heatmap_screen.dart",
+      "contentHash": "aab410b64fac7652dd7abf4d02dd593545a733afcba1b7406613998999aa6428",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 272,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/level_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/level_screen.dart",
+      "contentHash": "ec856d48e705194af727a59f3e09ec668e955ee1292f013cc954c5de861bf31a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 246,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/login_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/login_screen.dart",
+      "contentHash": "f5e918e9b525f86ea4ea8f4ac113d8033185760e123b67682cfb9266de876e72",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/net_worth_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/net_worth_screen.dart",
+      "contentHash": "26e702850061ec4190e04a9da60d56aa42fc14d88f09440543b4872c32c878b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 245,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/notifications_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/notifications_screen.dart",
+      "contentHash": "65fb3300d73869e9176b16d2fcaecf71397d88d082183c06d4f722687fbea002",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 152,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/onboarding_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/onboarding_screen.dart",
+      "contentHash": "d73d26a76f94a6513734c3c3562af514afba4c2be4e92b331340d070387c177a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 191,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/profile_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/profile_screen.dart",
+      "contentHash": "77686164e1bbc77c9a82373750699e0c82786705974df10b757a1468f090a8c5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 135,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/quick_add_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/quick_add_screen.dart",
+      "contentHash": "734853577985326447057af402b16218fa633c3b5696f37b1de4c9b0bec1b459",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 739,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/register_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/register_screen.dart",
+      "contentHash": "03456ef22a56058b3631c32f60b364fb06d94a0dd0ee6f35eefa501f8a2f10ec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/report_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/report_screen.dart",
+      "contentHash": "a9618d88754e79d13d419b434b83488f6243c2605f731b784ebfa6594e3fcf95",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 471,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/settings_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/settings_screen.dart",
+      "contentHash": "9ec9c6c9c1f6f68f6e3d5b86741838b1a5198f47eafd8dca02799c8811c61c51",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 146,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/splash_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/splash_screen.dart",
+      "contentHash": "a6ec7e8062a24e2ac10d035633dbfbc8b626a9cfdec0f0e8f39681255b4ef5d4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 141,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/subscriptions_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/subscriptions_screen.dart",
+      "contentHash": "64cc126b122be9146da220741e631e7e49ee3d5d46a4f0fee1855251eca81170",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 330,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/transaction_detail_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/transaction_detail_screen.dart",
+      "contentHash": "62ba650bd3f3f782acb7fd348bfed63fc8bb5deb73fa82caaf5df6bd36b2e10c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 172,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/screens/transactions_screen.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/screens/transactions_screen.dart",
+      "contentHash": "faddca251033e7478e851a1930d6f22ce24caa46f1e197047a485264b82ef972",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 327,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/auth/route_guard.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/auth/route_guard.dart",
+      "contentHash": "bdcac4c6268bc860500dcddb9f6fc797d53052edc6e7b94442bb47c25c9375a6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 161,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/auth/session_guard.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/auth/session_guard.dart",
+      "contentHash": "9d192e4eea022c8b4e1fe69013dcec0bb95b238ce2ac3b00b2560fb8f2d177a0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 118,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/common/custom_text_field.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/common/custom_text_field.dart",
+      "contentHash": "a573d9502813180b61f0065e63af74b8b2f5acff83702a25b479f41edd59dc04",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/common/empty_state.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/common/empty_state.dart",
+      "contentHash": "e7bef06eab0c11a9812b4c4d70dc8140f1249efec3fc9c3264ebe6d8146cdfac",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 49,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/common/error_banner.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/common/error_banner.dart",
+      "contentHash": "6185926f2e503f8b0ab5c22edeff40b3442372117e52eeeae52f9bac57079cb7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 144,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/common/loading_button.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/common/loading_button.dart",
+      "contentHash": "92840bc85cbb94ac2026710055629cef04e328a00e8ee539b437c61d9f4d3c68",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/category_selector.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/category_selector.dart",
+      "contentHash": "b6773c540c7093d12317143887804afbc1b0daa5617e29646c14c246eb559998",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/chart_card.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/chart_card.dart",
+      "contentHash": "b0094561468d20255fc536b5d454a633bbe03610f06709e85d407026e5a4bd09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/fintech_amount_card.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/fintech_amount_card.dart",
+      "contentHash": "9474c5f5fb8c6b62e6e4a1eeb5cb755a05e24504935810a627399d718f52eddd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/health_card.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/health_card.dart",
+      "contentHash": "725402d5c5d4786d6e9dbf235c41eb6fd37bd468f713da72524e4e041474c57c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 65,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/insight_card.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/insight_card.dart",
+      "contentHash": "b6a76febd29605f52326bba4bd84ac3a7a9f41e82e6815e0b8c5bb7112adfadb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/metric_card.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/metric_card.dart",
+      "contentHash": "2282b35fcc15dbabcfc2f4428a20fcdcb6e4491f874beaf62c228786a1842d73",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/payment_method_badge.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/payment_method_badge.dart",
+      "contentHash": "492d90c8a338a8c419cf4899f98064fc0978c7c250972c087c8553875e529d09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 44,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/presentation/widgets/fintech/payment_selector.dart": {
+      "filePath": "frontend/smartsave/lib/presentation/widgets/fintech/payment_selector.dart",
+      "contentHash": "ef060eaeab49d52706e861dc720dc82fba5ddc2858325cb15115536c14638563",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/cache_manager.dart": {
+      "filePath": "frontend/smartsave/lib/services/cache_manager.dart",
+      "contentHash": "11df36db49086d43f3e968f2fc57225688223268dc120faed3cc688ae6a289c9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 256,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/download_service.dart": {
+      "filePath": "frontend/smartsave/lib/services/download_service.dart",
+      "contentHash": "d9da8026743ceeb7eff92717aaf3d49ea95413dd378d06b0db6fd8eb0bbba503",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/export_service.dart": {
+      "filePath": "frontend/smartsave/lib/services/export_service.dart",
+      "contentHash": "6a79c00b20872d01137218c21d14cca5d14688c30a4cefc35fd67864b927fe09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/google_auth_service.dart": {
+      "filePath": "frontend/smartsave/lib/services/google_auth_service.dart",
+      "contentHash": "58338a04006da75ec6ab216481daa7e26657c16153b4ad0a70054faaf9f68300",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 293,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/notification_service.dart": {
+      "filePath": "frontend/smartsave/lib/services/notification_service.dart",
+      "contentHash": "f8b44849021316347d94a02b45ecafcb57b77a3c52e1a6623c4fdf2a5bc15171",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 92,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/lib/services/sync_service.dart": {
+      "filePath": "frontend/smartsave/lib/services/sync_service.dart",
+      "contentHash": "4dc3a8e8326a047cca9976027e95242023d39597105cdee2331d70ca99d4ae43",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Flutter/Flutter-Debug.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Flutter/Flutter-Debug.xcconfig",
+      "contentHash": "802714a37a8fd3065fb3d8e21cbcfbb3147c7ad25f25934b64590085aa9f5b28",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Flutter/Flutter-Release.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Flutter/Flutter-Release.xcconfig",
+      "contentHash": "d575f436f8bab30d7096792396e73b65db242edc01913c4123d2c29e713b3a6d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Flutter/GeneratedPluginRegistrant.swift": {
+      "filePath": "frontend/smartsave/macos/Flutter/GeneratedPluginRegistrant.swift",
+      "contentHash": "02931ab8534b207445719b81a8e050201d0188d178c27d876a5d089854e2685e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Podfile": {
+      "filePath": "frontend/smartsave/macos/Podfile",
+      "contentHash": "e85521f1c80ceaca2c2af8578c97857fc84f4c467514025c0b89bb55c0e8543a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner.xcodeproj/project.pbxproj": {
+      "filePath": "frontend/smartsave/macos/Runner.xcodeproj/project.pbxproj",
+      "contentHash": "84e1fdbc26705aff49dad4ac9a6e4a0cdef00cd872225ea94091d58c7aeb48d5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 706,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "filePath": "frontend/smartsave/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+      "contentHash": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme": {
+      "filePath": "frontend/smartsave/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme",
+      "contentHash": "c291a6a89f927a0f88625723bad82b440f6efdb711dc9eb400cbff3f4fb918ca",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 100,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner.xcworkspace/contents.xcworkspacedata": {
+      "filePath": "frontend/smartsave/macos/Runner.xcworkspace/contents.xcworkspacedata",
+      "contentHash": "46c3c9702ff7c5584e11c954d943cfb6e07fb26e3fbd072ddbc0f388aa352de1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": {
+      "filePath": "frontend/smartsave/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
+      "contentHash": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/AppDelegate.swift": {
+      "filePath": "frontend/smartsave/macos/Runner/AppDelegate.swift",
+      "contentHash": "ce9dbe45a57c59e85519da50a26c471615b9c8cdd85a8f4a39d2e480e62a4af4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "filePath": "frontend/smartsave/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "contentHash": "bc6ba8105ca69651aeeb77358851590de295dca04681a1d58c0f449641c242f3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 69,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/macos/Runner/Base.lproj/MainMenu.xib": {
+      "filePath": "frontend/smartsave/macos/Runner/Base.lproj/MainMenu.xib",
+      "contentHash": "be9e9ef8469d3262370e0f0b855ed163cbf9c8362c59e330b2ffe63b86fa42f4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 344,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Configs/AppInfo.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Runner/Configs/AppInfo.xcconfig",
+      "contentHash": "2f5bc580b31402ecaa63774c9cf5419cf90524c0155197979974b879debb2d8a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Configs/Debug.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Runner/Configs/Debug.xcconfig",
+      "contentHash": "8067d533ef6593760baad9a9855a786a7a77470fcc3f0925ec04fe43bc1ac4b0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Configs/Release.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Runner/Configs/Release.xcconfig",
+      "contentHash": "7a6a4b4d973a23052fa0a0388dd261e32d311d7b66ba1bfc3b914b361808ac61",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Configs/Warnings.xcconfig": {
+      "filePath": "frontend/smartsave/macos/Runner/Configs/Warnings.xcconfig",
+      "contentHash": "0e341a392b16ad302d12890aa3dac9257a6c10ece685437604259a85341645a3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/DebugProfile.entitlements": {
+      "filePath": "frontend/smartsave/macos/Runner/DebugProfile.entitlements",
+      "contentHash": "ebaab2b9992173de422c33e1fbab7f6e31acaa2213956097ac8cefd894a91ac8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Info.plist": {
+      "filePath": "frontend/smartsave/macos/Runner/Info.plist",
+      "contentHash": "f253e89c512b3a9a81bc5cdd7a14bf932470f835f261654a808ea4549cd94aad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/MainFlutterWindow.swift": {
+      "filePath": "frontend/smartsave/macos/Runner/MainFlutterWindow.swift",
+      "contentHash": "65c9613c11bcedfa51416b16c975d8ba6ff12b405fc19d60db8755d92e86d9fe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/Runner/Release.entitlements": {
+      "filePath": "frontend/smartsave/macos/Runner/Release.entitlements",
+      "contentHash": "b746c74b201e6af4e0864fbd1f4f629f96156a7ec4b7208bc995d0a5089bb592",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/macos/RunnerTests/RunnerTests.swift": {
+      "filePath": "frontend/smartsave/macos/RunnerTests/RunnerTests.swift",
+      "contentHash": "6bc180bc77c7def7a21d197233e25dff42cc493ab9d294632edafc18fdf0ac44",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/pubspec.yaml": {
+      "filePath": "frontend/smartsave/pubspec.yaml",
+      "contentHash": "29ded736240cfdb8b7067907a7924c0fd9f490a1613cf13aa7f825f267d988bb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 103,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/README.md": {
+      "filePath": "frontend/smartsave/README.md",
+      "contentHash": "b843646743f1f91a06b93871b246266e1cdc25225b6c01959e75c958127d8e05",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "frontend/smartsave/test/providers/auth_provider_test.dart": {
+      "filePath": "frontend/smartsave/test/providers/auth_provider_test.dart",
+      "contentHash": "96af67d459d6a7cf028425a52b01ec8656908400e74736e9bc510d42081e392b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 173,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/test/services/google_auth_service_test.dart": {
+      "filePath": "frontend/smartsave/test/services/google_auth_service_test.dart",
+      "contentHash": "62b542a582b728d68375e493aae2b433cd68088095eb7a2f8ddd761e5ad10453",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 77,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/test/widget_test.dart": {
+      "filePath": "frontend/smartsave/test/widget_test.dart",
+      "contentHash": "4191365f0776695624134831278889709a2a014568ec97d61d167a948ce4aff4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/test/widgets/login_screen_test.dart": {
+      "filePath": "frontend/smartsave/test/widgets/login_screen_test.dart",
+      "contentHash": "2b1d96d90c87163c9f318c096ab2a88ef878c25851c527cb14bd007c58b39e75",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 124,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/web/index.html": {
+      "filePath": "frontend/smartsave/web/index.html",
+      "contentHash": "c02ce245319f1f6dfbec0dfba766d65df7deb004f1793910f6262a6cd41b193e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "frontend/smartsave/web/manifest.json": {
+      "filePath": "frontend/smartsave/web/manifest.json",
+      "contentHash": "93e15f30cdf0bc04564a2dd4dadff32b56b29af167e1cfc65bd4a623371fe54d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "fa6735c787411e86292911a0373081f35469e725d8c573da59e27bd599dd2858",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 255,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

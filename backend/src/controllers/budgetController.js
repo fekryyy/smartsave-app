@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
 const { auditFromRequest } = require('../utils/audit');
+const { sumTotal, sumByGroup } = require('../utils/decryptedUtils');
 
 const budgetController = {
   getAll: asyncHandler(async (req, res) => {
@@ -17,13 +18,13 @@ const budgetController = {
       query.year = now.getFullYear();
     }
 
-    const budgets = await Budget.find(query).lean();
+    const budgets = await Budget.find(query);
 
     res.json({ success: true, data: budgets });
   }),
 
   getById: asyncHandler(async (req, res) => {
-    const budget = await Budget.findOne({ _id: req.params.id, user: req.user.id }).lean({ virtuals: true });
+    const budget = await Budget.findOne({ _id: req.params.id, user: req.user.id });
     if (!budget) {
       throw new AppError('Budget not found', 404);
     }
@@ -58,24 +59,19 @@ const budgetController = {
     });
 
     // Calculate current spending
-    const spent = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          type: 'expense',
-          category: category === 'Overall' ? { $exists: true } : category,
-          date: {
-            $gte: new Date(year, month - 1, 1),
-            $lt: new Date(year, month, 1),
-          },
-          isActive: true,
-        },
+    const totalSpent = await sumTotal(Transaction, {
+      user: req.user.id,
+      type: 'expense',
+      category: category === 'Overall' ? { $exists: true } : category,
+      date: {
+        $gte: new Date(year, month - 1, 1),
+        $lt: new Date(year, month, 1),
       },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
+      isActive: true,
+    }, 'amount');
 
-    if (spent.length > 0) {
-      budget.spent = spent[0].total;
+    if (totalSpent > 0) {
+      budget.spent = totalSpent;
       await budget.save();
     }
 
@@ -117,22 +113,17 @@ const budgetController = {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    const budgets = await Budget.find({ user: req.user.id, month, year }).lean();
+    const budgets = await Budget.find({ user: req.user.id, month, year });
     const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
     const totalSpent = budgets.reduce((sum, b) => sum + b.spent, 0);
 
     // Get monthly spending by category
-    const categorySpending = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          type: 'expense',
-          date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) },
-          isActive: true,
-        },
-      },
-      { $group: { _id: '$category', total: { $sum: '$amount' } } },
-    ]);
+    const categorySpending = await sumByGroup(Transaction, {
+      user: req.user.id,
+      type: 'expense',
+      date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) },
+      isActive: true,
+    }, 'category', 'amount');
 
     res.json({
       success: true,

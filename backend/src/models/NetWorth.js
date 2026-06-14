@@ -1,21 +1,22 @@
 const mongoose = require('mongoose');
+const encryptFields = require('../utils/encryptFieldsPlugin');
 
 const netWorthSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   entries: [{
     date: { type: Date, default: Date.now },
     assets: {
-      cash: { type: Number, default: 0 },
-      bankAccounts: { type: Number, default: 0 },
-      savings: { type: Number, default: 0 },
-      investments: { type: Number, default: 0 },
-      otherAssets: { type: Number, default: 0 },
+      cash: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      bankAccounts: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      savings: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      investments: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      otherAssets: { type: mongoose.Schema.Types.Mixed, default: 0 },
     },
     liabilities: {
-      creditCardDebt: { type: Number, default: 0 },
-      loans: { type: Number, default: 0 },
-      personalDebt: { type: Number, default: 0 },
-      mortgage: { type: Number, default: 0 },
+      creditCardDebt: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      loans: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      personalDebt: { type: mongoose.Schema.Types.Mixed, default: 0 },
+      mortgage: { type: mongoose.Schema.Types.Mixed, default: 0 },
     },
   }],
 }, { timestamps: true });
@@ -43,5 +44,20 @@ netWorthSchema.set('toObject', { virtuals: true });
 
 // Compound indexes for common queries
 netWorthSchema.index({ user: 1 }, { unique: true });
+
+// Apply field-level encryption to all financial value fields
+encryptFields(netWorthSchema, {
+  fields: [
+    'entries.assets.cash',
+    'entries.assets.bankAccounts',
+    'entries.assets.savings',
+    'entries.assets.investments',
+    'entries.assets.otherAssets',
+    'entries.liabilities.creditCardDebt',
+    'entries.liabilities.loans',
+    'entries.liabilities.personalDebt',
+    'entries.liabilities.mortgage',
+  ],
+});
 
 module.exports = mongoose.model('NetWorth', netWorthSchema);

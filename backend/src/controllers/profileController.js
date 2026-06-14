@@ -3,6 +3,7 @@ const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const Goal = require('../models/Goal');
 const asyncHandler = require('../utils/catchAsync');
+const { sumTotal: decryptedSumTotal } = require('../utils/decryptedUtils');
 
 const profileController = {
   getStats: asyncHandler(async (req, res) => {
@@ -22,14 +23,8 @@ const profileController = {
         Transaction.countDocuments({ user: req.user.id, date: { $gte: monthStart, $lte: monthEnd }, isActive: true }),
         Goal.countDocuments({ user: req.user.id, status: 'active' }),
         Budget.countDocuments({ user: req.user.id, month: now.getMonth() + 1, year: now.getFullYear() }),
-        Transaction.aggregate([
-          { $match: { user: req.user._id, type: 'income', isActive: true } },
-          { $group: { _id: null, total: { $sum: '$amount' } } },
-        ]),
-        Transaction.aggregate([
-          { $match: { user: req.user._id, type: 'expense', isActive: true } },
-          { $group: { _id: null, total: { $sum: '$amount' } } },
-        ]),
+        decryptedSumTotal(Transaction, { user: req.user.id, type: 'income', isActive: true }, 'amount'),
+        decryptedSumTotal(Transaction, { user: req.user.id, type: 'expense', isActive: true }, 'amount'),
       ]);
 
       res.json({
@@ -39,9 +34,9 @@ const profileController = {
           monthlyTransactions,
           activeGoals,
           activeBudgets,
-          totalIncome: totalIncome.length > 0 ? totalIncome[0].total : 0,
-          totalExpenses: totalExpenses.length > 0 ? totalExpenses[0].total : 0,
-          balance: (totalIncome.length > 0 ? totalIncome[0].total : 0) - (totalExpenses.length > 0 ? totalExpenses[0].total : 0),
+          totalIncome: totalIncome || 0,
+          totalExpenses: totalExpenses || 0,
+          balance: (totalIncome || 0) - (totalExpenses || 0),
         },
       });
     }),

@@ -25,8 +25,7 @@ const transactionController = {
     const transactions = await Transaction.find(query)
       .sort(sort)
       .skip((page - 1) * limit)
-      .limit(parseInt(limit))
-      .lean();
+      .limit(parseInt(limit));
 
     const total = await Transaction.countDocuments(query);
 
@@ -48,7 +47,7 @@ const transactionController = {
     const transaction = await Transaction.findOne({
       _id: req.params.id,
       user: req.user.id,
-    }).lean();
+    });
 
     if (!transaction) {
       throw new AppError('Transaction not found', 404);
@@ -209,8 +208,7 @@ const transactionController = {
   getRecent: asyncHandler(async (req, res) => {
     const transactions = await Transaction.find({ user: req.user.id, isActive: true })
       .sort('-date')
-      .limit(10)
-      .lean();
+      .limit(10);
 
     res.json({ success: true, data: transactions });
   }),

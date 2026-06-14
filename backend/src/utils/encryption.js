@@ -5,13 +5,15 @@ const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 
 /**
- * Get the encryption key from environment.
+ * Get an encryption key from environment by variable name.
  * Must be a 32-byte (64 hex char) key.
+ *
+ * @param {String} envVar - Environment variable name (default: 'MFA_ENCRYPTION_KEY')
  */
-function getKey() {
-  const key = process.env.MFA_ENCRYPTION_KEY;
+function getKey(envVar = 'MFA_ENCRYPTION_KEY') {
+  const key = process.env[envVar];
   if (!key) {
-    throw new Error('MFA_ENCRYPTION_KEY environment variable is not set');
+    throw new Error(`${envVar} environment variable is not set`);
   }
   // Accept either raw 32-byte string or 64-char hex
   if (key.length === 64) {
@@ -24,10 +26,13 @@ function getKey() {
 /**
  * Encrypt plaintext using AES-256-GCM.
  * Returns hex-encoded string: iv:authTag:ciphertext
+ *
+ * @param {String} plaintext - Text to encrypt
+ * @param {String} [envVar='MFA_ENCRYPTION_KEY'] - Env var name for the key
  */
-function encrypt(plaintext) {
+function encrypt(plaintext, envVar = 'MFA_ENCRYPTION_KEY') {
   if (plaintext === null || plaintext === undefined) return null;
-  const key = getKey();
+  const key = getKey(envVar);
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
   let encrypted = cipher.update(String(plaintext), 'utf8', 'hex');
@@ -38,10 +43,13 @@ function encrypt(plaintext) {
 
 /**
  * Decrypt a hex-encoded string of format iv:authTag:ciphertext.
+ *
+ * @param {String} ciphertext - Encrypted text
+ * @param {String} [envVar='MFA_ENCRYPTION_KEY'] - Env var name for the key
  */
-function decrypt(ciphertext) {
+function decrypt(ciphertext, envVar = 'MFA_ENCRYPTION_KEY') {
   if (!ciphertext) return null;
-  const key = getKey();
+  const key = getKey(envVar);
   const parts = ciphertext.split(':');
   if (parts.length !== 3) {
     throw new Error('Invalid encrypted format');

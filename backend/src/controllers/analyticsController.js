@@ -3,6 +3,12 @@ const Budget = require('../models/Budget');
 const Goal = require('../models/Goal');
 const asyncHandler = require('../utils/catchAsync');
 const { getDateRange } = require('../utils/helpers');
+const {
+  sumTotal,
+  sumByGroup,
+  monthlyTrend,
+  monthlyIncomeVsExpenses,
+} = require('../utils/decryptedUtils');
 
 const analyticsController = {
   getDashboard: asyncHandler(async (req, res) => {
@@ -15,7 +21,7 @@ const analyticsController = {
       user: req.user.id,
       date: { $gte: monthStart, $lte: monthEnd },
       isActive: true,
-    }).lean();
+    });
 
     const monthlyIncome = monthlyTransactions
       .filter(t => t.type === 'income')
@@ -26,55 +32,34 @@ const analyticsController = {
       .reduce((sum, t) => sum + t.amount, 0);
 
     // Current balance (all time) — includes Savings (goal contributions)
-    const allIncome = await Transaction.aggregate([
-      { $match: { user: req.user._id, type: 'income', isActive: true } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
+    const [totalIncome, totalExpenses] = await Promise.all([
+      sumTotal(Transaction, { user: req.user.id, type: 'income', isActive: true }, 'amount'),
+      sumTotal(Transaction, { user: req.user.id, type: 'expense', isActive: true }, 'amount'),
     ]);
-
-    const allExpenses = await Transaction.aggregate([
-      { $match: { user: req.user._id, type: 'expense', isActive: true } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-
-    const totalIncome = allIncome.length > 0 ? allIncome[0].total : 0;
-    const totalExpenses = allExpenses.length > 0 ? allExpenses[0].total : 0;
     const balance = totalIncome - totalExpenses;
 
     // Budget info (sum of all budgets for the month)
-    const budgets = await Budget.find({ user: req.user.id, month: now.getMonth() + 1, year: now.getFullYear() }).lean();
+    const budgets = await Budget.find({ user: req.user.id, month: now.getMonth() + 1, year: now.getFullYear() });
     const totalBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
     const totalBudgetSpent = budgets.reduce((sum, b) => sum + b.spent, 0);
     const remainingBudget = totalBudget - totalBudgetSpent;
 
     // Savings (active goals total)
-    const goals = await Goal.find({ user: req.user.id, status: 'active' }).lean();
+    const goals = await Goal.find({ user: req.user.id, status: 'active' });
     const totalSavings = goals.reduce((sum, g) => sum + g.currentAmount, 0);
 
     // Payment method breakdown (current month expenses)
-    const paymentMethodBreakdown = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          type: 'expense',
-          date: { $gte: monthStart, $lte: monthEnd },
-          isActive: true,
-        },
-      },
-      {
-        $group: {
-          _id: '$paymentMethod',
-          total: { $sum: '$amount' },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { total: -1 } },
-    ]);
+    const paymentMethodBreakdown = await sumByGroup(Transaction, {
+      user: req.user.id,
+      type: 'expense',
+      date: { $gte: monthStart, $lte: monthEnd },
+      isActive: true,
+    }, 'paymentMethod', 'amount');
 
     // Recent transactions
     const recentTransactions = await Transaction.find({ user: req.user.id, isActive: true })
       .sort('-date')
-      .limit(5)
-      .lean();
+      .limit(5);
 
     res.json({
       success: true,
@@ -115,27 +100,12 @@ const analyticsController = {
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - parseInt(months));
 
-    const trends = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          date: { $gte: startDate, $lte: endDate },
-          category: { $ne: 'Savings' },
-          isActive: true,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: '$date' },
-            month: { $month: '$date' },
-            type: '$type',
-          },
-          total: { $sum: '$amount' },
-        },
-      },
-      { $sort: { '_id.year': 1, '_id.month': 1 } },
-    ]);
+    const trends = await monthlyTrend(Transaction, {
+      user: req.user.id,
+      date: { $gte: startDate, $lte: endDate },
+      category: { $ne: 'Savings' },
+      isActive: true,
+    });
 
     // Format data for charts
     const monthlyData = {};
@@ -155,26 +125,15 @@ const analyticsController = {
     const { period = 'monthly' } = req.query;
     const { start, end } = getDateRange(period);
 
-    const transactions = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          date: { $gte: start, $lte: end },
-          category: { $ne: 'Savings' },
-          isActive: true,
-        },
-      },
-      {
-        $group: {
-          _id: '$type',
-          total: { $sum: '$amount' },
-          count: { $sum: 1 },
-        },
-      },
-    ]);
+    const incomeVsExpenses = await sumByGroup(Transaction, {
+      user: req.user.id,
+      date: { $gte: start, $lte: end },
+      category: { $ne: 'Savings' },
+      isActive: true,
+    }, 'type', 'amount');
 
-    const income = transactions.find(t => t._id === 'income');
-    const expenses = transactions.find(t => t._id === 'expense');
+    const income = incomeVsExpenses.find(t => t._id === 'income');
+    const expenses = incomeVsExpenses.find(t => t._id === 'expense');
 
     res.json({
       success: true,
@@ -192,28 +151,13 @@ const analyticsController = {
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - parseInt(months));
 
-    const goals = await Goal.find({ user: req.user.id }).select('title currentAmount targetAmount updatedAt createdAt').lean();
-    const savingsByMonth = await Transaction.aggregate([
-      {
-        $match: {
-          user: req.user._id,
-          date: { $gte: startDate, $lte: endDate },
-          category: { $ne: 'Savings' },
-          isActive: true,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: '$date' },
-            month: { $month: '$date' },
-          },
-          income: { $sum: { $cond: [{ $eq: ['$type', 'income'] }, '$amount', 0] } },
-          expenses: { $sum: { $cond: [{ $eq: ['$type', 'expense'] }, '$amount', 0] } },
-        },
-      },
-      { $sort: { '_id.year': 1, '_id.month': 1 } },
-    ]);
+    const goals = await Goal.find({ user: req.user.id }).select('title currentAmount targetAmount updatedAt createdAt');
+    const savingsByMonth = await monthlyIncomeVsExpenses(Transaction, {
+      user: req.user.id,
+      date: { $gte: startDate, $lte: endDate },
+      category: { $ne: 'Savings' },
+      isActive: true,
+    });
 
     const growth = savingsByMonth.map(s => ({
       month: `${s._id.year}-${String(s._id.month).padStart(2, '0')}`,
@@ -237,13 +181,10 @@ const analyticsController = {
       goals,
     ] = await Promise.all([
       Transaction.getCategoryBreakdown(req.user.id, start, end),
-      Transaction.aggregate([
-        { $match: { user: req.user._id, date: { $gte: start, $lte: end }, category: { $ne: 'Savings' }, isActive: true } },
-        { $group: { _id: '$type', total: { $sum: '$amount' } } },
-      ]),
-      Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, category: { $ne: 'Savings' }, isActive: true }).sort('-date').lean(),
-      Budget.find({ user: req.user.id, month: start.getMonth() + 1, year: start.getFullYear() }).lean(),
-      Goal.find({ user: req.user.id, status: 'active' }).lean(),
+      sumByGroup(Transaction, { user: req.user.id, date: { $gte: start, $lte: end }, category: { $ne: 'Savings' }, isActive: true }, 'type', 'amount'),
+      Transaction.find({ user: req.user.id, date: { $gte: start, $lte: end }, category: { $ne: 'Savings' }, isActive: true }).sort('-date'),
+      Budget.find({ user: req.user.id, month: start.getMonth() + 1, year: start.getFullYear() }),
+      Goal.find({ user: req.user.id, status: 'active' }),
     ]);
 
     const income = incomeVsExpenses.find(t => t._id === 'income');

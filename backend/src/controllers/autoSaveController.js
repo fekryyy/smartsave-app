@@ -2,7 +2,7 @@ const AutoSave = require('../models/AutoSave');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const catchAsync = require('../utils/catchAsync');
-const mongoose = require('mongoose');
+const { sumTotal } = require('../utils/decryptedUtils');
 
 exports.getAll = catchAsync(async (req, res) => {
   const { page = 1, limit = 50 } = req.query;
@@ -11,8 +11,7 @@ exports.getAll = catchAsync(async (req, res) => {
   const rules = await AutoSave.find(query)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
-    .limit(parseInt(limit))
-    .lean();
+    .limit(parseInt(limit));
   const total = await AutoSave.countDocuments(query);
   const totalProjected = rules.reduce((sum, r) => sum + r.totalContributed, 0);
 
@@ -73,11 +72,8 @@ exports.triggerContribution = catchAsync(async (req, res) => {
     case 'fixed_daily': amount = rule.amount || 0; break;
     case 'fixed_payday': amount = rule.amount || 0; break;
     case 'percentage_of_income': {
-      const totalIncome = await Transaction.aggregate([
-        { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'income', isActive: true } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
-      ]);
-      amount = ((totalIncome[0]?.total || 0) * (rule.percentage || 0)) / 100;
+      const totalIncome = await sumTotal(Transaction, { user: req.user.id, type: 'income', isActive: true }, 'amount');
+      amount = ((totalIncome || 0) * (rule.percentage || 0)) / 100;
       break;
     }
     case 'percentage_bonus': amount = ((user.totalIncome || 0) * (rule.percentage || 0)) / 100; break;

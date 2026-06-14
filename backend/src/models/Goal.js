@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const encryptFields = require('../utils/encryptFieldsPlugin');
 
 const goalSchema = new mongoose.Schema({
   user: {
@@ -20,14 +21,12 @@ const goalSchema = new mongoose.Schema({
     default: '',
   },
   targetAmount: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     required: [true, 'Target amount is required'],
-    min: [1, 'Target amount must be at least 1'],
   },
   currentAmount: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     default: 0,
-    min: 0,
   },
   targetDate: {
     type: Date,
@@ -100,5 +99,10 @@ goalSchema.index({ user: 1, priority: 1, status: 1 });
 
 goalSchema.set('toJSON', { virtuals: true });
 goalSchema.set('toObject', { virtuals: true });
+
+// Apply field-level encryption to financial data
+encryptFields(goalSchema, {
+  fields: ['targetAmount', 'currentAmount'],
+});
 
 module.exports = mongoose.model('Goal', goalSchema);

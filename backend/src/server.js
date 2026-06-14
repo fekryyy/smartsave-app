@@ -99,6 +99,7 @@ app.use('/api/calendar', require('./routes/calendarRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/xp', require('./routes/xpRoutes'));
 app.use('/api/financial-advisor', require('./routes/financialAdvisorRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Bull Board UI — requires valid JWT (admin/protected)
 app.use('/admin/queues', protect, serverAdapter.getRouter());

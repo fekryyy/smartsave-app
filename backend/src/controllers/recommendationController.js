@@ -2,6 +2,7 @@ const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const Goal = require('../models/Goal');
 const asyncHandler = require('../utils/catchAsync');
+const { sumByGroup, sumTotal } = require('../utils/decryptedUtils');
 
 const recommendationController = {
   getRecommendations: asyncHandler(async (req, res) => {
@@ -15,30 +16,20 @@ const recommendationController = {
       const recommendations = [];
 
       // Get current month expenses
-      const currentExpenses = await Transaction.aggregate([
-        {
-          $match: {
-            user: req.user._id,
-            type: 'expense',
-            date: { $gte: new Date(currentYear, currentMonth - 1, 1), $lt: new Date(currentYear, currentMonth, 1) },
-            isActive: true,
-          },
-        },
-        { $group: { _id: '$category', total: { $sum: '$amount' }, count: { $sum: 1 } } },
-      ]);
+      const currentExpenses = await sumByGroup(Transaction, {
+        user: req.user.id,
+        type: 'expense',
+        date: { $gte: new Date(currentYear, currentMonth - 1, 1), $lt: new Date(currentYear, currentMonth, 1) },
+        isActive: true,
+      }, 'category', 'amount');
 
       // Get last month expenses for comparison
-      const lastExpenses = await Transaction.aggregate([
-        {
-          $match: {
-            user: req.user._id,
-            type: 'expense',
-            date: { $gte: new Date(lastMonthYear, lastMonth - 1, 1), $lt: new Date(lastMonthYear, lastMonth, 1) },
-            isActive: true,
-          },
-        },
-        { $group: { _id: '$category', total: { $sum: '$amount' } } },
-      ]);
+      const lastExpenses = await sumByGroup(Transaction, {
+        user: req.user.id,
+        type: 'expense',
+        date: { $gte: new Date(lastMonthYear, lastMonth - 1, 1), $lt: new Date(lastMonthYear, lastMonth, 1) },
+        isActive: true,
+      }, 'category', 'amount');
 
       const lastMonthMap = {};
       lastExpenses.forEach(e => { lastMonthMap[e._id] = e.total; });
@@ -67,7 +58,7 @@ const recommendationController = {
       });
 
       // 2. Budget warnings
-      const budgets = await Budget.find({ user: userId, month: currentMonth, year: currentYear }).lean();
+      const budgets = await Budget.find({ user: userId, month: currentMonth, year: currentYear });
       budgets.forEach(budget => {
         if (budget.amount > 0) {
           const percentage = (budget.spent / budget.amount) * 100;
@@ -105,22 +96,15 @@ const recommendationController = {
       });
 
       // 4. Goal-related recommendations
-      const activeGoals = await Goal.find({ user: userId, status: 'active' }).lean();
+      const activeGoals = await Goal.find({ user: userId, status: 'active' });
       for (const goal of activeGoals) {
         if (goal.monthlyContribution > 0) {
-          const monthlyIncome = await Transaction.aggregate([
-            {
-              $match: {
-                user: req.user._id,
-                type: 'income',
-                date: { $gte: new Date(currentYear, currentMonth - 1, 1), $lt: new Date(currentYear, currentMonth, 1) },
-                isActive: true,
-              },
-            },
-            { $group: { _id: null, total: { $sum: '$amount' } } },
-          ]);
-
-          const income = monthlyIncome.length > 0 ? monthlyIncome[0].total : 0;
+          const income = await sumTotal(Transaction, {
+            user: req.user.id,
+            type: 'income',
+            date: { $gte: new Date(currentYear, currentMonth - 1, 1), $lt: new Date(currentYear, currentMonth, 1) },
+            isActive: true,
+          }, 'amount');
           if (income > 0 && goal.monthlyContribution > income * 0.3) {
             recommendations.push({
               type: 'warning',

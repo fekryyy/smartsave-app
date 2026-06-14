@@ -1,7 +1,14 @@
 const Transaction = require('../models/Transaction');
 const Budget = require('../models/Budget');
 const catchAsync = require('../utils/catchAsync');
-const mongoose = require('mongoose');
+const {
+  sumByType,
+  sumByGroup,
+  typeTotalsWithMax,
+  monthlyTrend,
+  dailyTotals,
+  spendingStats,
+} = require('../utils/decryptedUtils');
 
 exports.getMonthlyReport = catchAsync(async (req, res) => {
   const { year, month } = req.query;
@@ -13,21 +20,9 @@ exports.getMonthlyReport = catchAsync(async (req, res) => {
   const prevStart = new Date(y, m - 2, 1);
   const prevEnd = new Date(y, m - 1, 1);
 
-  const agg = await Transaction.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(req.user.id), isActive: true, date: { $gte: startDate, $lt: endDate } } },
-    {
-      $group: {
-        _id: '$type',
-        total: { $sum: '$amount' },
-        count: { $sum: 1 },
-        maxAmount: { $max: '$amount' },
-      },
-    },
-  ]);
-
-  const prevAgg = await Transaction.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(req.user.id), isActive: true, date: { $gte: prevStart, $lt: prevEnd } } },
-    { $group: { _id: '$type', total: { $sum: '$amount' } } },
+  const [agg, prevAgg] = await Promise.all([
+    typeTotalsWithMax(Transaction, { user: req.user.id, isActive: true, date: { $gte: startDate, $lt: endDate } }),
+    sumByType(Transaction, { user: req.user.id, isActive: true, date: { $gte: prevStart, $lt: prevEnd } }),
   ]);
 
   const income = agg.find(a => a._id === 'income');
@@ -46,16 +41,9 @@ exports.getMonthlyReport = catchAsync(async (req, res) => {
   const savingsChange = prevTotalIncome - prevTotalExpenses !== 0
     ? ((netSavings - (prevTotalIncome - prevTotalExpenses)) / Math.abs(prevTotalIncome - prevTotalExpenses)) * 100 : 0;
 
-  const categoryBreakdown = await Transaction.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: startDate, $lt: endDate } } },
-    { $group: { _id: '$category', total: { $sum: '$amount' }, count: { $sum: 1 } } },
-    { $sort: { total: -1 } },
-  ]);
-
-  const methodBreakdown = await Transaction.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'expense', isActive: true, date: { $gte: startDate, $lt: endDate } } },
-    { $group: { _id: '$paymentMethod', total: { $sum: '$amount' } } },
-    { $sort: { total: -1 } },
+  const [categoryBreakdown, methodBreakdown] = await Promise.all([
+    sumByGroup(Transaction, { user: req.user.id, type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: startDate, $lt: endDate } }, 'category', 'amount'),
+    sumByGroup(Transaction, { user: req.user.id, type: 'expense', isActive: true, date: { $gte: startDate, $lt: endDate } }, 'paymentMethod', 'amount'),
   ]);
 
   const largestExpense = await Transaction.findOne({
@@ -69,6 +57,10 @@ exports.getMonthlyReport = catchAsync(async (req, res) => {
     remaining: Math.max(0, b.limit - b.spent),
   }));
 
+  // Sort by total descending (original $sort is no longer applied by MongoDB)
+  const sortedCategoryBreakdown = [...categoryBreakdown].sort((a, b) => b.total - a.total);
+  const sortedMethodBreakdown = [...methodBreakdown].sort((a, b) => b.total - a.total);
+
   res.json({
     success: true,
     data: {
@@ -77,11 +69,11 @@ exports.getMonthlyReport = catchAsync(async (req, res) => {
       incomeChange: Math.round(incomeChange * 100) / 100,
       expenseChange: Math.round(expenseChange * 100) / 100,
       savingsChange: Math.round(savingsChange * 100) / 100,
-      mostUsedMethod: methodBreakdown[0]?._id || 'N/A',
+      mostUsedMethod: sortedMethodBreakdown[0]?._id || 'N/A',
       largestExpense: largestExpense || null,
-      topCategory: categoryBreakdown[0]?._id || 'N/A',
-      categoryBreakdown,
-      methodBreakdown,
+      topCategory: sortedCategoryBreakdown[0]?._id || 'N/A',
+      categoryBreakdown: sortedCategoryBreakdown,
+      methodBreakdown: sortedMethodBreakdown,
       budgetPerformance,
       transactionCount: (income?.count || 0) + (expense?.count || 0),
       incomeCount: income?.count || 0,
@@ -106,22 +98,13 @@ exports.getComparison = catchAsync(async (req, res) => {
   const data = await Promise.all(months.map(async ({ month: mm, year: yy }) => {
     const start = new Date(yy, mm - 1, 1);
     const end = new Date(yy, mm, 1);
-    const agg = await Transaction.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(req.user.id), isActive: true, date: { $gte: start, $lt: end } } },
-      { $group: { _id: '$type', total: { $sum: '$amount' } } },
+    const [byType, catBreak, methodBreak] = await Promise.all([
+      sumByType(Transaction, { user: req.user.id, isActive: true, date: { $gte: start, $lt: end } }),
+      sumByGroup(Transaction, { user: req.user.id, type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: start, $lt: end } }, 'category', 'amount'),
+      sumByGroup(Transaction, { user: req.user.id, type: 'expense', isActive: true, date: { $gte: start, $lt: end } }, 'paymentMethod', 'amount'),
     ]);
-    const income = agg.find(a => a._id === 'income')?.total || 0;
-    const expense = agg.find(a => a._id === 'expense')?.total || 0;
-
-    const catBreak = await Transaction.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: start, $lt: end } } },
-      { $group: { _id: '$category', total: { $sum: '$amount' } } },
-    ]);
-
-    const methodBreak = await Transaction.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'expense', isActive: true, date: { $gte: start, $lt: end } } },
-      { $group: { _id: '$paymentMethod', total: { $sum: '$amount' } } },
-    ]);
+    const income = byType.find(a => a._id === 'income')?.total || 0;
+    const expense = byType.find(a => a._id === 'expense')?.total || 0;
 
     return { month: mm, year: yy, income, expense, savings: income - expense, categories: catBreak, methods: methodBreak };
   }));
@@ -130,33 +113,31 @@ exports.getComparison = catchAsync(async (req, res) => {
 });
 
 exports.getTrends = catchAsync(async (req, res) => {
-  const userId = new mongoose.Types.ObjectId(req.user.id);
   const ninetyDaysAgo = new Date(Date.now() - 90 * 86400000);
 
-  const monthlyAgg = await Transaction.aggregate([
-    { $match: { user: userId, isActive: true, date: { $gte: ninetyDaysAgo } } },
-    {
-      $group: {
-        _id: { type: '$type', month: { $month: '$date' }, year: { $year: '$date' } },
-        total: { $sum: '$amount' },
-      },
-    },
-    { $sort: { '_id.year': 1, '_id.month': 1 } },
-  ]);
-
-  const categoryTrends = await Transaction.aggregate([
-    { $match: { user: userId, type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: ninetyDaysAgo } } },
-    {
-      $group: {
-        _id: { category: '$category', month: { $month: '$date' }, year: { $year: '$date' } },
-        total: { $sum: '$amount' },
-      },
-    },
-    { $sort: { '_id.year': 1, '_id.month': 1 } },
+  const [monthlyAgg, categoryTrendsRaw] = await Promise.all([
+    monthlyTrend(Transaction, { user: req.user.id, isActive: true, date: { $gte: ninetyDaysAgo } }),
+    // Category trends: group by category + month (cannot use sumByGroup which only groups by one field)
+    (async () => {
+      const docs = await Transaction.find({ user: req.user.id, type: 'expense', category: { $ne: 'Savings' }, isActive: true, date: { $gte: ninetyDaysAgo } });
+      const grouped = {};
+      for (const doc of docs) {
+        const d = doc.date || new Date();
+        const key = `${doc.category}|${d.getFullYear()}|${d.getMonth() + 1}`;
+        if (!grouped[key]) {
+          grouped[key] = { _id: { category: doc.category, month: d.getMonth() + 1, year: d.getFullYear() }, total: 0 };
+        }
+        grouped[key].total += typeof doc.amount === 'number' ? doc.amount : parseFloat(doc.amount) || 0;
+      }
+      return Object.values(grouped).sort((a, b) => {
+        if (a._id.year !== b._id.year) return a._id.year - b._id.year;
+        return a._id.month - b._id.month;
+      });
+    })(),
   ]);
 
   const catMap = {};
-  categoryTrends.forEach(c => {
+  categoryTrendsRaw.forEach(c => {
     const key = c._id.category;
     if (!catMap[key]) catMap[key] = [];
     catMap[key].push({ month: c._id.month, year: c._id.year, total: c.total });
@@ -174,10 +155,7 @@ exports.getTrends = catchAsync(async (req, res) => {
     }
   });
 
-  const dailySpending = await Transaction.aggregate([
-    { $match: { user: userId, type: 'expense', isActive: true, date: { $gte: ninetyDaysAgo } } },
-    { $group: { _id: null, avg: { $avg: '$amount' }, total: { $sum: '$amount' }, count: { $sum: 1 } } },
-  ]);
+  const dailySpending = await spendingStats(Transaction, { user: req.user.id, type: 'expense', isActive: true, date: { $gte: ninetyDaysAgo } });
 
   const ds = dailySpending[0] || {};
   const days = Math.max(1, Math.ceil((Date.now() - ninetyDaysAgo.getTime()) / 86400000));
@@ -207,17 +185,7 @@ exports.getHeatmap = catchAsync(async (req, res) => {
   const startDate = new Date(y, 0, 1);
   const endDate = new Date(y + 1, 0, 1);
 
-  const dailyAgg = await Transaction.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(req.user.id), type: 'expense', isActive: true, date: { $gte: startDate, $lt: endDate } } },
-    {
-      $group: {
-        _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-        total: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+  const dailyAgg = await dailyTotals(Transaction, { user: req.user.id, type: 'expense', isActive: true, date: { $gte: startDate, $lt: endDate } });
 
   const heatmap = {};
   let maxSpend = 0;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const encryptFields = require('../utils/encryptFieldsPlugin');
 
 const budgetSchema = new mongoose.Schema({
   user: {
@@ -13,9 +14,8 @@ const budgetSchema = new mongoose.Schema({
     required: [true, 'Category is required'],
   },
   amount: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     required: [true, 'Budget amount is required'],
-    min: [1, 'Budget must be at least 1'],
   },
   spent: {
     type: Number,
@@ -60,5 +60,13 @@ budgetSchema.virtual('remaining').get(function() {
 
 budgetSchema.set('toJSON', { virtuals: true });
 budgetSchema.set('toObject', { virtuals: true });
+
+// Apply field-level encryption to financial data
+// NOTE: 'spent' is intentionally NOT encrypted because it's updated via $inc,
+// which is incompatible with encrypted string storage. 'spent' is a computed
+// running total derived from transaction amounts (which are encrypted).
+encryptFields(budgetSchema, {
+  fields: ['amount'],
+});
 
 module.exports = mongoose.model('Budget', budgetSchema);

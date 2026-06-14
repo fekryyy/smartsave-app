@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const encryptFields = require('../utils/encryptFieldsPlugin');
 
 const transactionSchema = new mongoose.Schema({
   user: {
@@ -13,9 +14,10 @@ const transactionSchema = new mongoose.Schema({
     required: [true, 'Transaction type is required'],
   },
   amount: {
-    type: Number,
+    // Mixed type — encrypted value is stored as String in MongoDB,
+    // decrypted post-init returns a Number for application use.
+    type: mongoose.Schema.Types.Mixed,
     required: [true, 'Amount is required'],
-    min: [0.01, 'Amount must be greater than 0'],
   },
   category: {
     type: String,
@@ -80,48 +82,67 @@ transactionSchema.index({ user: 1, isActive: 1, date: -1 });
 transactionSchema.index({ user: 1, type: 1, isActive: 1, date: -1 });
 transactionSchema.index({ user: 1, category: 1, isActive: 1 });
 
-transactionSchema.statics.getMonthlyTotals = function(userId, year, month) {
-  return this.aggregate([
-    {
-      $match: {
-        user: new mongoose.Types.ObjectId(userId),
-        isActive: true,
-        date: {
-          $gte: new Date(year, month - 1, 1),
-          $lt: new Date(year, month, 1),
-        },
-      },
+/**
+ * Get monthly income/expense totals.
+ *
+ * Since 'amount' is encrypted at rest, we cannot use MongoDB $sum.
+ * Instead, we fetch matching docs (decrypted by post('init')) and sum in Node.js.
+ */
+transactionSchema.statics.getMonthlyTotals = async function(userId, year, month) {
+  // Must use hydrated docs (not lean) so post('init') decrypts 'amount'
+  const docs = await this.find({
+    user: userId,
+    isActive: true,
+    date: {
+      $gte: new Date(year, month - 1, 1),
+      $lt: new Date(year, month, 1),
     },
-    {
-      $group: {
-        _id: '$type',
-        total: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-  ]);
+  });
+
+  const result = { income: { total: 0, count: 0 }, expense: { total: 0, count: 0 } };
+
+  for (const doc of docs) {
+    const type = doc.type;
+    if (!result[type]) result[type] = { total: 0, count: 0 };
+    result[type].total += (typeof doc.amount === 'number' ? doc.amount : parseFloat(doc.amount) || 0);
+    result[type].count += 1;
+  }
+
+  return Object.entries(result)
+    .filter(([_, v]) => v.count > 0)
+    .map(([type, data]) => ({ _id: type, ...data }));
 };
 
-transactionSchema.statics.getCategoryBreakdown = function(userId, startDate, endDate) {
-    return this.aggregate([
-      {
-        $match: {
-          user: new mongoose.Types.ObjectId(userId),
-          type: 'expense',
-          category: { $ne: 'Savings' },
-          date: { $gte: startDate, $lte: endDate },
-          isActive: true,
-        },
-      },
-    {
-      $group: {
-        _id: '$category',
-        total: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { total: -1 } },
-  ]);
+/**
+ * Get category breakdown for expenses over a date range.
+ *
+ * Uses find() + in-memory decryption instead of aggregation $sum.
+ */
+transactionSchema.statics.getCategoryBreakdown = async function(userId, startDate, endDate) {
+  const docs = await this.find({
+    user: userId,
+    type: 'expense',
+    category: { $ne: 'Savings' },
+    date: { $gte: startDate, $lte: endDate },
+    isActive: true,
+  });
+
+  const breakdown = {};
+  for (const doc of docs) {
+    const cat = doc.category;
+    if (!breakdown[cat]) breakdown[cat] = { total: 0, count: 0 };
+    breakdown[cat].total += (typeof doc.amount === 'number' ? doc.amount : parseFloat(doc.amount) || 0);
+    breakdown[cat].count += 1;
+  }
+
+  return Object.entries(breakdown)
+    .map(([category, data]) => ({ _id: category, ...data }))
+    .sort((a, b) => b.total - a.total);
 };
+
+// Apply field-level encryption to financial data
+encryptFields(transactionSchema, {
+  fields: ['amount', 'description'],
+});
 
 module.exports = mongoose.model('Transaction', transactionSchema);
