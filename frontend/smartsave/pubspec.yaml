@@ -80,6 +80,7 @@ dependencies:
   firebase_auth: ^4.17.8
   get_it: ^7.7.0
   google_sign_in_ios: ^5.7.0
+  uuid: ^4.2.1
 
 dev_dependencies:
   flutter_test:

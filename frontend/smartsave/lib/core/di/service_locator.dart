@@ -1,5 +1,9 @@
 import 'package:get_it/get_it.dart';
 import '../../services/google_auth_service.dart';
+import '../../services/sync_service.dart';
+import '../../services/sync/sync_engine.dart';
+import '../../services/sync/sync_queue_manager.dart';
+import '../../services/sync/conflict_resolver.dart';
 
 /// Application-wide service locator using [GetIt].
 ///
@@ -23,4 +27,14 @@ final GetIt getIt = GetIt.instance;
 Future<void> setupServiceLocator() async {
   // ── Auth Services ──
   getIt.registerLazySingleton<GoogleAuthService>(() => GoogleAuthService());
+
+  // ── Sync Services (singletons) ──
+  // ConflictResolver, SyncQueueManager, SyncEngine, and SyncService are
+  // all singletons by design (factory constructors return the same instance).
+  // Registering them in GetIt allows providers to depend on them via DI
+  // rather than accessing static instances directly.
+  getIt.registerLazySingleton<ConflictResolver>(() => ConflictResolver());
+  getIt.registerLazySingleton<SyncQueueManager>(() => SyncQueueManager());
+  getIt.registerLazySingleton<SyncEngine>(() => SyncEngine());
+  getIt.registerLazySingleton<SyncService>(() => SyncService());
 }

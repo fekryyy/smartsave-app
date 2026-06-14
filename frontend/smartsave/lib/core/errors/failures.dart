@@ -28,3 +28,7 @@ class ValidationFailure extends Failure {
 class CacheFailure extends Failure {
   const CacheFailure({super.message = 'Cache error', super.statusCode});
 }
+
+class ConflictFailure extends Failure {
+  const ConflictFailure({required super.message, super.statusCode});
+}

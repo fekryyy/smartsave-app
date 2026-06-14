@@ -254,6 +254,9 @@ class ApiClient {
     if (statusCode == 404) {
       return ServerFailure(message: message ?? 'Not found', statusCode: statusCode);
     }
+    if (statusCode == 409) {
+      return ConflictFailure(message: message ?? 'Conflict', statusCode: statusCode);
+    }
     if (statusCode == 422 || statusCode == 400) {
       final errors = body is Map ? body['errors'] : null;
       return ValidationFailure(
