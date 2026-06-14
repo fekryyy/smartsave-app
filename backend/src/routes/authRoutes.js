@@ -27,7 +27,14 @@ router.post('/reset-password', [
   body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
 ], validate, authController.resetPassword);
 
-router.post('/refresh-token', authController.refreshToken);
+// Refresh token rotation (cookie-based — recommended for new clients)
+router.post('/refresh', authController.refresh);
+
+// Logout — revokes refresh token
+router.post('/logout', authController.logout);
+
+// Legacy body-based refresh token (backward compatible)
+router.post('/refresh-token', authController.refreshTokenLegacy);
 
 router.get('/profile', protect, authController.getProfile);
 router.put('/profile', protect, authController.updateProfile);

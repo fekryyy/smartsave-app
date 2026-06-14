@@ -1,9 +1,36 @@
 const crypto = require('crypto');
 const User = require('../models/User');
+const RefreshToken = require('../models/RefreshToken');
 const config = require('../config');
 const sendEmail = require('../utils/email');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
+const { generateAccessToken, generateRefreshToken, verifyAccessToken, REFRESH_TTL_MS } = require('../utils/tokenUtils');
+
+const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  path: '/api/auth',
+  maxAge: REFRESH_TTL_MS,
+};
+
+/**
+ * Issue a refresh token: save to DB, set as cookie, return raw value.
+ */
+async function issueRefreshToken(userId, req, res) {
+  const { raw, hash } = generateRefreshToken();
+  await RefreshToken.create({
+    userId,
+    tokenHash: hash,
+    deviceId: req.headers['x-device-id'] || null,
+    userAgent: req.headers['user-agent'] || null,
+    ip: req.ip || req.connection?.remoteAddress || null,
+    expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
+  });
+  res.cookie('refreshToken', raw, REFRESH_COOKIE_OPTIONS);
+  return raw;
+}
 
 const authController = {
   register: asyncHandler(async (req, res) => {
@@ -16,7 +43,7 @@ const authController = {
 
     const user = await User.create({ name, email, password });
     const token = user.generateAuthToken();
-    const refreshToken = user.generateRefreshToken();
+    const refreshTokenRaw = await issueRefreshToken(user._id, req, res);
 
     res.status(201).json({
       success: true,
@@ -24,7 +51,7 @@ const authController = {
       data: {
         user,
         token,
-        refreshToken,
+        refreshToken: refreshTokenRaw,
       },
     });
   }),
@@ -43,7 +70,7 @@ const authController = {
     }
 
     const token = user.generateAuthToken();
-    const refreshToken = user.generateRefreshToken();
+    const refreshTokenRaw = await issueRefreshToken(user._id, req, res);
 
     res.json({
       success: true,
@@ -51,7 +78,7 @@ const authController = {
       data: {
         user,
         token,
-        refreshToken,
+        refreshToken: refreshTokenRaw,
       },
     });
   }),
@@ -61,10 +88,6 @@ const authController = {
     const { OAuth2Client } = require('google-auth-library');
     const client = new OAuth2Client(config.googleClientId);
 
-    // Accept either the iOS or Android client ID as the audience.
-    // The aud claim in the ID token varies by platform:
-    //   Android → google-services.json default_web_client_id (client_type 3)
-    //   iOS     → GoogleService-Info.plist CLIENT_ID          (client_type 2)
     const audiences = [config.googleClientId];
     if (config.googleAndroidClientId) {
       audiences.push(config.googleAndroidClientId);
@@ -74,11 +97,11 @@ const authController = {
       idToken,
       audience: audiences,
     });
-    
+
     const { email, name, picture } = ticket.getPayload();
 
     let user = await User.findOne({ email });
-    
+
     if (!user) {
       user = await User.create({
         name,
@@ -95,12 +118,12 @@ const authController = {
     }
 
     const token = user.generateAuthToken();
-    const refreshToken = user.generateRefreshToken();
+    const refreshTokenRaw = await issueRefreshToken(user._id, req, res);
 
     res.json({
       success: true,
       message: 'Google login successful',
-      data: { user, token, refreshToken },
+      data: { user, token, refreshToken: refreshTokenRaw },
     });
   }),
 
@@ -114,7 +137,7 @@ const authController = {
 
     const resetToken = crypto.randomBytes(32).toString('hex');
     user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    user.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
+    user.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
     await user.save();
 
     const resetUrl = `${config.frontendUrl}/reset-password/${resetToken}`;
@@ -162,26 +185,115 @@ const authController = {
     res.json({ success: true, message: 'Password reset successful' });
   }),
 
-  refreshToken: asyncHandler(async (req, res) => {
+  /**
+   * Cookie-based refresh with rotation:
+   * 1. Read refresh token from HttpOnly cookie
+   * 2. Hash it and look up in DB
+   * 3. Verify not revoked and not expired
+   * 4. Revoke old token (rotation)
+   * 5. Issue new access token + new refresh token
+   */
+  refresh: asyncHandler(async (req, res) => {
+    const rawToken = req.cookies?.refreshToken;
+    if (!rawToken) {
+      throw new AppError('Refresh token required', 400);
+    }
+
+    const hash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const storedToken = await RefreshToken.findOne({ tokenHash: hash });
+
+    if (!storedToken) {
+      throw new AppError('Invalid refresh token', 401);
+    }
+
+    if (storedToken.revokedAt) {
+      // Token was revoked — could be a rotation reuse attack. Revoke all tokens for this user.
+      await RefreshToken.updateMany(
+        { userId: storedToken.userId, revokedAt: null },
+        { revokedAt: new Date() },
+      );
+      throw new AppError('Refresh token revoked — all sessions invalidated', 401);
+    }
+
+    if (storedToken.expiresAt < new Date()) {
+      throw new AppError('Refresh token expired', 401);
+    }
+
+    const user = await User.findById(storedToken.userId);
+    if (!user) {
+      throw new AppError('User not found', 401);
+    }
+
+    // Revoke the old token (rotation)
+    await RefreshToken.updateOne(
+      { _id: storedToken._id },
+      { revokedAt: new Date() },
+    );
+
+    // Issue new tokens
+    const accessToken = user.generateAuthToken();
+    const newRefreshTokenRaw = await issueRefreshToken(user._id, req, res);
+
+    res.json({
+      success: true,
+      data: {
+        token: accessToken,
+        refreshToken: newRefreshTokenRaw,
+      },
+    });
+  }),
+
+  /**
+   * Logout: revoke the current refresh token and clear the cookie.
+   */
+  logout: asyncHandler(async (req, res) => {
+    const rawToken = req.cookies?.refreshToken;
+    if (rawToken) {
+      const hash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      await RefreshToken.updateOne({ tokenHash: hash }, { revokedAt: new Date() });
+    }
+
+    res.clearCookie('refreshToken', { path: '/api/auth' });
+    res.json({ success: true, message: 'Logged out successfully' });
+  }),
+
+  /**
+   * Legacy body-based refresh token endpoint (backward compatible).
+   */
+  refreshTokenLegacy: asyncHandler(async (req, res) => {
     const { refreshToken } = req.body;
     if (!refreshToken) {
       throw new AppError('Refresh token required', 400);
     }
 
-    const jwt = require('jsonwebtoken');
-    const decoded = jwt.verify(refreshToken, config.jwtRefreshSecret);
-    const user = await User.findById(decoded.id);
+    const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const storedToken = await RefreshToken.findOne({ tokenHash: hash });
 
-    if (!user) {
+    if (!storedToken || storedToken.revokedAt) {
       throw new AppError('Invalid refresh token', 401);
     }
 
+    if (storedToken.expiresAt < new Date()) {
+      throw new AppError('Refresh token expired', 401);
+    }
+
+    const user = await User.findById(storedToken.userId);
+    if (!user) {
+      throw new AppError('User not found', 401);
+    }
+
+    // Revoke old token
+    await RefreshToken.updateOne(
+      { _id: storedToken._id },
+      { revokedAt: new Date() },
+    );
+
     const newToken = user.generateAuthToken();
-    const newRefreshToken = user.generateRefreshToken();
+    const newRefreshTokenRaw = await issueRefreshToken(user._id, req, res);
 
     res.json({
       success: true,
-      data: { token: newToken, refreshToken: newRefreshToken },
+      data: { token: newToken, refreshToken: newRefreshTokenRaw },
     });
   }),
 

@@ -69,6 +69,7 @@ app.use('/api', limiter);
 // Body parsing
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(require('cookie-parser')());
 
 // Logging
 if (process.env.NODE_ENV !== 'test') {
