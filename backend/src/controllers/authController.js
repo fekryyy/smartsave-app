@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
 const config = require('../config');
@@ -6,6 +7,9 @@ const sendEmail = require('../utils/email');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
 const { generateAccessToken, generateRefreshToken, verifyAccessToken, REFRESH_TTL_MS } = require('../utils/tokenUtils');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
+const { encrypt, decrypt } = require('../utils/encryption');
 
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
@@ -67,6 +71,24 @@ const authController = {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       throw new AppError('Invalid email or password', 401);
+    }
+
+    // If user has MFA enabled, issue a short-lived MFA pending token instead of full access
+    if (user.mfaEnabled) {
+      const mfaToken = jwt.sign(
+        { id: user._id, mfaPending: true },
+        config.jwtSecret,
+        { expiresIn: '5m' },
+      );
+      return res.json({
+        success: true,
+        message: 'MFA code required',
+        mfaRequired: true,
+        data: {
+          mfaToken,
+          userId: user._id,
+        },
+      });
     }
 
     const token = user.generateAuthToken();
@@ -317,6 +339,147 @@ const authController = {
     });
 
     res.json({ success: true, message: 'Profile updated', data: user });
+  }),
+
+  /**
+   * Generate TOTP secret and QR code URI for the authenticated user.
+   * Does NOT enable MFA yet — user must verify first.
+   */
+  mfaSetup: asyncHandler(async (req, res) => {
+    const secret = speakeasy.generateSecret({
+      name: `SmartSave:${req.user.email}`,
+      issuer: 'SmartSave',
+    });
+
+    // Store encrypted secret temporarily
+    req.user.mfaSecret = encrypt(secret.base32);
+    req.user.mfaVerified = false;
+    await req.user.save();
+
+    // Generate QR code as data URL
+    const qrCode = await QRCode.toDataURL(secret.otpauth_url);
+
+    res.json({
+      success: true,
+      data: {
+        secret: secret.base32,
+        qrCode,
+        otpauthUrl: secret.otpauth_url,
+      },
+    });
+  }),
+
+  /**
+   * Verify the user's first TOTP code and enable MFA.
+   */
+  mfaVerifySetup: asyncHandler(async (req, res) => {
+    const { token } = req.body;
+    if (!token) {
+      throw new AppError('TOTP code is required', 400);
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user.mfaSecret) {
+      throw new AppError('MFA setup not initiated. Call /auth/mfa/setup first.', 400);
+    }
+
+    const decryptedSecret = decrypt(user.mfaSecret);
+    const verified = speakeasy.totp.verify({
+      secret: decryptedSecret,
+      encoding: 'base32',
+      token,
+      window: 2,
+    });
+
+    if (!verified) {
+      throw new AppError('Invalid TOTP code. Please try again.', 400);
+    }
+
+    user.mfaEnabled = true;
+    user.mfaVerified = true;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'MFA enabled successfully',
+    });
+  }),
+
+  /**
+   * Validate TOTP code during login and issue full access token.
+   */
+  mfaValidate: asyncHandler(async (req, res) => {
+    const { mfaToken, token } = req.body;
+    if (!mfaToken || !token) {
+      throw new AppError('mfaToken and token are required', 400);
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(mfaToken, config.jwtSecret);
+    } catch (err) {
+      throw new AppError('MFA token expired or invalid. Please log in again.', 401);
+    }
+
+    if (!decoded.mfaPending) {
+      throw new AppError('Invalid MFA token', 401);
+    }
+
+    const user = await User.findById(decoded.id).select('+password');
+    if (!user || !user.mfaEnabled) {
+      throw new AppError('MFA is not enabled for this account', 401);
+    }
+
+    const decryptedSecret = decrypt(user.mfaSecret);
+    const verified = speakeasy.totp.verify({
+      secret: decryptedSecret,
+      encoding: 'base32',
+      token,
+      window: 2,
+    });
+
+    if (!verified) {
+      throw new AppError('Invalid TOTP code. Please try again.', 401);
+    }
+
+    const accessToken = user.generateAuthToken();
+    const refreshTokenRaw = await issueRefreshToken(user._id, req, res);
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      data: {
+        user,
+        token: accessToken,
+        refreshToken: refreshTokenRaw,
+      },
+    });
+  }),
+
+  /**
+   * Disable MFA. Requires password confirmation.
+   */
+  mfaDisable: asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    if (!password) {
+      throw new AppError('Password is required to disable MFA', 400);
+    }
+
+    const user = await User.findById(req.user.id).select('+password');
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      throw new AppError('Password is incorrect', 400);
+    }
+
+    user.mfaEnabled = false;
+    user.mfaSecret = null;
+    user.mfaVerified = false;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'MFA disabled successfully',
+    });
   }),
 
   changePassword: asyncHandler(async (req, res) => {

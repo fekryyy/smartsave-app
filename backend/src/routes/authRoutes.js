@@ -36,6 +36,12 @@ router.post('/logout', authController.logout);
 // Legacy body-based refresh token (backward compatible)
 router.post('/refresh-token', authController.refreshTokenLegacy);
 
+// MFA routes
+router.post('/mfa/setup', protect, authController.mfaSetup);
+router.post('/mfa/verify-setup', protect, authController.mfaVerifySetup);
+router.post('/mfa/validate', authController.mfaValidate);
+router.post('/mfa/disable', protect, authController.mfaDisable);
+
 router.get('/profile', protect, authController.getProfile);
 router.put('/profile', protect, authController.updateProfile);
 router.put('/change-password', protect, [

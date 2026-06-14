@@ -52,6 +52,18 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  mfaEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  mfaSecret: {
+    type: String,
+    default: null,
+  },
+  mfaVerified: {
+    type: Boolean,
+    default: false,
+  },
   notificationPreferences: {
     budgetWarnings: { type: Boolean, default: true },
     goalReminders: { type: Boolean, default: true },
@@ -126,6 +138,7 @@ userSchema.methods.toJSON = function() {
   delete obj.password;
   delete obj.resetPasswordToken;
   delete obj.resetPasswordExpire;
+  delete obj.mfaSecret;
   return obj;
 };
 
