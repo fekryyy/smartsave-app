@@ -34,9 +34,26 @@ createBullBoard({
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+    },
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true,
+}));
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? config.frontendUrl : '*',
+  origin: [config.frontendUrl, 'http://localhost:3000', 'http://localhost:5000'].filter(Boolean),
   credentials: true,
 }));
 
