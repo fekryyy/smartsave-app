@@ -64,6 +64,15 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // AI consent — user must explicitly grant before AI processes their data
+  aiConsent: {
+    type: Boolean,
+    default: false,
+  },
+  aiConsentDate: {
+    type: Date,
+    default: null,
+  },
   notificationPreferences: {
     budgetWarnings: { type: Boolean, default: true },
     goalReminders: { type: Boolean, default: true },

@@ -2,6 +2,19 @@ const FinancialAdvisorService = require('../services/financialAdvisorService');
 const asyncHandler = require('../utils/catchAsync');
 const { AppError } = require('../middleware/errorHandler');
 
+const FINANCIAL_DISCLAIMER = '\n\n*This is for informational purposes only and does not constitute financial advice. Consult a qualified professional before making financial decisions.*';
+
+/**
+ * Inject the financial disclaimer into a text field of an object.
+ */
+function addDisclaimer(obj, field = 'explanation') {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (obj[field] && typeof obj[field] === 'string') {
+    return { ...obj, [field]: obj[field] + FINANCIAL_DISCLAIMER };
+  }
+  return obj;
+}
+
 const financialAdvisorController = {
   // GET /api/financial-advisor/analysis — Full financial analysis
   getFullAnalysis: asyncHandler(async (req, res) => {
@@ -14,7 +27,7 @@ const financialAdvisorController = {
   getScore: asyncHandler(async (req, res) => {
     const service = new FinancialAdvisorService(req.user.id);
     const score = await service.getScore();
-    res.json({ success: true, data: score });
+    res.json({ success: true, data: addDisclaimer(score, 'explanation') });
   }),
 
   // GET /api/financial-advisor/insights — Smart insights only
@@ -47,6 +60,7 @@ const financialAdvisorController = {
     }
     const service = new FinancialAdvisorService(req.user.id);
     const result = await service.askQuestion(question.trim());
+    // Disclaimer is injected by the service for chat responses
     res.json({ success: true, data: result });
   }),
 };

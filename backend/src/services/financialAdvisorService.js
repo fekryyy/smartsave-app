@@ -17,12 +17,180 @@
 const aiContextBuilder = require('./aiContextBuilder');
 const aiService = require('./aiService');
 const AdvisorMemory = require('../models/AdvisorMemory');
+const AIAuditLog = require('../models/AIAuditLog');
+const User = require('../models/User');
 const logger = require('../utils/logger');
+
+/**
+ * Financial disclaimer appended to AI-generated responses.
+ * CONSTANT — never modify without legal review.
+ */
+const FINANCIAL_DISCLAIMER = '\n\n*This is for informational purposes only and does not constitute financial advice. Consult a qualified professional before making financial decisions.*';
+
+/**
+ * Maximum length for user context sent to AI (in characters).
+ * This limits token usage and prevents excessive context window consumption.
+ * ~4000 chars ≈ 1000 tokens for most models.
+ */
+const MAX_CONTEXT_CHARS = 4000;
 
 class FinancialAdvisorService {
   constructor(userId) {
     this.userId = userId;
     this.context = null;
+  }
+
+  /**
+   * Check whether the user has granted AI data processing consent.
+   * Throws an error if consent is not granted.
+   */
+  async _requireConsent() {
+    const user = await User.findById(this.userId).select('aiConsent');
+    if (!user || !user.aiConsent) {
+      const err = new Error('AI consent not granted. Please accept the AI terms at /api/financial-advisor/consent/accept.');
+      err.statusCode = 403;
+      err.code = 'AI_CONSENT_REQUIRED';
+      throw err;
+    }
+    return true;
+  }
+
+  /**
+   * Strip personally identifiable information (PII) from the context object
+   * before sending it to the AI provider. Modifies the object in place.
+   *
+   * Currently strips: userId (replaced with 'redacted'), user.name, and any
+   * email-like strings in descriptions/notes.
+   */
+  _stripPII(ctx) {
+    if (!ctx) return ctx;
+    if (ctx.userId) ctx.userId = 'redacted';
+    // Scrub email patterns from description/name fields in recentTransactions
+    if (ctx.recentTransactions) {
+      ctx.recentTransactions = ctx.recentTransactions.map((t) => ({
+        ...t,
+        description: (t.description || '').replace(/[\w.-]+@[\w.-]+\.\w+/g, '[email redacted]'),
+      }));
+    }
+    return ctx;
+  }
+
+  /**
+   * Truncate context to fit within AI token limits.
+   * Uses a simple character-count heuristic (4 chars ≈ 1 token for English).
+   * The strategy: keep high-value data (categories, budgets, goals) and
+   * trim lower-priority data (trends, payment methods, history).
+   */
+  _trimContext(ctx) {
+    if (!ctx) return ctx;
+    const ctxStr = JSON.stringify(ctx);
+    if (ctxStr.length <= MAX_CONTEXT_CHARS) return ctx;
+
+    logger.debug(`[Advisor] Context too large (${ctxStr.length} chars), trimming to ~${MAX_CONTEXT_CHARS}`);
+
+    // Trim strategies in priority order:
+    const trimmed = { ...ctx };
+
+    // 1. Trim monthlyTrends to last 3 months instead of 6
+    if (trimmed.monthlyTrends && trimmed.monthlyTrends.length > 3) {
+      trimmed.monthlyTrends = trimmed.monthlyTrends.slice(-3);
+    }
+
+    // 2. Limit categoryBreakdown to top 5
+    if (trimmed.categoryBreakdown && trimmed.categoryBreakdown.length > 5) {
+      trimmed.categoryBreakdown = trimmed.categoryBreakdown.slice(0, 5);
+    }
+
+    // 3. Limit recentTransactions to 3
+    if (trimmed.recentTransactions && trimmed.recentTransactions.length > 3) {
+      trimmed.recentTransactions = trimmed.recentTransactions.slice(0, 3);
+    }
+
+    // 4. Limit subscriptions to 5
+    if (trimmed.subscriptions && trimmed.subscriptions.length > 5) {
+      trimmed.subscriptions = trimmed.subscriptions.slice(0, 5);
+    }
+
+    // 5. Limit savingsGoals to 3
+    if (trimmed.savingsGoals && trimmed.savingsGoals.length > 3) {
+      trimmed.savingsGoals = trimmed.savingsGoals.slice(0, 3);
+    }
+
+    // 6. Trim categoryChanges to top 3
+    if (trimmed.categoryChanges && trimmed.categoryChanges.length > 3) {
+      trimmed.categoryChanges = trimmed.categoryChanges.slice(0, 3);
+    }
+
+    // 7. Limit incomeBreakdown
+    if (trimmed.incomeBreakdown && trimmed.incomeBreakdown.length > 3) {
+      trimmed.incomeBreakdown = trimmed.incomeBreakdown.slice(0, 3);
+    }
+
+    // 8. Limit paymentMethodBreakdown
+    if (trimmed.paymentMethodBreakdown && trimmed.paymentMethodBreakdown.length > 3) {
+      trimmed.paymentMethodBreakdown = trimmed.paymentMethodBreakdown.slice(0, 3);
+    }
+
+    // 9. Trim recurringTransactions
+    if (trimmed.recurringTransactions) {
+      if (trimmed.recurringTransactions.income && trimmed.recurringTransactions.income.length > 2) {
+        trimmed.recurringTransactions.income = trimmed.recurringTransactions.income.slice(0, 2);
+      }
+      if (trimmed.recurringTransactions.expenses && trimmed.recurringTransactions.expenses.length > 2) {
+        trimmed.recurringTransactions.expenses = trimmed.recurringTransactions.expenses.slice(0, 2);
+      }
+    }
+
+    return trimmed;
+  }
+
+  /**
+   * Inject the financial disclaimer into AI response objects.
+   * Only adds to string responses or objects with an 'answer' field.
+   */
+  _injectDisclaimer(response) {
+    if (typeof response === 'string') {
+      return response + FINANCIAL_DISCLAIMER;
+    }
+    if (response && typeof response === 'object' && response.answer) {
+      return { ...response, answer: response.answer + FINANCIAL_DISCLAIMER };
+    }
+    return response;
+  }
+
+  /**
+   * Log an AI interaction to the audit trail.
+   */
+  async _logAudit({ endpoint, provider, responseType, systemPromptLength = 0, userPromptLength = 0, responseLength = 0, latencyMs = 0, error = null, consentGranted = true }) {
+    try {
+      await AIAuditLog.create({
+        user: this.userId,
+        endpoint,
+        provider: provider || 'none',
+        responseType,
+        systemPromptLength,
+        userPromptLength,
+        responseLength,
+        estimatedTokens: Math.round((systemPromptLength + userPromptLength + responseLength) / 4),
+        latencyMs,
+        error,
+        consentChecked: true,
+        consentGranted,
+      });
+    } catch (e) {
+      logger.error(`[Advisor] Failed to write audit log: ${e.message}`);
+    }
+  }
+
+  /**
+   * Build context with consent check and PII stripping.
+   */
+  async _buildContext() {
+    await this._requireConsent();
+    const ctx = await aiContextBuilder.buildContext(this.userId);
+    this._stripPII(ctx);
+    this.context = this._trimContext(ctx);
+    return this.context;
   }
 
   // ══════════════════════════════════════════════
@@ -123,15 +291,6 @@ class FinancialAdvisorService {
   async askQuestion(question) {
     const ctx = await this._buildContext();
     return this._answerWithAI(question, ctx);
-  }
-
-  // ══════════════════════════════════════════════
-  // CONTEXT BUILDER
-  // ══════════════════════════════════════════════
-
-  async _buildContext() {
-    this.context = await aiContextBuilder.buildContext(this.userId);
-    return this.context;
   }
 
   // ══════════════════════════════════════════════
@@ -236,6 +395,38 @@ class FinancialAdvisorService {
   }
 
   /**
+   * Wrapper around aiService.generate that adds audit logging and timing.
+   */
+  async _callAI(systemPrompt, userPrompt, options = {}) {
+    const startTime = Date.now();
+    try {
+      const result = await aiService.generate(systemPrompt, userPrompt, options);
+      await this._logAudit({
+        endpoint: options.auditEndpoint || 'ai_call',
+        provider: aiService._lastProvider || 'openai',
+        responseType: 'ai',
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+        responseLength: result.length,
+        latencyMs: Date.now() - startTime,
+      });
+      return result;
+    } catch (e) {
+      await this._logAudit({
+        endpoint: options.auditEndpoint || 'ai_call',
+        provider: 'none',
+        responseType: 'error',
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+        responseLength: 0,
+        latencyMs: Date.now() - startTime,
+        error: e.message,
+      });
+      throw e;
+    }
+  }
+
+  /**
    * AI-enhanced score explanation
    */
   async _aiScoreExplanation(ctx, score) {
@@ -249,7 +440,7 @@ Their calculated score is ${score.score}/100 (${score.level}).
 Write a brief, personalized explanation (2-3 sentences) of this score. Mention their specific savings rate (${ctx.savingsRate}%) and one key action they could take to improve. Return ONLY a JSON object with a single field "explanation" containing the text.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.4, maxTokens: 500 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.4, maxTokens: 500, auditEndpoint: 'score_explanation' });
       const parsed = this._extractJSON(result);
       if (parsed && parsed.explanation) return parsed.explanation;
       return this._defaultExplanation(score, ctx);
@@ -304,7 +495,7 @@ ${JSON.stringify(ctx, null, 2)}
 Generate up to 10 personalized financial insights based EXCLUSIVELY on this data. Every insight must reference specific numbers, categories, and amounts from the data above. Never invent data. Return ONLY a valid JSON array.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000, auditEndpoint: 'insights' });
       const parsed = this._extractJSON(result);
       if (Array.isArray(parsed)) return parsed.slice(0, 15);
       throw new Error('Insights response is not an array');
@@ -338,7 +529,7 @@ ${JSON.stringify(ctx, null, 2)}
 Analyze their financial health. Status should be "excellent" if no major issues, "good" if 1-2 minor issues, "needs_attention" if significant concerns. Return ONLY valid JSON.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000, auditEndpoint: 'health' });
       const parsed = this._extractJSON(result);
       if (parsed && parsed.status) return parsed;
       throw new Error('Health response missing required fields');
@@ -378,7 +569,7 @@ ${JSON.stringify(ctx, null, 2)}
 Generate personalized advice based EXCLUSIVELY on this data. Include specific dollar amounts. Return ONLY a valid JSON array.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000, auditEndpoint: 'advice' });
       const parsed = this._extractJSON(result);
       if (Array.isArray(parsed)) return parsed.slice(0, 8);
       throw new Error('Advice response is not an array');
@@ -415,7 +606,7 @@ ${JSON.stringify(ctx, null, 2)}
 Identify savings opportunities based EXCLUSIVELY on this data. Include specific amounts. Return ONLY a valid JSON array.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 800 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 800, auditEndpoint: 'opportunities' });
       const parsed = this._extractJSON(result);
       if (Array.isArray(parsed)) return parsed.slice(0, 6);
       throw new Error('Opportunities response is not an array');
@@ -458,7 +649,7 @@ ${JSON.stringify(ctx, null, 2)}
 Create up to 3 personalized action plans based EXCLUSIVELY on this data. Every step must reference specific categories and amounts. Return ONLY a valid JSON array.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.3, maxTokens: 1000, auditEndpoint: 'action_plan' });
       const parsed = this._extractJSON(result);
       if (Array.isArray(parsed)) return parsed.slice(0, 3);
       throw new Error('Action plans response is not an array');
@@ -504,7 +695,7 @@ ${JSON.stringify(ctx, null, 2)}
 Generate financial predictions based EXCLUSIVELY on this data. Include specific projected amounts. Calculate end-of-month projections using their average daily spend. Return ONLY a valid JSON array.`;
 
     try {
-      const result = await aiService.generate(systemPrompt, userPrompt, { temperature: 0.2, maxTokens: 1000 });
+      const result = await this._callAI(systemPrompt, userPrompt, { temperature: 0.2, maxTokens: 1000, auditEndpoint: 'predictions' });
       const parsed = this._extractJSON(result);
       if (Array.isArray(parsed)) return parsed.slice(0, 6);
       throw new Error('Predictions response is not an array');
@@ -520,6 +711,11 @@ Generate financial predictions based EXCLUSIVELY on this data. Include specific 
   // ══════════════════════════════════════════════
 
   async _answerWithAI(question, ctx) {
+    const startTime = Date.now();
+    let responseType = 'fallback';
+    let provider = 'none';
+    let error = null;
+
     // Load recent conversation history (last 3 exchanges only to save tokens)
     const recentMemory = await AdvisorMemory.find({ user: this.userId })
       .sort({ createdAt: -1 })
@@ -572,21 +768,54 @@ JSON: {"answer":"...","type":"advice|analysis|info","suggestedActions":["..."]|n
         throw new Error('Could not extract valid JSON response from AI');
       }
 
+      provider = aiService._lastProvider || 'openai';
+      responseType = 'ai';
+
+      // Inject financial disclaimer
+      const withDisclaimer = this._injectDisclaimer(parsed);
+
       // Save to conversation memory
       await this._saveMemory('user', question, 'chat');
-      await this._saveMemory('assistant', parsed.answer || '', parsed.type || 'chat');
+      await this._saveMemory('assistant', withDisclaimer.answer || '', withDisclaimer.type || 'chat');
 
-      return parsed;
+      // Audit log
+      await this._logAudit({
+        endpoint: 'chat',
+        provider,
+        responseType,
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+        responseLength: (parsed.answer || '').length,
+        latencyMs: Date.now() - startTime,
+      });
+
+      return withDisclaimer;
     } catch (e) {
       logger.error('AI chat failed, using data-driven fallback:', e.message);
+      error = e.message;
 
       // Smart keyword-driven fallback — answers questions using real user data
       const response = this._smartFallback(question, ctx);
 
-      await this._saveMemory('user', question, 'chat');
-      await this._saveMemory('assistant', response.answer, response.type || 'chat');
+      // Inject disclaimer into fallback responses too
+      const withDisclaimer = this._injectDisclaimer(response);
 
-      return response;
+      await this._saveMemory('user', question, 'chat');
+      await this._saveMemory('assistant', withDisclaimer.answer, withDisclaimer.type || 'chat');
+
+      // Audit log for fallback
+      await this._logAudit({
+        endpoint: 'chat',
+        provider: 'fallback',
+        responseType: 'fallback',
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+        responseLength: (withDisclaimer.answer || '').length,
+        latencyMs: Date.now() - startTime,
+        error,
+      });
+
+      return withDisclaimer;
     }
   }
 

@@ -58,6 +58,11 @@ const errorHandler = (err, req, res, next) => {
     error.statusCode = 400;
   }
 
+  // AI consent required
+  if (err.code === 'AI_CONSENT_REQUIRED') {
+    error.statusCode = 403;
+  }
+
   // Only log stack traces for non-operational errors (programmer mistakes)
   if (!error.isOperational) {
     logger.error(`UNEXPECTED ERROR: ${err.stack}`);
@@ -66,6 +71,7 @@ const errorHandler = (err, req, res, next) => {
   res.status(error.statusCode).json({
     success: false,
     message: error.message || 'Internal Server Error',
+    code: err.code || undefined,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
