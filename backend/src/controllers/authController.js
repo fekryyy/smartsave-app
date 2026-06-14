@@ -60,10 +60,19 @@ const authController = {
     const { idToken } = req.body;
     const { OAuth2Client } = require('google-auth-library');
     const client = new OAuth2Client(config.googleClientId);
-    
+
+    // Accept either the iOS or Android client ID as the audience.
+    // The aud claim in the ID token varies by platform:
+    //   Android → google-services.json default_web_client_id (client_type 3)
+    //   iOS     → GoogleService-Info.plist CLIENT_ID          (client_type 2)
+    const audiences = [config.googleClientId];
+    if (config.googleAndroidClientId) {
+      audiences.push(config.googleAndroidClientId);
+    }
+
     const ticket = await client.verifyIdToken({
       idToken,
-      audience: config.googleClientId,
+      audience: audiences,
     });
     
     const { email, name, picture } = ticket.getPayload();

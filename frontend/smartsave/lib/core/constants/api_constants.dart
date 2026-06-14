@@ -1,6 +1,16 @@
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 class ApiConstants {
-  static const String baseUrl = 'http://localhost:5001/api';
-  static const String socketUrl = 'http://localhost:5001';
+  /// Android emulator uses 10.0.2.2 to reach the host machine.
+  /// All other platforms (iOS simulator, macOS, web, real devices) use localhost
+  /// when the backend runs on the same machine during development.
+  static String get _host {
+    if (defaultTargetPlatform == TargetPlatform.android) return '10.0.2.2';
+    return 'localhost';
+  }
+
+  static String get baseUrl => 'http://$_host:5001/api';
+  static String get socketUrl => 'http://$_host:5001';
 
   // Auth endpoints
   static const String login = '/auth/login';
