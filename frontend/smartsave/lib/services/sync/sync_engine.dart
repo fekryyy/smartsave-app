@@ -26,7 +26,7 @@ class SyncEngine {
   // Stream controller for sync state observation
   final StreamController<SyncStatusInfo> _statusController =
       StreamController<SyncStatusInfo>.broadcast();
-  late final SyncStatusInfo _currentStatus;
+  late SyncStatusInfo _currentStatus;
 
   // Periodic sync timer
   Timer? _periodicTimer;
@@ -257,7 +257,9 @@ class SyncEngine {
     final serverId = serverRecord['_id'] as String? ?? serverRecord['id'] as String?;
     if (serverId == null) return;
 
-    // Normalize: use 'id' as primary key consistently
+    // Normalize: use 'id' as primary key consistently.
+    // Unknown fields (Mongoose _id, __v, etc.) are stripped automatically
+    // by [LocalDatabase.filterRecordForTable] inside upsertWithSyncMetadata.
     final normalizedRecord = Map<String, dynamic>.from(serverRecord);
     if (normalizedRecord.containsKey('_id') && !normalizedRecord.containsKey('id')) {
       normalizedRecord['id'] = normalizedRecord['_id'];

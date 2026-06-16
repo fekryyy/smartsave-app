@@ -4,6 +4,26 @@ import '../models/financial_advisor_models.dart';
 class FinancialAdvisorRepositoryImpl {
   final FinancialAdvisorRemoteDataSource _remoteDataSource = FinancialAdvisorRemoteDataSource();
 
+  // ── Consent management ──
+
+  /// Returns the current AI consent status: `{ aiConsent: bool, aiConsentDate: DateTime? }`.
+  Future<Map<String, dynamic>> getConsentStatus() async {
+    final response = await _remoteDataSource.getConsentStatus();
+    return response['data'] as Map<String, dynamic>? ?? {};
+  }
+
+  /// Accept AI consent for the current user.
+  Future<void> acceptConsent() async {
+    await _remoteDataSource.acceptConsent();
+  }
+
+  /// Revoke AI consent for the current user.
+  Future<void> revokeConsent() async {
+    await _remoteDataSource.revokeConsent();
+  }
+
+  // ── AI-powered endpoints ──
+
   Future<FullFinancialAnalysis> getFullAnalysis() async {
     final response = await _remoteDataSource.getFullAnalysis();
     return FullFinancialAnalysis.fromJson(response['data'] ?? {});

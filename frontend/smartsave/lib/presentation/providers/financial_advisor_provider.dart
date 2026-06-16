@@ -4,6 +4,16 @@ import '../../data/models/financial_advisor_models.dart';
 
 /// State provider for the Financial Advisor feature.
 ///
+/// ## Consent-first flow
+/// The Financial Advisor uses AI to generate personalized insights. Before
+/// any user financial data is sent to an AI provider, the user must explicitly
+/// grant consent. This provider enforces that flow:
+///
+/// 1. [loadAll] first checks consent status via the consent API
+/// 2. If consent is missing → sets [consentRequired] → UI shows consent prompt
+/// 3. User taps accept → [acceptConsent] is called → [loadAll] proceeds
+/// 4. Once consent is confirmed, AI-powered sections load in parallel
+///
 /// ## Architecture
 /// - Score loads first (fast, deterministic, no AI calls)
 /// - AI sections (insights, plans, predictions) load in parallel incrementally
@@ -13,6 +23,11 @@ import '../../data/models/financial_advisor_models.dart';
 class FinancialAdvisorProvider extends ChangeNotifier {
   final FinancialAdvisorRepositoryImpl _repository =
       FinancialAdvisorRepositoryImpl();
+
+  // ── Consent state ──
+
+  bool _consentGranted = false;
+  bool _consentChecked = false;
 
   // ── Core state ──
 
@@ -48,6 +63,15 @@ class FinancialAdvisorProvider extends ChangeNotifier {
 
   // ── Getters ──
 
+  /// Whether AI consent is required (consent checked and not yet granted).
+  bool get consentRequired => _consentChecked && !_consentGranted;
+
+  /// Whether AI consent has been granted.
+  bool get consentGranted => _consentGranted;
+
+  /// Whether the initial consent check is still in progress.
+  bool get consentChecking => _isLoading && !_consentChecked;
+
   FullFinancialAnalysis? get analysis => _analysis;
   FinancialScore? get score => _score;
   List<FinancialInsight> get insights => _insights;
@@ -62,26 +86,88 @@ class FinancialAdvisorProvider extends ChangeNotifier {
   bool get actionPlanError => _actionPlanError;
   bool get predictionError => _predictionError;
 
-  // ── Data loading ──
+  // ── Consent management ──
 
-  /// Loads all Financial Advisor data incrementally:
-  ///
-  /// 1. Score (fast — deterministic backend, no AI) — displayed immediately
-  /// 2. AI sections (insights, plans, predictions) — loaded in parallel,
-  ///    each appearing as its data arrives
-  ///
-  /// If the user switches users or a second [loadAll] is called while the
-  /// first is still in-flight, stale responses are silently discarded via
-  /// the [_loadSequence] guard.
-  Future<void> loadAll() async {
-    final sequence = ++_loadSequence;
-
+  /// Accept AI consent and then load all data.
+  Future<void> acceptConsent() async {
     _errorMessage = null;
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Step 1: Load score first (fast — no AI calls)
+      await _repository.acceptConsent();
+      _consentGranted = true;
+      _consentChecked = true;
+      // Now proceed to load data
+      await _loadAllAfterConsent();
+    } catch (e) {
+      _isLoading = false;
+      _errorMessage = 'Failed to save consent. Please try again.';
+      notifyListeners();
+    }
+  }
+
+  /// Revoke AI consent and clear all advisor data.
+  Future<void> revokeConsent() async {
+    try {
+      await _repository.revokeConsent();
+    } catch (_) {
+      // Revoke is best-effort
+    }
+    _consentGranted = false;
+    _consentChecked = true;
+    resetState();
+  }
+
+  // ── Data loading ──
+
+  /// Loads all Financial Advisor data with consent-first flow:
+  ///
+  /// 1. Check consent status (no AI required for this)
+  /// 2. If consent not granted → stop and show consent prompt
+  /// 3. If consent granted → score first, then AI sections in parallel
+  Future<void> loadAll() async {
+    final sequence = ++_loadSequence;
+
+    _errorMessage = null;
+    _isLoading = true;
+    _consentChecked = false;
+    notifyListeners();
+
+    try {
+      // Step 0: Check consent status (this endpoint does NOT require AI consent)
+      final consentStatus = await _repository.getConsentStatus();
+      _consentGranted = consentStatus['aiConsent'] == true;
+      _consentChecked = true;
+
+      if (sequence != _loadSequence) return; // Stale — discard
+
+      if (!_consentGranted) {
+        // Show consent prompt — no data loaded
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Consent granted — load all data
+      await _loadAllAfterConsent();
+    } catch (e) {
+      if (sequence != _loadSequence) return; // Stale — discard
+      _isLoading = false;
+      _consentChecked = true;
+      if (_analysis == null) {
+        _errorMessage = 'Unable to load financial data';
+      }
+      notifyListeners();
+    }
+  }
+
+  /// Internal: load all data (consent already confirmed).
+  Future<void> _loadAllAfterConsent() async {
+    final sequence = _loadSequence;
+
+    try {
+      // Step 1: Load score first (fast — no AI calls needed)
       _score = await _repository.getScore();
       if (sequence != _loadSequence) return; // Stale — discard
       _analysis = FullFinancialAnalysis(
@@ -253,6 +339,9 @@ class FinancialAdvisorProvider extends ChangeNotifier {
     _chatQueue.clear();
     _isChatPending = false;
     _chatLoadingCount = 0;
+
+    _consentGranted = false;
+    _consentChecked = false;
 
     _analysis = null;
     _score = null;

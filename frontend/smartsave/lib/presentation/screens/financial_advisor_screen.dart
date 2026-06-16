@@ -94,9 +94,11 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
             Expanded(
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : provider.errorMessage != null && provider.analysis == null
-                      ? _buildErrorState(provider, isDark)
-                      : _buildContent(provider, isDark),
+                  : provider.consentRequired
+                      ? _buildConsentPrompt(provider, isDark)
+                      : provider.errorMessage != null && provider.analysis == null
+                          ? _buildErrorState(provider, isDark)
+                          : _buildContent(provider, isDark),
             ),
           ],
         ),
@@ -194,6 +196,87 @@ class _FinancialAdvisorScreenState extends State<FinancialAdvisorScreen> with Ro
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Consent Prompt ──
+  Widget _buildConsentPrompt(FinancialAdvisorProvider provider, bool isDark) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 8))],
+              ),
+              child: const Icon(Icons.auto_awesome_rounded, size: 48, color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Welcome to SmartSave Advisor',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF0F172A)),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Your personal AI-powered financial assistant that provides:\n\n'
+              '• Personalized spending insights\n'
+              '• Smart savings recommendations\n'
+              '• Action plans to reach your goals\n'
+              '• Financial predictions & forecasts\n'
+              '• Conversational Q&A about your finances',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, height: 1.6, color: isDark ? AppColors.grey400 : AppColors.grey600),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: (isDark ? AppColors.primary : AppColors.primary).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: (isDark ? AppColors.primary : AppColors.primary).withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Your financial data will be processed by AI providers (OpenAI, Claude, or DeepSeek) to generate personalized insights. '
+                      'Your data is encrypted in transit and never stored by third parties. You can revoke consent at any time.',
+                      style: TextStyle(fontSize: 13, height: 1.5, color: isDark ? AppColors.grey400 : AppColors.grey700),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () => provider.acceptConsent(),
+              icon: const Icon(Icons.check_circle_rounded),
+              label: const Text('Accept & Continue'),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Not now', style: TextStyle(fontSize: 14, color: isDark ? AppColors.grey400 : AppColors.grey500)),
             ),
           ],
         ),

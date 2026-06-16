@@ -8,6 +8,28 @@ class FinancialAdvisorRemoteDataSource {
     _apiClient.cancelRequests('financial-advisor');
   }
 
+  // ── Consent management ──
+
+  Future<Map<String, dynamic>> getConsentStatus() async {
+    return _apiClient.get(
+      '/financial-advisor/consent',
+    ).dataOrThrow;
+  }
+
+  Future<Map<String, dynamic>> acceptConsent() async {
+    return _apiClient.post(
+      '/financial-advisor/consent/accept',
+    ).dataOrThrow;
+  }
+
+  Future<Map<String, dynamic>> revokeConsent() async {
+    return _apiClient.post(
+      '/financial-advisor/consent/revoke',
+    ).dataOrThrow;
+  }
+
+  // ── AI-powered endpoints ──
+
   Future<Map<String, dynamic>> getFullAnalysis() async {
     return _apiClient.get(
       '/financial-advisor/analysis',

@@ -259,6 +259,9 @@ class LocalDatabase {
   // ── Sync Metadata Helpers ──
 
   /// Upsert a record with sync metadata (insert or replace).
+  ///
+  /// Automatically filters out fields that don't have corresponding columns
+  /// in the target table, preventing SQLite errors from server-only fields.
   Future<void> upsertWithSyncMetadata(
     String table,
     Map<String, dynamic> record, {
@@ -271,7 +274,9 @@ class LocalDatabase {
       ..['updatedAt'] = updatedAt
       ..['syncStatus'] = syncStatus
       ..['serverUpdatedAt'] = serverUpdatedAt;
-    await db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.replace);
+    // Strip fields not present in the target table schema
+    final filtered = await filterRecordForTable(table, data);
+    await db.insert(table, filtered, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Mark a local record as having pending (unsynced) changes.
@@ -333,6 +338,35 @@ class LocalDatabase {
     final value = result.first['lastSync'] as String?;
     if (value == null) return null;
     return DateTime.tryParse(value);
+  }
+
+  // ── Schema Helpers ──
+
+  /// Cache of table column names, keyed by table name.
+  final Map<String, Set<String>> _tableColumnCache = {};
+
+  /// Get the set of column names for a given table by querying PRAGMA table_info.
+  /// Results are cached in memory for the lifetime of the database connection.
+  Future<Set<String>> getTableColumns(String table) async {
+    if (_tableColumnCache.containsKey(table)) {
+      return _tableColumnCache[table]!;
+    }
+    final db = await database;
+    final result = await db.rawQuery('PRAGMA table_info($table)');
+    final columns = result.map((row) => row['name'] as String).toSet();
+    _tableColumnCache[table] = columns;
+    return columns;
+  }
+
+  /// Filter a record map to only include keys that match the table's columns.
+  /// This prevents SQLite errors when server records contain fields (like
+  /// Mongoose `_id`, `__v`, `priority`, `icon`, etc.) that don't have
+  /// corresponding columns in the local table.
+  Future<Map<String, dynamic>> filterRecordForTable(String table, Map<String, dynamic> record) async {
+    final columns = await getTableColumns(table);
+    return Map.fromEntries(
+      record.entries.where((e) => columns.contains(e.key)),
+    );
   }
 
   // ── Session Management ──
